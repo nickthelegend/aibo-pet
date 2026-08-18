@@ -52,8 +52,8 @@
         "arm-fore"
       ],
       "used_mm": [
-        123.4,
-        51.7,
+        127.1,
+        55.4,
         154.0
       ],
       "fits_bed": true
@@ -96,6 +96,7 @@
         "cap-shoulder",
         "cap-elbow",
         "cap-head",
+        "keycap",
         "mic-tab"
       ],
       "used_mm": [

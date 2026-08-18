@@ -24,6 +24,7 @@ import part_base
 import part_base_joint
 import part_head
 import part_horn
+import part_keycap
 import part_lid
 import part_retainers
 import part_shoulder
@@ -88,6 +89,9 @@ def world_components():
     transforms as the arm, so a servo lands in its cup rather than near it."""
     out = []
     out += CO.for_part("base")
+    # The lid is modelled in world coordinates already (it is never rotated
+    # into place), so its MX switch and keycap need no extra transform.
+    out += CO.for_part("lid")
 
     # base servo: into the base-joint housing, then through that part's own
     # frame transform (rotate -90 about X, then translate)
@@ -113,7 +117,9 @@ def world_components():
     return out
 
 
-PRINT_FLIP = {"lid": 180.0}          # lid prints top-face DOWN
+# keycap prints TOP FACE DOWN too -- see part_keycap's docstring: flat top on
+# the bed, walls flaring out at 14 deg, stem growing up off the roof.
+PRINT_FLIP = {"lid": 180.0, "keycap": 180.0}
 PRINT_SHIFT = {}                     # name -> (flip_deg, dz) applied below
 
 
@@ -123,7 +129,8 @@ def print_items():
     print pose (component models, say) can apply the same one."""
     groups = (part_base.build() + part_shoulder.build() + part_lid.build()
               + part_base_joint.build() + part_arms.build() + part_head.build()
-              + part_horn.build() + part_retainers.build())
+              + part_horn.build() + part_retainers.build()
+              + part_keycap.build())
     out = []
     for name, mesh, _c in groups:
         m = mesh.copy()

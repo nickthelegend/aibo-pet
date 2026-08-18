@@ -199,6 +199,22 @@ def sg90():
                   "sg90", label=False, col="servo2")
 
 
+def mx_switch():
+    """Cherry MX, origin at the PLATE TOP: upper housing sits on the plate,
+    body and pins hang below, stem stands proud. The cap goes over the stem."""
+    up = P.MX_UPPER_SQ
+    parts = [("mx-upper", _b(up, up, 0.0, P.MX_UPPER_H, r=0.6), C["pcb-black"]),
+             ("mx-body", _b(P.MX_BODY_SQ - 1.0, P.MX_BODY_SQ - 1.0,
+                            -P.MX_BODY_DROP, 0.0, r=0.6), C["white"])]
+    stem = P.MX_UPPER_H
+    parts.append(("mx-stem", _b(P.MX_STEM_SQ, P.MX_STEM_SQ, stem,
+                                stem + P.MX_STEM_UP, r=0.4), C["keycap"]))
+    for sx in (-2.5, 2.5):
+        parts.append(("mx-pins", _b(0.9, 0.5, -P.MX_BODY_DROP - P.MX_PIN_DROP,
+                                    -P.MX_BODY_DROP, cx=sx), C["metal"]))
+    return parts
+
+
 def place(parts, rx=0.0, ry=0.0, rz=0.0, dx=0.0, dy=0.0, dz=0.0, tag=""):
     out = []
     for n, m, c in parts:
@@ -261,6 +277,19 @@ def for_part(name):
         return place(mg996r(), ry=90.0, dx=-P.MG_H / 2,
                      dz=axis_z - (P.MG_L / 2 - P.MG_SHAFT_OFF), tag=tag)
 
+    if name == "lid":
+        import part_keycap as PKC
+        z = P.LID_Z1
+        out = place(mx_switch(), dx=P.MX_CTR[0], dy=P.MX_CTR[1], dz=z)
+        # Cap underside sits KEYCAP_GAP above the upper housing -- that gap is
+        # the key's travel. Deriving it from the stem top instead (as this
+        # first did) happened to land the cap flat on the housing with zero
+        # clearance, i.e. a key that is already bottomed out.
+        cap_z = z + P.MX_UPPER_H + P.KEYCAP_GAP
+        for n, m, c in PKC.build():
+            out.append((n, m.copy().translate(dx=P.MX_CTR[0], dy=P.MX_CTR[1],
+                                              dz=cap_z), c))
+        return out
     if name == "base-joint":
         import part_base_joint as PBJ
         return _mg(PBJ.AXIS, "-base")

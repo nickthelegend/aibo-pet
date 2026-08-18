@@ -30,7 +30,17 @@ import partlib as pl
 EXPORTS = assembly.EXPORTS
 BED = P.PLATE
 MARGIN = 6.0        # keep off the bed edge (skirt/brim room)
-GAP = 4.0           # between parts
+GAP = 4.0           # between parts, minimum
+# Tall parts get more. 4 mm is fine between two 3 mm caps and mean between
+# two 154 mm towers on a bedslinger: the gantry travels through that gap on
+# every layer, and the parts themselves are swinging back and forth. Scaled
+# off the taller of the two neighbours.
+GAP_PER_MM_TALL = 0.05
+GAP_MAX = 12.0
+
+
+def gap_for(h):
+    return min(max(GAP, h * GAP_PER_MM_TALL), GAP_MAX)
 
 # Grouping is deliberate, not alphabetical -- see the module docstring.
 BATCHES = [
@@ -44,7 +54,8 @@ BATCHES = [
     ("4-head", "cone (mouth down) + lid (top face down)", ["shade", "lid"]),
     ("5-small", "everything that is quick", ["base-joint", "cap-base", "cap-shoulder",
                                              "cap-elbow", "cap-head", "horn-sg90",
-                                             "horn-adapter", "spk-clamp", "mic-tab"]),
+                                             "horn-adapter", "spk-clamp", "mic-tab",
+                                             "keycap"]),
 ]
 
 
@@ -58,20 +69,22 @@ def shelf_pack(items):
     usable = BED - 2 * MARGIN
     todo = sorted(items, key=lambda it: -_footprint(it[1])[1])
     plates, cur, shelf_y, shelf_h, cx = [], [], MARGIN, 0.0, MARGIN
+    shelf_tall = 0.0
     for name, mesh in todo:
         w, h = _footprint(mesh)
         if w > usable or h > usable:
             raise ValueError(f"{name} ({w:.0f}x{h:.0f}) does not fit the bed")
         if cx + w > MARGIN + usable:                      # next shelf
-            shelf_y += shelf_h + GAP
-            shelf_h, cx = 0.0, MARGIN
+            shelf_y += shelf_h + gap_for(shelf_tall)
+            shelf_h, cx, shelf_tall = 0.0, MARGIN, 0.0
         if shelf_y + h > MARGIN + usable:                 # next plate
             plates.append(cur)
-            cur, shelf_y, shelf_h, cx = [], MARGIN, 0.0, MARGIN
+            cur, shelf_y, shelf_h, cx, shelf_tall = [], MARGIN, 0.0, MARGIN, 0.0
         b = mesh.bounds()
         cur.append((name, mesh, cx - b[0], shelf_y - b[1]))
-        cx += w + GAP
+        cx += w + gap_for(b[5] - b[2])
         shelf_h = max(shelf_h, h)
+        shelf_tall = max(shelf_tall, b[5] - b[2])
     if cur:
         plates.append(cur)
     return plates
@@ -84,7 +97,8 @@ def main():
                + assembly.part_base_joint.build() + assembly.part_arms.build()
                + assembly.part_head.build() + assembly.part_horn.build()
                + assembly.part_retainers.build()
-               + assembly.part_shoulder.build())}
+               + assembly.part_shoulder.build()
+               + assembly.part_keycap.build())}
     report, n_plates = [], 0
     print(f"bed {BED:.0f}x{BED:.0f}, margin {MARGIN}, gap {GAP}\n")
     for tag, why, names in BATCHES:

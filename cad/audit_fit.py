@@ -199,6 +199,8 @@ chk("lid rebate is a straight bore, not a taper",
 # -- so it could only sit ON the shoulder, standing LID_T proud. That step was
 # visible in the assembly and nothing here objected to it. These two do now.
 import part_lid as _PL
+import assembly as _ASM0
+_A_ITEMS = list(_ASM0.world_items())
 _lid = [m for n, m, _ in _PL.build() if n == "lid"][0]
 _sh = [m for n, m, _ in _PS.build() if n == "shoulder"][0]
 chk("lid finishes flush with the shoulder rim",
@@ -209,6 +211,31 @@ chk("lid plate actually drops into the bore", P.LID_OD < _PS.SEAT_IN,
     f"plate O{P.LID_OD:.1f} into a O{_PS.SEAT_IN:.1f} bore "
     f"({_PS.SEAT_IN - P.LID_OD:.1f} mm total clearance)")
 _cb_edge = max(math.hypot(x, y) for x, y in P.LUG_POS) + P.M3_HEAD_D / 2
+# The MX pocket is a 16 mm square hole in a lid that is already carrying the
+# base joint, a cable slot and four seat lugs. Nothing checked it had room.
+_mxh = P.MX_BODY_SQ / 2
+_mx = (P.MX_CTR[0] - _mxh, P.MX_CTR[1] - _mxh,
+       P.MX_CTR[0] + _mxh, P.MX_CTR[1] + _mxh)
+_bj = [m.bounds() for n, m, _c in _A_ITEMS if n == "base-joint"][0]
+_nbrs = [("base joint", (_bj[0], _bj[1], _bj[3], _bj[4])),
+         ("cable slot", (-11.0, P.BSERVO_AXIS_Y - 7.0, 11.0, P.BSERVO_AXIS_Y + 7.0))]
+_nbrs += [(f"seat lug {i}", (x - P.M3_HEAD_D / 2, y - P.M3_HEAD_D / 2,
+                             x + P.M3_HEAD_D / 2, y + P.M3_HEAD_D / 2))
+          for i, (x, y) in enumerate(P.LUG_POS)]
+_hits = [n for n, b in _nbrs
+         if _mx[0] < b[2] and _mx[2] > b[0] and _mx[1] < b[3] and _mx[3] > b[1]]
+chk("MX pocket clears everything else on the lid", not _hits,
+    f"X{_mx[0]:.1f}..{_mx[2]:.1f} Y{_mx[1]:.1f}..{_mx[3]:.1f}, on the centreline"
+    if not _hits else "clashes with " + ", ".join(_hits))
+chk("MX pocket stays inside the lid",
+    math.hypot(_mxh, abs(P.MX_CTR[1]) + _mxh) < P.LID_OD / 2 - 2.0,
+    f"far corner r{math.hypot(_mxh, abs(P.MX_CTR[1]) + _mxh):.1f} "
+    f"vs rim r{P.LID_OD / 2:.1f}")
+chk("keycap engages the switch stem",
+    P.KEYCAP_SOCKET - P.KEYCAP_GAP >= P.MX_STEM_UP * 0.7,
+    f"{P.MX_STEM_UP - P.KEYCAP_GAP:.1f} mm of a {P.MX_STEM_UP} mm stem, "
+    f"leaving {P.KEYCAP_GAP} mm of travel")
+
 chk("lug counterbores stay inside the lid's rim", _cb_edge < P.LID_OD / 2 - 1.5,
     f"counterbore reaches r{_cb_edge:.1f}, lid rim r{P.LID_OD / 2:.1f} -- "
     f"{P.LID_OD / 2 - _cb_edge:.1f} mm of rim left")

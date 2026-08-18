@@ -153,6 +153,22 @@ MX_BODY_DROP  = 6.5    # plate underside -> switch base
 MX_PIN_DROP   = 3.5    # pins below the switch base
 MX_SOCKET_W   = 1.6    # relief pocket wall
 
+# ------------------------------------------------ MX switch + keycap ----
+# Cherry MX geometry above the plate. The switch itself is bought; the cap
+# is printed. TODO verify against your actual switch -- clone uppers vary.
+MX_UPPER_SQ   = 15.6   # upper housing, sits ON the plate
+MX_UPPER_H    = 6.2    # plate top -> top of the upper housing
+MX_STEM_SQ    = 7.2    # stem boss the cap slides over
+MX_STEM_UP    = 3.6    # stem standing proud of the upper housing
+MX_CROSS_A    = 4.1    # stem cross, long arm
+MX_CROSS_B    = 1.35   # ...and its width
+KEYCAP_BASE   = 18.0   # 1u
+KEYCAP_TOP    = 13.4   # top face, after the taper
+KEYCAP_H      = 9.0    # cap underside -> cap top
+KEYCAP_WALL   = 1.6
+KEYCAP_SOCKET = 4.2    # how deep the cross socket runs up into the cap
+KEYCAP_GAP    = 0.6    # cap underside clear of the upper housing when up
+
 # ============================================== bulk capacitor (servo rail) =
 CAP_D         = 16.0   # TODO verify -- 2200uF 16V radial
 CAP_H         = 26.0   # TODO verify
@@ -267,7 +283,10 @@ CAP_CTR       = (46.0, 46.0)    # rear-right corner, outboard of the bulkhead
 AMP_CTR       = (0.0, 30.0)     # rear floor, between the bulkheads
 
 # MX key in the lid -- front left, clear of the yoke slot
-MX_CTR        = (-28.0, -30.0)
+# On the lid's centreline. Dead centre is not available -- the base joint
+# occupies X-40..40, Y-15.8..36 -- so the key sits on X=0 in the clear band
+# in FRONT of it, 6.2 mm off the joint and 6.9 mm off the front seat lug.
+MX_CTR        = (0.0, -30.0)
 
 # =================================================================== arm ====
 # Joint axis to joint axis. Three lift joints (base/shoulder/elbow) + head
@@ -364,6 +383,7 @@ COLORS = {
     "joint":  "#3A3D42",   # dark joint covers
     "shade":  "#F2EDE4",
     "ring":   "#FFC85C",   # the glow
+    "keycap": "#2C6BED",   # the one blue thing on the whole lamp
     "servo2": "#1E44A8",   # SG90 -- TowerPro blue, so the head servo reads
                            # as its own part and not as more dark joint
                            # ("servo" itself lives in the component block

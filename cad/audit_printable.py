@@ -58,7 +58,51 @@ def main():
     else:
         print("\nEvery part fits the A1 mini. Print them one at a time; the "
               "plates in\nexports/plate-*.stl are groupings, not a requirement.")
+
+    bad += _plates()
     return 0 if not bad else 1
+
+
+def _plates():
+    """Every PLATE, not just every part. A plate can bust the bed or, worse,
+    lay two parts on top of each other -- nothing checked either until now,
+    and a merged STL with overlapping parts slices without complaint into a
+    print that fails."""
+    import plates as PL
+    built = dict(assembly.print_items())
+    print(f"\n{'plate':<20}{'used XY':>16}{'Z':>7}  {'fits':>5}{'min gap':>9}  parts")
+    print("-" * 74)
+    bad = []
+    for tag, _why, names in PL.BATCHES:
+        for i, grp in enumerate(PL.shelf_pack([(n, built[n]) for n in names])):
+            label = f"plate-{tag}" + (f"-{i+1}" if i else "")
+            bx = [(n, m.copy().translate(dx=dx, dy=dy).bounds())
+                  for n, m, dx, dy in grp]
+            ux = max(b[3] for _n, b in bx) - min(b[0] for _n, b in bx)
+            uy = max(b[4] for _n, b in bx) - min(b[1] for _n, b in bx)
+            uz = max(b[5] for _n, b in bx)
+            gap, clash = None, []
+            for a in range(len(bx)):
+                for c in range(a + 1, len(bx)):
+                    (n1, A), (n2, B) = bx[a], bx[c]
+                    ox = min(A[3], B[3]) - max(A[0], B[0])
+                    oy = min(A[4], B[4]) - max(A[1], B[1])
+                    if ox > 0 and oy > 0:
+                        clash.append(f"{n1}/{n2}")
+                    else:
+                        g = max(-ox, -oy)
+                        gap = g if gap is None else min(gap, g)
+            fits = ux <= BED - 2 * SKIRT and uy <= BED - 2 * SKIRT and uz <= BED
+            if not fits or clash:
+                bad.append((label, ux, uy, uz))
+            print(f"{label:<20}{ux:>7.1f} x{uy:>6.1f}{uz:>7.1f}  "
+                  f"{'YES' if fits else 'NO':>5}"
+                  f"{('-' if gap is None else f'{gap:.1f}'):>9}  {len(bx)}"
+                  + ("   CLASH: " + ", ".join(clash) if clash else ""))
+    print("-" * 74)
+    print("No plate overlaps a part with another and none busts the bed."
+          if not bad else "PLATE PROBLEMS -- see CLASH / NO above.")
+    return bad
 
 
 if __name__ == "__main__":

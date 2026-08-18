@@ -225,6 +225,18 @@
         7.0,
         3.2
       ]
+    },
+    "keycap": {
+      "shells": 17,
+      "triangles": 4504,
+      "volume_mm3": 1062.51,
+      "watertight": true,
+      "fits_a1_mini": true,
+      "bbox_mm": [
+        17.9,
+        17.9,
+        9.0
+      ]
     }
   },
   "print_notes": {
