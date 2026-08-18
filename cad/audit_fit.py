@@ -194,6 +194,24 @@ chk("lid skirt fits the base rebate at EVERY height", all(skirt_od < b for b in 
     f"skirt {skirt_od:.1f} vs bore {min(bores):.1f}..{max(bores):.1f}")
 chk("lid rebate is a straight bore, not a taper",
     abs(max(bores) - min(bores)) < 0.01, "constant bore over the skirt's travel")
+
+# The lid used to be BASE_TOP_D -- the same diameter as the opening it covered
+# -- so it could only sit ON the shoulder, standing LID_T proud. That step was
+# visible in the assembly and nothing here objected to it. These two do now.
+import part_lid as _PL
+_lid = [m for n, m, _ in _PL.build() if n == "lid"][0]
+_sh = [m for n, m, _ in _PS.build() if n == "shoulder"][0]
+chk("lid finishes flush with the shoulder rim",
+    abs(_lid.bounds()[5] - _sh.bounds()[5]) < 0.05,
+    f"lid top Z{_lid.bounds()[5]:.1f} vs shoulder rim Z{_sh.bounds()[5]:.1f} -- "
+    f"one turned form, no proud step")
+chk("lid plate actually drops into the bore", P.LID_OD < _PS.SEAT_IN,
+    f"plate O{P.LID_OD:.1f} into a O{_PS.SEAT_IN:.1f} bore "
+    f"({_PS.SEAT_IN - P.LID_OD:.1f} mm total clearance)")
+_cb_edge = max(math.hypot(x, y) for x, y in P.LUG_POS) + P.M3_HEAD_D / 2
+chk("lug counterbores stay inside the lid's rim", _cb_edge < P.LID_OD / 2 - 1.5,
+    f"counterbore reaches r{_cb_edge:.1f}, lid rim r{P.LID_OD / 2:.1f} -- "
+    f"{P.LID_OD / 2 - _cb_edge:.1f} mm of rim left")
 chk("snap bead engages its groove",
     P.SNAP_BEAD > 0.3 and P.SNAP_Z + 1.6 < P.BASE_H,
     f"bead {P.SNAP_BEAD} at Z{P.SNAP_Z}")

@@ -170,6 +170,11 @@ BASE_H        = 58.0   # floor bottom -> shoulder top (TALL: the wire volume)
 # straight down into place.
 BASE_STRAIGHT = 42.0   # tub rim / shoulder split line
 BASE_TOP_D    = 118.0  # diameter where the shoulder meets the lid
+# The lid drops INSIDE that bore and its top face finishes flush with the
+# shoulder's rim, so the base reads as one turned form. It used to be
+# BASE_TOP_D itself -- a O118 plate sitting on a O118 opening, standing
+# LID_T (3.4) proud of it, which is the step you could see in the assembly.
+LID_OD        = BASE_TOP_D - 2 * WALL_STRUCT - 0.4   # 112.8, 0.4 in the bore
 BASE_W        = BASE_D # (compat) the footprint is square-bounded by the circle
 BASE_R        = BASE_D / 2.0
 LID_T         = 3.4
@@ -220,7 +225,10 @@ LID_RIB_Z0    = 44.0
 LID_RIB_T     = 4.0
 # Lid hold-down lugs on the seat ring. Short (Z 48..58) and merged into the
 # wall by a radial web, so they are rim detail, not towers in the bay.
-LUG_POS       = [(53.0, 0.0), (-53.0, 0.0), (0.0, 53.0), (0.0, -53.0)]
+# Pulled in from r53 to r48. With the lid recessed to O112.8 its rim is at
+# r56.4, and an M3 counterbore (O6.2) centred at r53 reached r56.1 -- it would
+# have broken straight out of the edge. At r48 there is 5.3 mm of rim left.
+LUG_POS       = [(48.0, 0.0), (-48.0, 0.0), (0.0, 48.0), (0.0, -48.0)]
 # Shoulder-to-tub mounts. Three points, hand-placed into the only gaps left
 # at the rim (the speaker land, USB boss, mic boss and cap clamp take the rest).
 SHOULDER_POS  = [(-51.0, 51.0), (-51.0, -51.0), (51.0, -51.0)]

@@ -10,8 +10,11 @@ ring goes on.
   42 .. 45   inward flange, 3 M3 clearance holes down into the tub's inserts
   36 .. 42   locating skirt dropping inside the tub bore
   42 .. 52   quarter-sine taper, O160 -> O118, tangent to the tub at the rim
-  52 .. 58   straight lid rebate + the lid's snap groove
-  ..         4 seat lugs the lid screws into
+  52 .. 61.4 straight lid rebate + the lid's snap groove. It carries on past
+             the 58 seat by the lid's 3.4 thickness, so the lid drops INSIDE
+             the ring and the two top faces finish flush -- no proud step.
+  ..         4 seat lugs at r48, tops at 58: what the lid lands on and screws
+             into. At r53 their counterbores broke out of the recessed lid.
 
 Prints as modelled, sitting on its wide rim: the taper only ever narrows
 going up, so the whole thing is self-supporting.
@@ -49,7 +52,10 @@ def build():
     ring = pl.ring2d(pl.circle(P.BASE_TOP_D, 128), pl.circle(SEAT_IN, 128))
     groove = pl.ring2d(pl.circle(P.BASE_TOP_D, 128),
                        pl.circle(SEAT_IN + 2 * P.SNAP_BEAD, 128))
-    m += pl.banded(ring, P.LID_SEAT_Z - OVL, P.BASE_H,
+    # Rebate wall runs up to LID_Z1, not BASE_H -- it has to rise PAST the
+    # seat by the lid's own thickness so the lid sits down inside it and the
+    # two finish level. Stopping at BASE_H is what left the lid perched proud.
+    m += pl.banded(ring, P.LID_SEAT_Z - OVL, P.LID_Z1,
                    [(groove, P.SNAP_Z, P.SNAP_Z + 1.6)])
 
     # inward flange with the tub screws

@@ -30,7 +30,11 @@ import params as P
 import partlib as pl
 
 OVL = pl.OVL
-OUTER = pl.circle(P.BASE_TOP_D, 128)
+# LID_OD, not BASE_TOP_D. At BASE_TOP_D the plate was the same diameter as
+# the opening it covered, so it could only sit ON the shoulder -- a O118 disc
+# standing 3.4 proud of a O118 rim. At LID_OD it drops INSIDE the bore, lands
+# on the four seat lugs at Z58, and its top face finishes flush at Z61.4.
+OUTER = pl.circle(P.LID_OD, 128)
 Z0, Z1 = P.LID_Z0, P.LID_Z1
 MX_PLATE_Z0 = Z1 - P.MX_PLATE_T
 
@@ -64,9 +68,11 @@ def build():
         m += _ribs(bolts, unary_union([joint, cable, mx_rel]))
     # Skirt sized to the base's STRAIGHT rebate (constant bore), not to a
     # cone -- a skirt dropping into a taper only fits at one height, and the
-    # first attempt fouled the bore by 2.1 mm at the top.
+    # first attempt fouled the bore by 2.1 mm at the top. It is no longer what
+    # locates the lid -- the recessed plate does that now -- but it still
+    # carries the snap bead down to the groove at Z55, below the seat.
     seat_in = P.BASE_TOP_D - 2 * P.WALL_STRUCT
-    sk_out = pl.circle(seat_in - 0.3, 128)
+    sk_out = pl.circle(min(seat_in - 0.3, P.LID_OD - 0.2), 128)
     skirt = pl.ring2d(sk_out, pl.circle(seat_in - 0.3 - 2 * 1.4, 128))
     bead = pl.ring2d(pl.circle(seat_in - 0.3 + 2 * P.SNAP_BEAD, 128),
                      pl.circle(seat_in - 0.3 - 2 * 1.4, 128))
