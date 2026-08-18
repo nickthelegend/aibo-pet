@@ -212,6 +212,45 @@ _cb_edge = max(math.hypot(x, y) for x, y in P.LUG_POS) + P.M3_HEAD_D / 2
 chk("lug counterbores stay inside the lid's rim", _cb_edge < P.LID_OD / 2 - 1.5,
     f"counterbore reaches r{_cb_edge:.1f}, lid rim r{P.LID_OD / 2:.1f} -- "
     f"{P.LID_OD / 2 - _cb_edge:.1f} mm of rim left")
+# The snap groove was cutting the OUTER slice of the shoulder wall instead of
+# the bore: a 1.95 mm channel round the outside of the base, with 0.45 mm of
+# wall left behind it. This measures the assembled silhouette and objects to
+# any step in it above the taper -- a groove, a proud lid, anything.
+def _silhouette(zs):
+    import assembly as _asm          # imported as _A further down, after this
+    out = {z: 0.0 for z in zs}
+    for _n, _m, _c in _asm.world_items():
+        if _n not in ("base", "shoulder", "lid"):
+            continue
+        for f in _m.F:
+            t = [_m.V[i] for i in f]
+            for a, b in ((t[0], t[1]), (t[1], t[2]), (t[2], t[0])):
+                if a[2] == b[2]:
+                    continue
+                for z in zs:
+                    if min(a[2], b[2]) <= z <= max(a[2], b[2]):
+                        u = (z - a[2]) / (b[2] - a[2])
+                        r = math.hypot(a[0] + u * (b[0] - a[0]),
+                                       a[1] + u * (b[1] - a[1]))
+                        out[z] = max(out[z], r)
+    return out
+
+
+_zs = [P.LID_SEAT_Z + 0.5 * i for i in range(int((P.LID_Z1 - P.LID_SEAT_Z) / 0.5))]
+_sil = _silhouette(_zs)
+_steps = [(z, _sil[z] - _sil[_zs[i - 1]]) for i, z in enumerate(_zs)
+          if i and abs(_sil[z] - _sil[_zs[i - 1]]) > 0.15]
+chk("the base's top is one smooth form -- no step in the silhouette",
+    not _steps,
+    f"constant r{_sil[_zs[0]]:.2f} from Z{_zs[0]:.0f} to Z{_zs[-1]:.0f}"
+    if not _steps else
+    f"{len(_steps)} step(s): " + ", ".join(f"{d:+.2f} mm at Z{z:.1f}"
+                                           for z, d in _steps[:3]))
+chk("shoulder wall stays printable through the snap groove",
+    (P.BASE_TOP_D - _PS.SEAT_IN) / 2 - P.SNAP_BEAD >= 0.8,
+    f"{(P.BASE_TOP_D - _PS.SEAT_IN)/2 - P.SNAP_BEAD:.2f} mm behind the groove "
+    f"(>= 0.8 for two 0.4 perimeters)")
+
 chk("snap bead engages its groove",
     P.SNAP_BEAD > 0.3 and P.SNAP_Z + 1.6 < P.BASE_H,
     f"bead {P.SNAP_BEAD} at Z{P.SNAP_Z}")

@@ -50,8 +50,14 @@ def build():
     m = pl.revolve_shell(P.BASE_STRAIGHT, P.LID_SEAT_Z, shoulder_od,
                          P.WALL_STRUCT, steps=24)
     ring = pl.ring2d(pl.circle(P.BASE_TOP_D, 128), pl.circle(SEAT_IN, 128))
-    groove = pl.ring2d(pl.circle(P.BASE_TOP_D, 128),
-                       pl.circle(SEAT_IN + 2 * P.SNAP_BEAD, 128))
+    # The snap groove recesses the BORE and leaves the outside alone. It was
+    # the other way round -- ring2d(BASE_TOP_D, SEAT_IN + 2*SNAP_BEAD), the
+    # OUTER slice of the wall -- which cut a 1.95 mm channel right round the
+    # outside of the base and left a 0.45 mm wall behind it, under one 0.4
+    # perimeter. Cutting the inner slice leaves 1.95 mm of wall and puts the
+    # groove where the lid's bead actually runs.
+    groove = pl.ring2d(pl.circle(SEAT_IN + 2 * P.SNAP_BEAD, 128),
+                       pl.circle(SEAT_IN, 128))
     # Rebate wall runs up to LID_Z1, not BASE_H -- it has to rise PAST the
     # seat by the lid's own thickness so the lid sits down inside it and the
     # two finish level. Stopping at BASE_H is what left the lid perched proud.
