@@ -120,9 +120,12 @@ SPK_L         = 40.0   # TODO verify
 SPK_W         = 20.0   # TODO verify
 SPK_T         = 5.5    # TODO verify -- overall depth incl. magnet
 SPK_FIT       = 0.4
-SPK_CAV_D     = 12.0   # sealed back-volume depth behind the driver
-SPK_POST_D    = 7.0    # clamp posts either end of the pocket
+SPK_RAIL_W    = 3.0    # end rail either side of the pocket -- carries the
+                       # clamp screw. NOT a post: it is the frame's own end
+                       # wall, in the wall plane, nothing behind the driver.
 SPK_CLAMP_T   = 3.0    # clamp bar thickness
+SPK_CLAMP_W   = 10.0   # bar width in X -- overhangs the driver back
+SPK_SCREW_DEPTH = 6.0  # how far the clamp screw sinks into the rail
 SPK_SLOT_W    = 2.2    # grille slot width
 SPK_SLOT_N    = 7      # slots
 SPK_SLOT_GAP  = 2.6    # web between slots
@@ -238,7 +241,9 @@ SPK_WALL      = "left"          # fires -X through the left-wall grille
 SPK_CTR_X     = -69.0           # speaker face X (fires -X)
 SPK_CTR_Y     = -6.0
 SPK_CTR_Z     = 22.0
-SPK_CAV_X     = -56.0           # bulkhead sealing the speaker back volume
+# No bulkhead. The whole tub is the back volume, which also leaves the bay
+# open for the driver's leads -- see part_base._speaker_bay.
+SPK_SCREW_X   = SPK_CTR_X + SPK_T + SPK_FIT - 2.0   # clamp screw centres
 MIC_CTR_X     = 0.0             # on the FRONT wall, facing the user
 MIC_CTR_Z     = 30.0
 USB_CTR_Y     = -14.0           # right wall window, follows the board

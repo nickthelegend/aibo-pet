@@ -11,9 +11,9 @@
   "build_plate_mm": 180.0,
   "parts": {
     "base": {
-      "shells": 100,
-      "triangles": 15444,
-      "volume_mm3": 146167.41,
+      "shells": 98,
+      "triangles": 15484,
+      "volume_mm3": 139821.02,
       "watertight": true,
       "fits_a1_mini": true,
       "bbox_mm": [
@@ -205,12 +205,12 @@
     "spk-clamp": {
       "shells": 1,
       "triangles": 692,
-      "volume_mm3": 1473.37,
+      "volume_mm3": 1563.37,
       "watertight": true,
       "fits_a1_mini": true,
       "bbox_mm": [
         10.0,
-        50.8,
+        53.8,
         3.0
       ]
     },

@@ -27,8 +27,11 @@ Interior (X right, Y back, Z up; origin = centre, Z0 = bottom):
                      tops, putting the arm's load on the floor directly; the
                      lid's rib web backs it up. BULKHEADS=False drops them.
   board bay          ESP32-S3 flat, pins DOWN into 13.6 mm
-  speaker            fires -X, ~sealed back volume behind a bulkhead. Pocket
-                     open at the top; spk-clamp screws down over the driver.
+  speaker            fires -X. NO bulkhead and NO clamp posts -- the pocket
+                     is open at the top AND across its whole back, so the
+                     leads have somewhere to go and the tub itself (~749 cm3)
+                     is the back volume. spk-clamp screws down into two bores
+                     sunk in the pocket's own end rails.
   mic                U-slot counterbore in the FRONT WALL facing the ports,
                      with two full-height retaining lips
   amp / cap / zip-tie bars
@@ -175,24 +178,37 @@ def _board_bay():
 
 
 def _speaker_bay():
+    """Speaker pocket -- open at the TOP and across its whole BACK.
+
+    Nothing free-stands in the bay: no clamp posts, no bulkhead, no sealed
+    sub-box. The driver drops into a recess in the wall, lands on a shelf,
+    and spk-clamp screws down over it into two bores sunk into the pocket's
+    own END RAILS -- material that is already there as the frame, not towers
+    added behind the driver.
+
+    That leaves the entire back of the driver clear, so the leads have
+    somewhere to go, and makes the whole tub (~750 cm3) the back volume.
+    """
     xf = P.SPK_CTR_X + P.SPK_T + P.SPK_FIT
     y0 = P.SPK_CTR_Y - P.SPK_L / 2 - P.SPK_FIT
     y1 = P.SPK_CTR_Y + P.SPK_L / 2 + P.SPK_FIT
     z0 = P.SPK_CTR_Z - P.SPK_W / 2 - P.SPK_FIT
     z1 = P.SPK_CTR_Z + P.SPK_W / 2 + P.SPK_FIT
-    land = box(-R, y0 - 3.0, xf + 2.0, y1 + 3.0).intersection(OUTER)
+    land = box(-R, y0 - P.SPK_RAIL_W, xf + 2.0,
+               y1 + P.SPK_RAIL_W).intersection(OUTER)
     window = box(-R - 6, y0, xf, y1)
     m = pl.Mesh()
-    # pocket is open at the TOP: the speaker drops in, sits on the shelf,
-    # is framed on all four sides, and spk-clamp screws down over it.
-    m += pl.banded(land.difference(window), z0, z1, [(_speaker_slots(), 14.0, 30.0)])
+    frame = land.difference(window)
+    # Screw bores go DOWN into the end rails from the pocket mouth. The rail
+    # is the frame's own end wall, so this costs no extra material and puts
+    # nothing behind the driver.
+    bores = unary_union([affinity.translate(pl.circle(P.M2_PILOT),
+                                            P.SPK_SCREW_X, py)
+                         for py in (y0 - P.SPK_RAIL_W / 2,
+                                    y1 + P.SPK_RAIL_W / 2)])
+    m += pl.banded(frame, z0, z1, [(_speaker_slots(), 14.0, 30.0),
+                                   (bores, z1 - P.SPK_SCREW_DEPTH, z1)])
     m += pl.prism(land, z0 - 2.0, z0)
-    for py in (y0 - 1.6, y1 + 1.6):
-        post = affinity.translate(pl.circle(P.SPK_POST_D), xf - 1.0, py)
-        bore = affinity.translate(pl.circle(P.M2_PILOT), xf - 1.0, py)
-        m += pl.prism(post.difference(bore), z0 - 2.0, z1 - 0.4)
-    m += pl.prism(box(P.SPK_CAV_X - 1.5, y0 - 3.0, P.SPK_CAV_X + 1.5,
-                      y1 + 3.0).intersection(IN_THICK), P.FLOOR - OVL, z1 + 4.0)
     return m
 
 

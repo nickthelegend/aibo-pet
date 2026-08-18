@@ -138,7 +138,6 @@ sec("speaker + acoustics")
 span = P.SPK_SLOT_N * P.SPK_SLOT_W + (P.SPK_SLOT_N - 1) * P.SPK_SLOT_GAP
 chk("grille spans the driver", span <= P.SPK_L, f"grille {span:.1f} over {P.SPK_L} driver")
 chk("grille webs printable", P.SPK_SLOT_GAP >= 2 * 0.4 + 0.8, f"web {P.SPK_SLOT_GAP}")
-cav = abs(P.SPK_CAV_X - (-P.BASE_W / 2 + P.WALL_STRUCT)) * (P.SPK_L + 4.8) * (P.SPK_W + 12)
 bay_vol = math.pi * ((P.BASE_D / 2 - P.WALL_STRUCT) / 10.0) ** 2 * \
     ((P.BASE_STRAIGHT - P.FLOOR) / 10.0)
 chk("driver has a real back volume", bay_vol >= 200.0,
@@ -202,8 +201,26 @@ import part_retainers as _PR
 chk("spk-clamp holes line up with the pocket's rail bores",
     abs((_PR.POST_Y[1] - _PR.POST_Y[0]) - ((P.SPK_L + 2 * P.SPK_FIT) + 3.0)) < 1e-6,
     f"screw spacing {_PR.POST_Y[1] - _PR.POST_Y[0]:.1f}")
-chk("no free-standing posts in the speaker bay", True,
-    "clamp screws go into the side rails; the back of the pocket is open")
+# This used to be `chk(..., True, ...)` -- an assertion about the design that
+# never looked at the mesh, so it went on passing while the bay still had two
+# O7 posts and a full-height bulkhead in it. It reads the geometry now.
+_spk_xf = P.SPK_CTR_X + P.SPK_T + P.SPK_FIT
+# Bounded at X-48 on purpose: past that are the STRUCTURAL bulkheads that
+# carry the base joint down to the floor (X~-35), which are load path, not
+# speaker furniture. This zone is the corridor directly behind the driver --
+# exactly where the O7 clamp posts (to X-60.6) and the speaker bulkhead
+# (X-56) used to sit.
+_clear = ((_spk_xf + 2.5, -48.0),                       # behind the driver
+          (P.SPK_CTR_Y - P.SPK_L / 2 - P.SPK_RAIL_W,
+           P.SPK_CTR_Y + P.SPK_L / 2 + P.SPK_RAIL_W),
+          (P.FLOOR + 1.0, P.SPK_CTR_Z + P.SPK_W / 2 + 4.0))
+_base_mesh = [m for n, m, _ in part_base.build() if n == "base"][0]
+_intruders = [v for v in _base_mesh.V
+              if all(lo <= v[i] <= hi for i, (lo, hi) in enumerate(_clear))]
+chk("nothing free-stands behind the speaker", not _intruders,
+    f"clear zone X{_clear[0][0]:.1f}..{_clear[0][1]:.0f} is empty -- "
+    f"{len(_intruders)} intruding vertices; clamp screws go into the end "
+    f"rails and the whole back of the pocket is open for the leads")
 chk("mic pocket faces the wall ports, not the ceiling",
     P.MIC_POCKET_D < P.MIC_D,
     f"pocket is {P.MIC_POCKET_D} deep along Y, {P.MIC_D} across -- a wall "

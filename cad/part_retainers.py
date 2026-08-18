@@ -27,11 +27,12 @@ OVL = pl.OVL
 XF = P.SPK_CTR_X + P.SPK_T + P.SPK_FIT
 Y0 = P.SPK_CTR_Y - P.SPK_L / 2 - P.SPK_FIT
 Y1 = P.SPK_CTR_Y + P.SPK_L / 2 + P.SPK_FIT
-POST_Y = (Y0 - 1.5, Y1 + 1.5)          # screw centres, in the side rails
+POST_Y = (Y0 - P.SPK_RAIL_W / 2, Y1 + P.SPK_RAIL_W / 2)   # centres, in the rails
 
 
 def build():
-    bar = pl.rounded_rect(P.SPK_POST_D + 3.0, (POST_Y[1] - POST_Y[0]) + P.SPK_POST_D, 3.0)
+    bar = pl.rounded_rect(P.SPK_CLAMP_W,
+                          (POST_Y[1] - POST_Y[0]) + P.SPK_CLAMP_W, 3.0)
     holes = unary_union([affinity.translate(pl.circle(P.M2_CLEAR), 0.0,
                                             py - (POST_Y[0] + POST_Y[1]) / 2)
                          for py in POST_Y])
