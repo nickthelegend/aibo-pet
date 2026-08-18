@@ -356,7 +356,9 @@ COLORS = {
     "joint":  "#3A3D42",   # dark joint covers
     "shade":  "#F2EDE4",
     "ring":   "#FFC85C",   # the glow
-    "servo":  "#26282E",
+    "servo":  "#26282E",   # MG996R -- black case
+    "servo2": "#1E44A8",   # SG90 -- TowerPro blue, so the head servo reads
+                           # as its own part and not as more dark joint
     "board":  "#1E6E3C",
     "metal":  "#9BA1A9",
     # component models

@@ -161,12 +161,12 @@ def speaker2040():
 
 # -------------------------------------------------------------- servos ----
 def _servo(bl, bw, bh, tab_span, tab_t, tab_z, shaft_off, shaft_d, boss_d,
-           boss_h, shaft_l, tag, label=True):
+           boss_h, shaft_l, tag, label=True, col="servo"):
     """Generic hobby servo. Origin = body centre, output shaft +Z, shaft
     offset `shaft_off` from the -X end of the body."""
     sx = -bl / 2 + shaft_off
-    parts = [(f"{tag}-body", _b(bl, bw, 0.0, bh, r=1.2), C["servo"]),
-             (f"{tag}-tabs", _b(tab_span, bw, tab_z, tab_z + tab_t, r=1.5), C["servo"])]
+    parts = [(f"{tag}-body", _b(bl, bw, 0.0, bh, r=1.2), C[col]),
+             (f"{tag}-tabs", _b(tab_span, bw, tab_z, tab_z + tab_t, r=1.5), C[col])]
     if label:
         parts.append((f"{tag}-label", _b(bl - 4.0, bw - 3.0, bh - P.MG_LABEL_H, bh),
                       C["label"]))
@@ -174,7 +174,7 @@ def _servo(bl, bw, bh, tab_span, tab_t, tab_z, shaft_off, shaft_d, boss_d,
     m += pl.prism(affinity.translate(pl.circle(boss_d), sx, 0.0), bh - OVL, bh + boss_h)
     m += pl.prism(affinity.translate(pl.circle(boss_d * 0.55), -sx * 0.9, 0.0),
                   bh - OVL, bh + boss_h * 0.5)
-    parts.append((f"{tag}-boss", m, C["servo"]))
+    parts.append((f"{tag}-boss", m, C[col]))
     parts.append((f"{tag}-spline",
                   pl.prism(affinity.translate(pl.circle(shaft_d), sx, 0.0),
                            bh + boss_h - OVL, bh + boss_h + shaft_l), C["brass"]))
@@ -196,7 +196,7 @@ def mg996r():
 def sg90():
     return _servo(P.SG_L, P.SG_W, P.SG_H, P.SG_TAB_SPAN, P.SG_TAB_T, P.SG_TAB_Z,
                   P.SG_SHAFT_OFF, P.SG_SHAFT_D, P.SG_HORN_HUB_D, 2.5, 3.5,
-                  "sg90", label=False)
+                  "sg90", label=False, col="servo2")
 
 
 def place(parts, rx=0.0, ry=0.0, rz=0.0, dx=0.0, dy=0.0, dz=0.0, tag=""):

@@ -177,12 +177,20 @@ function upload(ps){
   document.getElementById("meta").innerHTML =
     `<b>${ps.length}</b> parts &nbsp; <b>${(ps.reduce((s,p)=>s+p.idx.length,0)/3)|0}</b> triangles<br>`+
     `bbox <b>${(hi[0]-lo[0]).toFixed(0)} x ${(hi[1]-lo[1]).toFixed(0)} x ${(hi[2]-lo[2]).toFixed(0)}</b> mm`;
-  // Split the list: printed parts vs component models, each with a
-  // show/hide-all, so a plate view can be checked with or without hardware.
+  // Split the list by SUBSYSTEM, each with its own show/hide-all. It used to
+  // be two groups, "Printed" and one flat "Components" list of 44 rows -- in
+  // which the head servo was the last five entries, below the fold, and read
+  // as missing. First matching rule wins, and "Other" catches anything a rule
+  // does not, so nothing can silently vanish from the list again.
   const host=document.getElementById("parts"); host.innerHTML="";
-  const idx=parts.map((p,i)=>i);
-  const groups=[["Printed", idx.filter(i=>!IS_COMPONENT.test(parts[i].name))],
-                ["Components", idx.filter(i=>IS_COMPONENT.test(parts[i].name))]];
+  const RULES=[["Printed",  n=>!IS_COMPONENT.test(n)],
+               ["Servos",   n=>/^(mg996r|sg90)-/.test(n)],
+               ["ESP32-S3", n=>/^esp32-/.test(n)],
+               ["Audio",    n=>/^(amp|spk|mic)-/.test(n)],
+               ["Other",    n=>true]];
+  const bucket=new Map(RULES.map(([t])=>[t,[]]));
+  parts.forEach((p,i)=>bucket.get(RULES.find(([,m])=>m(p.name))[0]).push(i));
+  const groups=RULES.map(([t])=>[t, bucket.get(t)]);
   for(const [title, ids] of groups){
     if(!ids.length) continue;
     const hd=document.createElement("div"); hd.className="grp";
