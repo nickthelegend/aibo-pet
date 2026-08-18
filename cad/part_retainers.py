@@ -37,6 +37,22 @@ def build():
                                             py - (POST_Y[0] + POST_Y[1]) / 2)
                          for py in POST_Y])
     clamp = pl.prism(bar.difference(holes), 0.0, P.SPK_CLAMP_T)
+    # Two tongues. With the back of the pocket now completely open, the plate
+    # alone would leave the driver free to walk backwards out of its recess --
+    # these drop in behind it and stop that. They sit INBOARD of the driver's
+    # ends and leave the middle 2 x SPK_TONGUE_Y - SPK_TONGUE_W = 18 mm clear,
+    # which is where the leads come off.
+    #
+    # Modelled rising in +Z off the flat plate, which is how it PRINTS (plate
+    # on the bed, tongues standing up, no support). Fitted, it turns over --
+    # rotate 180 about X -- so +X still points into the bay and the tongues
+    # hang down behind the driver.
+    tx0 = P.SPK_SCREW_X_LOCAL
+    for sy in (-1, 1):
+        t = box(tx0, sy * P.SPK_TONGUE_Y - P.SPK_TONGUE_W / 2,
+                tx0 + 2.0, sy * P.SPK_TONGUE_Y + P.SPK_TONGUE_W / 2)
+        clamp += pl.prism(t, P.SPK_CLAMP_T - OVL,
+                          P.SPK_CLAMP_T + P.SPK_TONGUE_H)
 
     d = P.MIC_D + P.MIC_FIT
     tab = pl.rounded_rect(d + 6.0, 7.0, 2.0).difference(

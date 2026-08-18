@@ -210,17 +210,55 @@ _spk_xf = P.SPK_CTR_X + P.SPK_T + P.SPK_FIT
 # speaker furniture. This zone is the corridor directly behind the driver --
 # exactly where the O7 clamp posts (to X-60.6) and the speaker bulkhead
 # (X-56) used to sit.
-_clear = ((_spk_xf + 2.5, -48.0),                       # behind the driver
-          (P.SPK_CTR_Y - P.SPK_L / 2 - P.SPK_RAIL_W,
-           P.SPK_CTR_Y + P.SPK_L / 2 + P.SPK_RAIL_W),
-          (P.FLOOR + 1.0, P.SPK_CTR_Z + P.SPK_W / 2 + 4.0))
+# Starts at the pocket's back face + 0.05, NOT at +2.5. The first version of
+# this check started clear of the land and so walked straight over the 2 mm
+# back lip that was sealing the driver in -- it has to begin where the driver
+# ends or it is not testing the thing that matters.
+# Y and Z are the DRIVER's own envelope, inset 0.5. Widening them to the
+# frame would flag the end rails and the shelf the driver sits on, which are
+# the pocket, not obstructions. Anything tall enough to matter -- the old
+# floor-to-ceiling bulkhead included -- still crosses this band.
+_clear = ((_spk_xf + 0.05, -48.0),                      # behind the driver
+          (P.SPK_CTR_Y - P.SPK_L / 2 + 0.5,
+           P.SPK_CTR_Y + P.SPK_L / 2 - 0.5),
+          (P.SPK_CTR_Z - P.SPK_W / 2 + 0.5,
+           P.SPK_CTR_Z + P.SPK_W / 2 - 0.5))
 _base_mesh = [m for n, m, _ in part_base.build() if n == "base"][0]
-_intruders = [v for v in _base_mesh.V
-              if all(lo <= v[i] <= hi for i, (lo, hi) in enumerate(_clear))]
-chk("nothing free-stands behind the speaker", not _intruders,
-    f"clear zone X{_clear[0][0]:.1f}..{_clear[0][1]:.0f} is empty -- "
-    f"{len(_intruders)} intruding vertices; clamp screws go into the end "
-    f"rails and the whole back of the pocket is open for the leads")
+# TRIANGLE overlap, not vertex-in-box. Sampling vertices was the second way
+# this check managed to pass while the pocket was still sealed: the back lip
+# is a slab spanning the whole zone, so every one of its corners sits OUTSIDE
+# an inset box and not a single vertex ever landed in it. An AABB test on each
+# face catches anything that crosses the zone, corners or no corners.
+def _crosses(tri, zone):
+    return all(min(v[k] for v in tri) <= zone[k][1] and
+               max(v[k] for v in tri) >= zone[k][0] for k in range(3))
+
+
+_V = _base_mesh.V
+_intruders = [f for f in _base_mesh.F
+              if _crosses([_V[i] for i in f], _clear)]
+chk("the back of the speaker pocket is completely open", not _intruders,
+    (f"X{_clear[0][0]:.1f}..{_clear[0][1]:.0f} behind the driver is clear -- "
+     f"no bulkhead, no posts, no back lip. It goes in from the back and the "
+     f"leads come out the same way"
+     if not _intruders else
+     f"{len(_intruders)} triangles are sitting in "
+     f"X{_clear[0][0]:.1f}..{_clear[0][1]:.0f} behind the driver -- the "
+     f"pocket is sealed and the leads have nowhere to go"))
+
+# The pocket being open is only half of it -- something still has to stop the
+# driver walking back out of a recess that no longer has a back.
+import part_retainers as _PRT
+_clamp = [m for n, m, _ in _PRT.build() if n == "spk-clamp"][0]
+_clo, _chi = _clamp.bounds()[:3], _clamp.bounds()[3:]
+chk("spk-clamp reaches down behind the driver",
+    _chi[2] - P.SPK_CLAMP_T >= P.SPK_W * 0.6,
+    f"tongues stand {_chi[2] - P.SPK_CLAMP_T:.0f} mm off the plate, over a "
+    f"{P.SPK_W:.0f} mm driver")
+chk("the leads still have the middle of the pocket",
+    2 * P.SPK_TONGUE_Y - P.SPK_TONGUE_W >= 15.0,
+    f"{2 * P.SPK_TONGUE_Y - P.SPK_TONGUE_W:.0f} mm clear between the tongues, "
+    f"plus {P.SPK_L / 2 - P.SPK_TONGUE_Y - P.SPK_TONGUE_W / 2:.0f} mm at each end")
 chk("mic pocket faces the wall ports, not the ceiling",
     P.MIC_POCKET_D < P.MIC_D,
     f"pocket is {P.MIC_POCKET_D} deep along Y, {P.MIC_D} across -- a wall "

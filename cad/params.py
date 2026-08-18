@@ -125,6 +125,11 @@ SPK_RAIL_W    = 3.0    # end rail either side of the pocket -- carries the
                        # wall, in the wall plane, nothing behind the driver.
 SPK_CLAMP_T   = 3.0    # clamp bar thickness
 SPK_CLAMP_W   = 10.0   # bar width in X -- overhangs the driver back
+SPK_TONGUE_W  = 8.0    # each retaining tongue, along the driver
+SPK_TONGUE_H  = 16.0   # how far a tongue reaches down behind the driver
+SPK_TONGUE_Y  = 13.0   # tongue centres, +-, from the driver centre. Inboard
+                       # of the ends and clear of the middle, so the leads
+                       # have the whole centre of the pocket to come out of.
 SPK_SCREW_DEPTH = 6.0  # how far the clamp screw sinks into the rail
 SPK_SLOT_W    = 2.2    # grille slot width
 SPK_SLOT_N    = 7      # slots
@@ -244,6 +249,9 @@ SPK_CTR_Z     = 22.0
 # No bulkhead. The whole tub is the back volume, which also leaves the bay
 # open for the driver's leads -- see part_base._speaker_bay.
 SPK_SCREW_X   = SPK_CTR_X + SPK_T + SPK_FIT - 2.0   # clamp screw centres
+# Same point in spk-clamp's own frame, whose origin is the screw axis: the
+# tongues start at the pocket's back face, just clear of the driver.
+SPK_SCREW_X_LOCAL = 2.0
 MIC_CTR_X     = 0.0             # on the FRONT wall, facing the user
 MIC_CTR_Z     = 30.0
 USB_CTR_Y     = -14.0           # right wall window, follows the board

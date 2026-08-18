@@ -178,16 +178,16 @@ def _board_bay():
 
 
 def _speaker_bay():
-    """Speaker pocket -- open at the TOP and across its whole BACK.
+    """Speaker pocket -- open at the TOP and across its WHOLE BACK.
 
-    Nothing free-stands in the bay: no clamp posts, no bulkhead, no sealed
-    sub-box. The driver drops into a recess in the wall, lands on a shelf,
-    and spk-clamp screws down over it into two bores sunk into the pocket's
-    own END RAILS -- material that is already there as the frame, not towers
-    added behind the driver.
+    Nothing free-stands in the bay and nothing closes the pocket behind the
+    driver: no clamp posts, no bulkhead, no back lip, no sealed sub-box. The
+    driver goes in from the BACK, lands on a shelf, and spk-clamp holds it
+    there -- screwed into two bores sunk in the pocket's own END RAILS, which
+    are the frame's end walls, material already there.
 
-    That leaves the entire back of the driver clear, so the leads have
-    somewhere to go, and makes the whole tub (~750 cm3) the back volume.
+    The leads leave the driver's back face into open bay, and the whole tub
+    (~749 cm3) is the back volume.
     """
     xf = P.SPK_CTR_X + P.SPK_T + P.SPK_FIT
     y0 = P.SPK_CTR_Y - P.SPK_L / 2 - P.SPK_FIT
@@ -196,7 +196,13 @@ def _speaker_bay():
     z1 = P.SPK_CTR_Z + P.SPK_W / 2 + P.SPK_FIT
     land = box(-R, y0 - P.SPK_RAIL_W, xf + 2.0,
                y1 + P.SPK_RAIL_W).intersection(OUTER)
-    window = box(-R - 6, y0, xf, y1)
+    # The window runs CLEAR THROUGH the land's back face (which is at xf + 2,
+    # so +10 is well past it). Stopping it at xf -- which is what it used to
+    # do -- left a 2 mm lip spanning the pocket's full 40.8 x 20.8 mm and
+    # sealed the driver into a closed box: no way to feed the leads out, and
+    # the only way in was down a 20.8 mm slot. What survives of the frame is
+    # the two END RAILS and nothing else.
+    window = box(-R - 6, y0, xf + 10.0, y1)
     m = pl.Mesh()
     frame = land.difference(window)
     # Screw bores go DOWN into the end rails from the pocket mouth. The rail
