@@ -364,15 +364,18 @@ COLORS = {
     "joint":  "#3A3D42",   # dark joint covers
     "shade":  "#F2EDE4",
     "ring":   "#FFC85C",   # the glow
-    "servo":  "#26282E",   # MG996R -- black case
     "servo2": "#1E44A8",   # SG90 -- TowerPro blue, so the head servo reads
                            # as its own part and not as more dark joint
+                           # ("servo" itself lives in the component block
+                           #  below -- it was declared up here too, and the
+                           #  later one silently won)
     "board":  "#1E6E3C",
     "metal":  "#9BA1A9",
     # component models
     "pcb-black":  "#14171C", "pcb-purple": "#5B2A83", "pcb-green": "#0E5B3A",
     "gold":       "#C9A227", "shield":     "#B9A98A", "silver":    "#B8BCC2",
     "white":      "#F2F2F0", "terminal":   "#2FBF71", "speaker":   "#1A1A1A",
-    "servo":      "#1E1F22", "brass":      "#C9A227", "label":     "#6B4FA8",
+    "servo":      "#1E1F22",   # MG996R -- black case
+    "brass":      "#C9A227", "label":     "#6B4FA8",
     "wire-red":   "#C0392B", "wire-black": "#202020", "cone":      "#101010",
 }
