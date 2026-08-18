@@ -1,0 +1,239 @@
+{
+  "generator": "aibo cad/assembly.py",
+  "pose_deg": {
+    "base": -22.0,
+    "shoulder": 58.0,
+    "elbow": 52.0,
+    "head": 26.0
+  },
+  "lamp_height_mm": 315.8,
+  "reach_mm": 345.0,
+  "build_plate_mm": 180.0,
+  "parts": {
+    "base": {
+      "shells": 100,
+      "triangles": 15444,
+      "volume_mm3": 146167.41,
+      "watertight": true,
+      "fits_a1_mini": true,
+      "bbox_mm": [
+        160.0,
+        160.0,
+        58.0
+      ]
+    },
+    "shoulder": {
+      "shells": 16,
+      "triangles": 24456,
+      "volume_mm3": 36665.65,
+      "watertight": true,
+      "fits_a1_mini": true,
+      "bbox_mm": [
+        160.0,
+        160.0,
+        22.0
+      ]
+    },
+    "lid": {
+      "shells": 5,
+      "triangles": 10412,
+      "volume_mm3": 46808.99,
+      "watertight": true,
+      "fits_a1_mini": true,
+      "bbox_mm": [
+        118.0,
+        118.0,
+        9.4
+      ]
+    },
+    "base-joint": {
+      "shells": 215,
+      "triangles": 4028,
+      "volume_mm3": 53805.37,
+      "watertight": true,
+      "fits_a1_mini": true,
+      "bbox_mm": [
+        80.0,
+        34.5,
+        51.8
+      ]
+    },
+    "cap-base": {
+      "shells": 1,
+      "triangles": 252,
+      "volume_mm3": 3855.62,
+      "watertight": true,
+      "fits_a1_mini": true,
+      "bbox_mm": [
+        49.7,
+        26.5,
+        3.0
+      ]
+    },
+    "arm-lower": {
+      "shells": 158,
+      "triangles": 3892,
+      "volume_mm3": 57977.59,
+      "watertight": true,
+      "fits_a1_mini": true,
+      "bbox_mm": [
+        59.7,
+        26.5,
+        154.0
+      ]
+    },
+    "arm-upper": {
+      "shells": 158,
+      "triangles": 3892,
+      "volume_mm3": 57977.59,
+      "watertight": true,
+      "fits_a1_mini": true,
+      "bbox_mm": [
+        59.7,
+        26.5,
+        154.0
+      ]
+    },
+    "arm-fore": {
+      "shells": 153,
+      "triangles": 3672,
+      "volume_mm3": 34494.06,
+      "watertight": true,
+      "fits_a1_mini": true,
+      "bbox_mm": [
+        59.7,
+        21.2,
+        132.9
+      ]
+    },
+    "cap-shoulder": {
+      "shells": 1,
+      "triangles": 252,
+      "volume_mm3": 3855.62,
+      "watertight": true,
+      "fits_a1_mini": true,
+      "bbox_mm": [
+        49.7,
+        26.5,
+        3.0
+      ]
+    },
+    "cap-elbow": {
+      "shells": 1,
+      "triangles": 252,
+      "volume_mm3": 3855.62,
+      "watertight": true,
+      "fits_a1_mini": true,
+      "bbox_mm": [
+        49.7,
+        26.5,
+        3.0
+      ]
+    },
+    "cap-head": {
+      "shells": 1,
+      "triangles": 252,
+      "volume_mm3": 1526.89,
+      "watertight": true,
+      "fits_a1_mini": true,
+      "bbox_mm": [
+        35.3,
+        18.0,
+        2.5
+      ]
+    },
+    "shade": {
+      "shells": 71,
+      "triangles": 14840,
+      "volume_mm3": 30141.38,
+      "watertight": true,
+      "fits_a1_mini": true,
+      "bbox_mm": [
+        66.0,
+        66.0,
+        72.0
+      ]
+    },
+    "horn-mg996r": {
+      "shells": 3,
+      "triangles": 1848,
+      "volume_mm3": 2153.28,
+      "watertight": true,
+      "fits_a1_mini": true,
+      "bbox_mm": [
+        48.0,
+        48.0,
+        7.3
+      ]
+    },
+    "horn-sg90": {
+      "shells": 2,
+      "triangles": 1008,
+      "volume_mm3": 451.1,
+      "watertight": true,
+      "fits_a1_mini": true,
+      "bbox_mm": [
+        31.0,
+        31.0,
+        4.9
+      ]
+    },
+    "horn-adapter": {
+      "shells": 2,
+      "triangles": 1776,
+      "volume_mm3": 4887.36,
+      "watertight": true,
+      "fits_a1_mini": true,
+      "bbox_mm": [
+        48.0,
+        48.0,
+        10.1
+      ]
+    },
+    "spline-test": {
+      "shells": 1,
+      "triangles": 2696,
+      "volume_mm3": 9559.85,
+      "watertight": true,
+      "fits_a1_mini": true,
+      "bbox_mm": [
+        66.0,
+        26.0,
+        6.0
+      ]
+    },
+    "spk-clamp": {
+      "shells": 1,
+      "triangles": 692,
+      "volume_mm3": 1473.37,
+      "watertight": true,
+      "fits_a1_mini": true,
+      "bbox_mm": [
+        10.0,
+        50.8,
+        3.0
+      ]
+    },
+    "mic-tab": {
+      "shells": 2,
+      "triangles": 444,
+      "volume_mm3": 314.24,
+      "watertight": true,
+      "fits_a1_mini": true,
+      "bbox_mm": [
+        21.1,
+        7.0,
+        3.2
+      ]
+    }
+  },
+  "print_notes": {
+    "material": "PLA",
+    "layer_mm": 0.2,
+    "walls": 3,
+    "supports": "none required -- every part is modelled in its print orientation with no overhang past 45 deg",
+    "arms": "print standing on the yoke, servo cup opening up",
+    "shade": "prints mouth down, open back",
+    "lid": "prints top face down so the MX plate comes out crisp"
+  }
+}

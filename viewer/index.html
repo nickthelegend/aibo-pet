@@ -1,0 +1,261 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>AIBO — model viewer</title>
+<style>
+  :root { --bg:#14161a; --panel:#1c1f25; --line:#2c313a; --fg:#e8eaee; --dim:#98a0ad; --accent:#f0a848; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html,body { height:100%; background:var(--bg); color:var(--fg);
+    font:13px/1.5 ui-sans-serif,-apple-system,"SF Pro Text",Inter,system-ui,sans-serif; }
+  #app { display:flex; height:100%; }
+  #side { width:250px; flex:none; background:var(--panel); border-right:1px solid var(--line);
+    padding:16px; overflow-y:auto; }
+  h1 { font-size:15px; letter-spacing:.04em; margin-bottom:2px; }
+  h1 span { color:var(--accent); }
+  .sub { color:var(--dim); font-size:11px; margin-bottom:16px; }
+  label { display:block; font-size:10px; text-transform:uppercase; letter-spacing:.09em;
+    color:var(--dim); margin:14px 0 6px; }
+  select { width:100%; background:#12141a; color:var(--fg); border:1px solid var(--line);
+    border-radius:6px; padding:7px 8px; font:inherit; }
+  ul { list-style:none; font-size:12px; margin-bottom:4px; }
+  .grp { display:flex; align-items:baseline; justify-content:space-between;
+    margin:14px 0 5px; }
+  .grp span { font-size:10px; text-transform:uppercase; letter-spacing:.09em;
+    color:var(--dim); }
+  .grp button { background:none; border:1px solid var(--line); color:var(--dim);
+    font:inherit; font-size:10px; padding:1px 7px; border-radius:5px; cursor:pointer; }
+  .grp button:hover { color:var(--fg); border-color:var(--dim); }
+  li { display:flex; align-items:center; gap:8px; padding:3px 0; color:var(--dim); cursor:pointer; }
+  li:hover { color:var(--fg); }
+  li.off { opacity:.35; text-decoration:line-through; }
+  .sw { width:10px; height:10px; border-radius:2px; flex:none; border:1px solid rgba(255,255,255,.18); }
+  .meta { margin-top:16px; padding-top:14px; border-top:1px solid var(--line);
+    color:var(--dim); font-size:11px; }
+  .meta b { color:var(--fg); font-weight:600; }
+  #view { flex:1; position:relative; min-width:0; }
+  canvas { display:block; width:100%; height:100%; }
+  #hint { position:absolute; left:14px; bottom:12px; color:var(--dim); font-size:11px; }
+  #err { position:absolute; inset:0; display:none; place-items:center; padding:24px;
+    text-align:center; color:#ff9a8a; }
+</style>
+<div id="app">
+  <div id="side">
+    <h1>AIBO<span>.</span></h1>
+    <div class="sub">animated desk lamp — model viewer</div>
+    <label for="model">Model</label>
+    <select id="model"></select>
+    <div id="parts"></div>
+    <div class="meta" id="meta"></div>
+  </div>
+  <div id="view">
+    <canvas id="c"></canvas>
+    <div id="hint">drag orbit · scroll zoom · shift-drag pan</div>
+    <div id="err"></div>
+  </div>
+</div>
+<script>
+const MODELS = [
+  ["../exports/aibo-populated.glb", "Assembled + components"],
+  ["../exports/aibo-assembled.glb", "Assembled (printed only)"],
+  ["../exports/aibo-exploded.glb",  "Exploded"],
+  ["../exports/plate-1-test.glb",   "Plate 1 — test"],
+  ["../exports/plate-2-base.glb",   "Plate 2 — tub"],
+  ["../exports/plate-2b-shoulder.glb", "Plate 2b — shoulder"],
+  ["../exports/plate-3-arms.glb",   "Plate 3 — arms"],
+  ["../exports/plate-4-head.glb",   "Plate 4 — lid"],
+  ["../exports/plate-4-head-2.glb", "Plate 4b — cone"],
+  ["../exports/plate-5-small.glb",  "Plate 5 — small"],
+];
+
+// Component models (cad/components.py) rather than printed parts.
+const IS_COMPONENT = /^(esp32|mic-|amp-|spk-|mg996r|sg90)/;
+
+/* ---------- tiny mat4 ---------- */
+const M4 = {
+  mul(a,b){const o=new Float32Array(16);for(let i=0;i<4;i++)for(let j=0;j<4;j++){let s=0;
+    for(let k=0;k<4;k++)s+=a[k*4+j]*b[i*4+k];o[i*4+j]=s;}return o;},
+  persp(f,ar,n,fa){const t=1/Math.tan(f/2),o=new Float32Array(16);
+    o[0]=t/ar;o[5]=t;o[10]=(fa+n)/(n-fa);o[11]=-1;o[14]=2*fa*n/(n-fa);return o;},
+  look(e,c,u){const z=norm(sub(e,c)),x=norm(cross(u,z)),y=cross(z,x);
+    return new Float32Array([x[0],y[0],z[0],0, x[1],y[1],z[1],0, x[2],y[2],z[2],0,
+      -dot(x,e),-dot(y,e),-dot(z,e),1]);},
+};
+const sub=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]];
+const dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+const norm=a=>{const l=Math.hypot(...a)||1;return [a[0]/l,a[1]/l,a[2]/l];};
+
+/* ---------- GLB parse (matches cad/partlib.py glb_write) ---------- */
+async function loadGLB(url){
+  const res = await fetch(url);
+  if(!res.ok) throw new Error(url+" -> HTTP "+res.status);
+  const buf = await res.arrayBuffer(), dv = new DataView(buf);
+  if(dv.getUint32(0,true)!==0x46546C67) throw new Error("not a GLB: "+url);
+  let off=12, json=null, bin=null;
+  while(off + 8 <= dv.byteLength){
+    const len=dv.getUint32(off,true), type=dv.getUint32(off+4,true);
+    const body=buf.slice(off+8, off+8+len);
+    if(type===0x4E4F534A) json=JSON.parse(new TextDecoder().decode(body));
+    else if(type===0x004E4942) bin=body;
+    off += 8 + len + ((4 - (len % 4)) % 4);   // chunks are 4-byte aligned
+  }
+  const acc = i => {
+    const a=json.accessors[i], v=json.bufferViews[a.bufferView];
+    const n = a.type==="VEC3"?3:1, o=(v.byteOffset||0);
+    return a.componentType===5126 ? new Float32Array(bin, o, a.count*n)
+                                  : new Uint32Array(bin, o, a.count*n);
+  };
+  return json.nodes.map(node=>{
+    const prim = json.meshes[node.mesh].primitives[0];
+    const c = json.materials[prim.material].pbrMetallicRoughness.baseColorFactor;
+    return { name: node.name, pos: acc(prim.attributes.POSITION),
+             nrm: acc(prim.attributes.NORMAL), idx: acc(prim.indices),
+             color: [c[0],c[1],c[2]], on: true };
+  });
+}
+
+/* ---------- GL ---------- */
+const cv=document.getElementById("c");
+const gl=cv.getContext("webgl",{antialias:true,alpha:false});
+if(!gl){ document.getElementById("err").style.display="grid";
+         document.getElementById("err").textContent="WebGL unavailable."; }
+const VS=`attribute vec3 p;attribute vec3 n;uniform mat4 mvp,mv;varying vec3 vn,vp;
+void main(){vn=mat3(mv)*n;vp=(mv*vec4(p,1.)).xyz;gl_Position=mvp*vec4(p,1.);}`;
+const FS=`precision mediump float;varying vec3 vn,vp;uniform vec3 col;
+void main(){vec3 n=normalize(vn);
+ float k=max(dot(n,normalize(vec3(.45,.75,.55))),0.)*.78
+        +max(dot(n,normalize(vec3(-.6,-.25,.35))),0.)*.24;
+ float rim=pow(1.-max(dot(n,normalize(-vp)),0.),2.6)*.30;
+ gl_FragColor=vec4(col*(.30+k)+vec3(rim*.85,rim*.88,rim),1.);}`;
+function sh(t,s){const o=gl.createShader(t);gl.shaderSource(o,s);gl.compileShader(o);
+  if(!gl.getShaderParameter(o,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(o));return o;}
+const prog=gl.createProgram();
+gl.attachShader(prog,sh(gl.VERTEX_SHADER,VS));gl.attachShader(prog,sh(gl.FRAGMENT_SHADER,FS));
+gl.linkProgram(prog);gl.useProgram(prog);
+const A={p:gl.getAttribLocation(prog,"p"),n:gl.getAttribLocation(prog,"n")};
+const U={mvp:gl.getUniformLocation(prog,"mvp"),mv:gl.getUniformLocation(prog,"mv"),
+         col:gl.getUniformLocation(prog,"col")};
+gl.enable(gl.DEPTH_TEST); gl.enable(gl.CULL_FACE);
+// A part with >65535 vertices (the base has 88872) silently WRAPS if its
+// indices are uploaded as Uint16 -- you get triangles stitched between random
+// vertices. Use 32-bit indices where the GL supports them; otherwise fall
+// back to drawArrays, which is always valid here because partlib's glb_write
+// emits per-face vertices with a plain 0,1,2,... index run.
+const UINT_IDX = !!gl.getExtension("OES_element_index_uint");
+
+let parts=[], center=[0,0,0], radius=100;
+let az=-0.62, el=0.30, dist=420, pan=[0,0];
+
+function upload(ps){
+  parts.forEach(p=>{gl.deleteBuffer(p.bp);gl.deleteBuffer(p.bn);
+                    if(p.bi)gl.deleteBuffer(p.bi);});
+  parts=ps.map(p=>{
+    const n=p.pos.length/3;
+    const bp=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,bp);
+    gl.bufferData(gl.ARRAY_BUFFER,p.pos,gl.STATIC_DRAW);
+    const bn=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,bn);
+    gl.bufferData(gl.ARRAY_BUFFER,p.nrm,gl.STATIC_DRAW);
+    let seq=true;
+    for(let i=0;i<p.idx.length;i++){ if(p.idx[i]!==i){ seq=false; break; } }
+    let bi=null, itype=0;
+    if(!(seq && !UINT_IDX)){
+      if(n>65535 && !UINT_IDX)
+        throw new Error(p.name+": "+n+" vertices needs 32-bit indices "+
+                        "(OES_element_index_uint unavailable)");
+      bi=gl.createBuffer(); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,bi);
+      const arr = (n>65535||UINT_IDX) ? new Uint32Array(p.idx) : new Uint16Array(p.idx);
+      itype = (n>65535||UINT_IDX) ? gl.UNSIGNED_INT : gl.UNSIGNED_SHORT;
+      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,arr,gl.STATIC_DRAW);
+    }
+    return Object.assign({},p,{bp,bn,bi,itype,count:p.idx.length});
+  });
+  let lo=[1e9,1e9,1e9], hi=[-1e9,-1e9,-1e9];
+  ps.forEach(p=>{for(let i=0;i<p.pos.length;i+=3)for(let k=0;k<3;k++){
+    lo[k]=Math.min(lo[k],p.pos[i+k]); hi[k]=Math.max(hi[k],p.pos[i+k]);}});
+  center=[(lo[0]+hi[0])/2,(lo[1]+hi[1])/2,(lo[2]+hi[2])/2];
+  radius=Math.max(...[0,1,2].map(k=>hi[k]-lo[k]))/2 || 100;
+  dist=radius*3.1; pan=[0,0];
+  document.getElementById("meta").innerHTML =
+    `<b>${ps.length}</b> parts &nbsp; <b>${(ps.reduce((s,p)=>s+p.idx.length,0)/3)|0}</b> triangles<br>`+
+    `bbox <b>${(hi[0]-lo[0]).toFixed(0)} x ${(hi[1]-lo[1]).toFixed(0)} x ${(hi[2]-lo[2]).toFixed(0)}</b> mm`;
+  // Split the list: printed parts vs component models, each with a
+  // show/hide-all, so a plate view can be checked with or without hardware.
+  const host=document.getElementById("parts"); host.innerHTML="";
+  const idx=parts.map((p,i)=>i);
+  const groups=[["Printed", idx.filter(i=>!IS_COMPONENT.test(parts[i].name))],
+                ["Components", idx.filter(i=>IS_COMPONENT.test(parts[i].name))]];
+  for(const [title, ids] of groups){
+    if(!ids.length) continue;
+    const hd=document.createElement("div"); hd.className="grp";
+    const lab=document.createElement("span"); lab.textContent=title;
+    const btn=document.createElement("button"); btn.textContent="hide all";
+    hd.appendChild(lab); hd.appendChild(btn); host.appendChild(hd);
+    const ul=document.createElement("ul"); host.appendChild(ul);
+    const rows=[];
+    ids.forEach(i=>{
+      const li=document.createElement("li");
+      li.innerHTML=`<span class="sw" style="background:rgb(${parts[i].color.map(c=>
+        Math.round(255*Math.pow(c,1/2.2))).join(',')})"></span>${parts[i].name}`;
+      li.onclick=()=>{parts[i].on=!parts[i].on; li.classList.toggle("off",!parts[i].on);
+                      btn.textContent=ids.every(j=>!parts[j].on)?"show all":"hide all";};
+      ul.appendChild(li); rows.push(li);
+    });
+    btn.onclick=()=>{
+      const hiding = ids.some(j=>parts[j].on);
+      ids.forEach((j,k)=>{parts[j].on=!hiding; rows[k].classList.toggle("off",hiding);});
+      btn.textContent = hiding ? "show all" : "hide all";
+    };
+  }
+}
+
+function draw(){
+  const w=cv.clientWidth, h=cv.clientHeight, dpr=Math.min(devicePixelRatio||1,2);
+  if(cv.width!==w*dpr||cv.height!==h*dpr){cv.width=w*dpr;cv.height=h*dpr;}
+  gl.viewport(0,0,cv.width,cv.height);
+  gl.clearColor(0.078,0.086,0.102,1); gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+  // Z-up model -> Y-up view
+  const ce=Math.cos(el), eye=[center[0]+dist*ce*Math.cos(az)+pan[0],
+                             center[1]+dist*ce*Math.sin(az),
+                             center[2]+dist*Math.sin(el)+pan[1]];
+  const tgt=[center[0]+pan[0],center[1],center[2]+pan[1]];
+  const V=M4.look(eye,tgt,[0,0,1]);
+  const Pm=M4.persp(0.72, w/h||1, radius*0.06, dist+radius*8);
+  const MVP=M4.mul(Pm,V);
+  parts.forEach(p=>{
+    if(!p.on) return;
+    gl.uniform3fv(U.col,p.color);
+    gl.uniformMatrix4fv(U.mvp,false,MVP); gl.uniformMatrix4fv(U.mv,false,V);
+    gl.bindBuffer(gl.ARRAY_BUFFER,p.bp); gl.enableVertexAttribArray(A.p);
+    gl.vertexAttribPointer(A.p,3,gl.FLOAT,false,0,0);
+    gl.bindBuffer(gl.ARRAY_BUFFER,p.bn); gl.enableVertexAttribArray(A.n);
+    gl.vertexAttribPointer(A.n,3,gl.FLOAT,false,0,0);
+    if(p.bi){ gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,p.bi);
+              gl.drawElements(gl.TRIANGLES,p.count,p.itype,0); }
+    else    { gl.drawArrays(gl.TRIANGLES,0,p.count); }
+  });
+  requestAnimationFrame(draw);
+}
+
+let drag=null;
+cv.addEventListener("mousedown",e=>drag={x:e.clientX,y:e.clientY,s:e.shiftKey});
+addEventListener("mouseup",()=>drag=null);
+addEventListener("mousemove",e=>{
+  if(!drag) return;
+  const dx=e.clientX-drag.x, dy=e.clientY-drag.y; drag.x=e.clientX; drag.y=e.clientY;
+  if(drag.s){ pan[0]-=dx*dist*0.0016; pan[1]+=dy*dist*0.0016; }
+  else { az-=dx*0.008; el=Math.max(-1.45,Math.min(1.45,el+dy*0.008)); }
+});
+cv.addEventListener("wheel",e=>{e.preventDefault();
+  dist=Math.max(radius*0.6,Math.min(radius*14,dist*(1+Math.sign(e.deltaY)*0.11)));},
+  {passive:false});
+
+const sel=document.getElementById("model");
+MODELS.forEach(([u,n])=>{const o=document.createElement("option");o.value=u;o.textContent=n;sel.appendChild(o);});
+async function show(url){
+  try{ upload(await loadGLB(url)); document.getElementById("err").style.display="none"; }
+  catch(err){ const e=document.getElementById("err");
+    e.style.display="grid"; e.textContent=err.message; }
+}
+sel.onchange=()=>show(sel.value);
+show(MODELS[0][0]);
+draw();
+</script>
