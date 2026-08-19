@@ -63,8 +63,8 @@ header.top{position:fixed;top:0;left:0;right:0;z-index:100;
   pointer-events:none}
 header.top > *{pointer-events:auto}
 .brand{display:flex;align-items:center;color:var(--fg);line-height:0}
-.brand svg{height:30px;width:auto}
-@media(min-width:768px){ .brand svg{height:38px} }
+.brand svg{height:22px;width:auto}
+@media(min-width:768px){ .brand svg{height:26px} }
 .topnav{display:flex;gap:var(--s-400);align-items:center}
 .topnav a{font-size:15px;line-height:20px;font-weight:600;color:var(--fg-dim);
   transition:color var(--t-ui) var(--ease)}
