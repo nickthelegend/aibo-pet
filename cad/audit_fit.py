@@ -231,6 +231,29 @@ chk("MX pocket stays inside the lid",
     math.hypot(_mxh, abs(P.MX_CTR[1]) + _mxh) < P.LID_OD / 2 - 2.0,
     f"far corner r{math.hypot(_mxh, abs(P.MX_CTR[1]) + _mxh):.1f} "
     f"vs rim r{P.LID_OD / 2:.1f}")
+# The yoke had NO axial retention at all -- 3 mm of stub-axle engagement and
+# friction. These check the printed keeper actually keeps.
+import part_screw as _PSC
+_scr = [m for n, m, _c in _PSC.build() if n == "yoke-screw"][0]
+_sb = _scr.bounds()
+chk("yoke-screw head is wider than the bore it has to cap",
+    P.SCREW_HEAD_D > P.AXLE_D + P.AXLE_FIT,
+    f"head O{P.SCREW_HEAD_D} over a O{P.AXLE_D + P.AXLE_FIT:.1f} bore -- "
+    f"{(P.SCREW_HEAD_D - P.AXLE_D - P.AXLE_FIT) / 2:.2f} mm of grip per side")
+chk("axle keeps a printable wall around its thread",
+    (P.AXLE_D - P.SCREW_MAJOR - P.SCREW_FIT) / 2 >= 1.6,
+    f"{(P.AXLE_D - P.SCREW_MAJOR - P.SCREW_FIT) / 2:.2f} mm of wall")
+chk("thread pitch is coarse enough to survive a 0.4 nozzle",
+    P.SCREW_PITCH >= 1.5,
+    f"{P.SCREW_PITCH} mm pitch, {P.SCREW_PITCH / 0.2:.0f} layers a turn at 0.2 "
+    f"-- an M3's 0.5 would be {0.5 / 0.2:.0f}")
+chk("screw thread does not bore into the servo pocket",
+    P.SCREW_ENGAGE <= P.AXLE_LEN,
+    f"{P.SCREW_ENGAGE} mm of thread in a {P.AXLE_LEN} mm axle")
+chk("idler plate keeps meat around the enlarged axle",
+    (P.YOKE_DEPTH - P.AXLE_D - P.AXLE_FIT) / 2 >= 3.0,
+    f"{(P.YOKE_DEPTH - P.AXLE_D - P.AXLE_FIT) / 2:.2f} mm either side of the bore")
+
 chk("keycap engages the switch stem",
     P.KEYCAP_SOCKET - P.KEYCAP_GAP >= P.MX_STEM_UP * 0.7,
     f"{P.MX_STEM_UP - P.KEYCAP_GAP:.1f} mm of a {P.MX_STEM_UP} mm stem, "

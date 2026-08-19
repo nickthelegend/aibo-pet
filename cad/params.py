@@ -314,6 +314,28 @@ YOKE_ABOVE    = 26.0   # ...and above, before it necks into the arm tube
 YOKE_PLATE_T  = 4.0
 YOKE_DEPTH    = 20.0   # yoke plate depth in Y
 JOINT_GAP     = 1.0    # yoke inner face -> housing outer face
+
+# ---- printed retaining screw (the arm's axial keeper) ------------------
+# The yoke had NOTHING holding it on: spread the plates 3 mm and the whole
+# segment lifted off the stub axle. This is that keeper, and it prints.
+#
+# M6 x 2.0 trapezoidal, not a real M-profile. An M3 at 0.5 pitch is a
+# quarter of a 0.4 nozzle per flank and simply does not exist once sliced;
+# 2.0 mm of pitch is 10 layers a turn at 0.2 and comes out as a thread you
+# can actually run a nut down.
+AXLE_D        = 11.0   # stub axle OD -- also the joint's bearing surface
+AXLE_FIT      = 0.3    # idler bore clearance over it
+AXLE_LEN      = 5.0    # reaches the yoke plate's outer face, flush
+SCREW_MAJOR   = 6.0
+SCREW_PITCH   = 2.0
+SCREW_FIT     = 0.35   # cut on the BORE, so the screw itself stays nominal
+SCREW_ENGAGE  = 5.0    # == AXLE_LEN. Kept inside the axle deliberately: any
+                       # deeper and the bore breaks into the servo pocket
+                       # behind it, and it lets ONE screw serve the MG996R
+                       # joints and the smaller SG90 head joint alike.
+SCREW_HEAD_D  = 16.0   # > idler bore, which is the whole point
+SCREW_HEAD_T  = 3.5
+SCREW_KNURL_N = 12
 JOINT_WALL    = 3.0    # housing wall
 FLARE_Z       = 16.0   # 45-deg-safe tube -> housing transition
 CONVERGE_Z    = 28.0   # yoke plates -> tube (inner edge travels 25.45 @ 42 deg)

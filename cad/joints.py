@@ -76,7 +76,11 @@ def yoke(axis_z, drive=True, idler=True):
 
     drive plate (+X): cross recess for the servo horn + a through hub bore
                       so the horn's retaining screw stays reachable.
-    idler plate (-X): bore riding the housing's stub axle.
+    idler plate (-X): bore riding the housing's stub axle, which the printed
+                      yoke-screw then caps -- the screw head is SCREW_HEAD_D
+                      against a bore of AXLE_D + AXLE_FIT, so the plate is
+                      trapped between the housing wall and the head and the
+                      segment cannot lift off.
     """
     z0, z1 = axis_z - P.YOKE_BELOW, axis_z + P.YOKE_ABOVE
     hy = P.YOKE_DEPTH / 2.0
@@ -102,7 +106,7 @@ def yoke(axis_z, drive=True, idler=True):
     plate2 = box(-YK_X1, -hy, -YK_X0, hy)
     if idler:
         bore = [(box(-YK_X1 - OVL, -w, -YK_X0 + OVL, w), zl, zh)
-                for zl, zh, w in _disc_slices(P.M3_CLEAR + 1.6, 0.0, axis_z)]
+                for zl, zh, w in _disc_slices(P.AXLE_D + P.AXLE_FIT, 0.0, axis_z)]
         m += pl.banded(plate2, z0, z1, bore)
     else:
         m += pl.prism(plate2, z0, z1)
@@ -139,8 +143,16 @@ def housing(axis_z, extra=()):
         (spline, axis_z - (P.MG_BOSS_D + 2.0) / 2, axis_z + (P.MG_BOSS_D + 2.0) / 2),
     ] + list(extra)
     m = pl.banded(outer, z_bot, z_top, openings)
-    # stub axle on the -X wall (the idler runs on this)
-    m += cyl_x(P.M3_CLEAR + 1.4, -H_HX - 4.0 + OVL, -H_HX + OVL, 0.0, axis_z)
+    # Stub axle on the -X wall. The idler plate runs on its OD, and the
+    # printed yoke-screw threads up its middle to stop the segment lifting
+    # off -- see part_screw. Built along Z (the only axis the kernel threads
+    # on) and laid over onto X, as its own watertight shell that the slicer
+    # unions into the housing.
+    axle = pl.threaded_bore(P.AXLE_D, P.SCREW_MAJOR, P.SCREW_PITCH,
+                            0.0, P.SCREW_ENGAGE, clearance=P.SCREW_FIT / 2)
+    axle.rotate_y(90.0)              # +Z -> +X
+    axle.translate(dx=-H_HX - P.AXLE_LEN + OVL, dz=axis_z)
+    m += axle
     # cap screw bosses: 4 M3 inserts in the cup rim
     for sx in (-1, 1):
         for sy in (-1, 1):

@@ -106,7 +106,13 @@ def sg_housing(axis_z):
         (tab_slot, z_bot + 2.5 - P.SG_TAB_T - 0.4, z_bot + 2.5 + OVL),
         (spline, axis_z - 4.5, axis_z + 4.5),
     ])
-    m += J.cyl_x(P.M3_CLEAR + 1.0, -SG_HX - 3.0 + OVL, -SG_HX + OVL, 0.0, axis_z)
+    # Same threaded stub as the MG996R joints -- the shade is light but it
+    # hangs off this sideways, and it had nothing holding it on either.
+    _ax = pl.threaded_bore(P.AXLE_D, P.SCREW_MAJOR, P.SCREW_PITCH,
+                           0.0, P.SCREW_ENGAGE, clearance=P.SCREW_FIT / 2)
+    _ax.rotate_y(90.0)
+    _ax.translate(dx=-SG_HX - P.AXLE_LEN + OVL, dz=axis_z)
+    m += _ax
     return m, z_bot, z_top
 
 

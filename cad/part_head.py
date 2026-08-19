@@ -124,7 +124,7 @@ def build():
     ])
     m += pl.banded(box(-YK1, -hy, -YK0, hy), Z_CONE1 - OVL, Z_YOKE1,
                    [(box(-YK1 - OVL, -w, -YK0 + OVL, w), zl, zh)
-                    for zl, zh, w in J._disc_slices(P.M3_CLEAR + 1.0, 0.0, TILT)])
+                    for zl, zh, w in J._disc_slices(P.AXLE_D + P.AXLE_FIT, 0.0, TILT)])
     return [("shade", m, P.COLORS["shade"])]
 
 

@@ -97,11 +97,15 @@
         "cap-elbow",
         "cap-head",
         "keycap",
+        "yoke-screw",
+        "yoke-screw",
+        "yoke-screw",
+        "yoke-screw",
         "mic-tab"
       ],
       "used_mm": [
-        146.0,
-        119.3,
+        150.2,
+        139.0,
         51.8
       ],
       "fits_bed": true

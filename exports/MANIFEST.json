@@ -47,9 +47,9 @@
       ]
     },
     "base-joint": {
-      "shells": 215,
-      "triangles": 4028,
-      "volume_mm3": 53805.37,
+      "shells": 192,
+      "triangles": 19356,
+      "volume_mm3": 54092.55,
       "watertight": true,
       "fits_a1_mini": true,
       "bbox_mm": [
@@ -71,9 +71,9 @@
       ]
     },
     "arm-lower": {
-      "shells": 158,
-      "triangles": 3892,
-      "volume_mm3": 57977.59,
+      "shells": 135,
+      "triangles": 19220,
+      "volume_mm3": 57765.75,
       "watertight": true,
       "fits_a1_mini": true,
       "bbox_mm": [
@@ -83,9 +83,9 @@
       ]
     },
     "arm-upper": {
-      "shells": 158,
-      "triangles": 3892,
-      "volume_mm3": 57977.59,
+      "shells": 135,
+      "triangles": 19220,
+      "volume_mm3": 57765.75,
       "watertight": true,
       "fits_a1_mini": true,
       "bbox_mm": [
@@ -95,9 +95,9 @@
       ]
     },
     "arm-fore": {
-      "shells": 153,
-      "triangles": 3672,
-      "volume_mm3": 34494.06,
+      "shells": 130,
+      "triangles": 19000,
+      "volume_mm3": 34310.03,
       "watertight": true,
       "fits_a1_mini": true,
       "bbox_mm": [
@@ -145,7 +145,7 @@
     "shade": {
       "shells": 71,
       "triangles": 14840,
-      "volume_mm3": 30141.38,
+      "volume_mm3": 29608.34,
       "watertight": true,
       "fits_a1_mini": true,
       "bbox_mm": [
@@ -236,6 +236,18 @@
         17.9,
         17.9,
         9.0
+      ]
+    },
+    "yoke-screw": {
+      "shells": 3,
+      "triangles": 8756,
+      "volume_mm3": 661.62,
+      "watertight": true,
+      "fits_a1_mini": true,
+      "bbox_mm": [
+        15.7,
+        15.7,
+        9.5
       ]
     }
   },

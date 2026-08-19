@@ -55,7 +55,8 @@ BATCHES = [
     ("5-small", "everything that is quick", ["base-joint", "cap-base", "cap-shoulder",
                                              "cap-elbow", "cap-head", "horn-sg90",
                                              "horn-adapter", "spk-clamp", "mic-tab",
-                                             "keycap"]),
+                                             "keycap"]
+     + ["yoke-screw"] * 4),          # one per joint: base, shoulder, elbow, head
 ]
 
 
@@ -98,7 +99,8 @@ def main():
                + assembly.part_head.build() + assembly.part_horn.build()
                + assembly.part_retainers.build()
                + assembly.part_shoulder.build()
-               + assembly.part_keycap.build())}
+               + assembly.part_keycap.build()
+               + assembly.part_screw.build())}
     report, n_plates = [], 0
     print(f"bed {BED:.0f}x{BED:.0f}, margin {MARGIN}, gap {GAP}\n")
     for tag, why, names in BATCHES:

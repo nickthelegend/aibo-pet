@@ -311,6 +311,84 @@ def loft_solid(poly_a, z0, poly_b, z1):
     return m
 
 
+# ------------------------------------------------------------- threads ----
+# A single-start helical thread. At a fixed z, walking around theta is the
+# same as walking ALONG the thread axially (the helix advances one pitch per
+# revolution), so the cross-section at any height is just the axial thread
+# profile wrapped into polar form. That makes a thread expressible as a
+# revolve() profile_fn and needs no new machinery.
+#
+# The form is a symmetric trapezoid, not a sharp V: 30% crest, 30% root, 20%
+# each flank, which puts the flanks near 45 degrees. That is deliberate --
+# it is the shallowest form that still keys, and 45 is what an FDM printer
+# can bridge unsupported when the thread axis ends up horizontal.
+
+def thread_profile_fn(major_d, pitch, depth, seg=64, clearance=0.0, phase=0.0):
+    """profile_fn(z) for revolve(): one single-start trapezoidal thread."""
+    r_maj = major_d / 2.0 + clearance
+    r_min = r_maj - depth
+
+    def r_at(u):
+        u = u % 1.0
+        if u < 0.30:                       # crest
+            return r_maj
+        if u < 0.50:                       # falling flank
+            return r_maj - depth * (u - 0.30) / 0.20
+        if u < 0.80:                       # root
+            return r_min
+        return r_min + depth * (u - 0.80) / 0.20   # rising flank
+
+    def fn(z):
+        pts = []
+        for i in range(seg):
+            th = 2.0 * math.pi * i / seg
+            r = r_at(th / (2.0 * math.pi) - z / pitch + phase)
+            pts.append((r * math.cos(th), r * math.sin(th)))
+        return Polygon(pts)
+
+    return fn
+
+
+def thread(major_d, pitch, z0, z1, depth=None, seg=64, per_turn=24,
+           clearance=0.0):
+    """Solid external thread between z0 and z1. Use `clearance` NEGATIVE on a
+    screw (or positive on the matching bore) to set the running fit."""
+    depth = 0.54 * pitch if depth is None else depth
+    steps = max(8, int(per_turn * (z1 - z0) / pitch))
+    return revolve(thread_profile_fn(major_d, pitch, depth, seg, clearance),
+                   z0, z1, steps, seg=seg)
+
+
+def threaded_bore(outer_d, major_d, pitch, z0, z1, depth=None, seg=64,
+                  per_turn=24, clearance=0.0):
+    """A plain cylinder of `outer_d` with a THREADED hole up the middle, as
+    one watertight annular shell.
+
+    Built rather than subtracted: the kernel does no 3D CSG (cad/README.md),
+    so the outer wall, the helical inner wall and the two annular caps are
+    each generated directly and stitched. The inner ring is wound backwards
+    so its normals face into the bore.
+    """
+    depth = 0.54 * pitch if depth is None else depth
+    steps = max(8, int(per_turn * (z1 - z0) / pitch))
+    fn = thread_profile_fn(major_d, pitch, depth, seg, clearance)
+    zs = np.linspace(z0, z1, steps + 1)
+    outer = [resample_ring(circle(outer_d, seg), seg) for _ in zs]
+    inner = [resample_ring(fn(z), seg) for z in zs]
+
+    m = Mesh(weld=True)
+    for i in range(steps):
+        oa, _ = _rings(outer[i])
+        ob, _ = _rings(outer[i + 1])
+        m.add_loft_wall(oa, zs[i], ob, zs[i + 1])
+        ia, _ = _rings(inner[i])
+        ib, _ = _rings(inner[i + 1])
+        m.add_loft_wall(ia[::-1], zs[i], ib[::-1], zs[i + 1])
+    m.add_cap(Polygon(_rings(outer[-1])[0], [_rings(inner[-1])[0]]), zs[-1], up=True)
+    m.add_cap(Polygon(_rings(outer[0])[0], [_rings(inner[0])[0]]), zs[0], up=False)
+    return m
+
+
 def revolve(profile_fn, z0, z1, steps, seg=64):
     """Stack of thin lofted bands between z0 and z1, where profile_fn(z)
     returns the (hole-free) cross-section at height z. Every band is resampled

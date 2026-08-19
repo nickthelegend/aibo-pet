@@ -25,6 +25,7 @@ import part_base_joint
 import part_head
 import part_horn
 import part_keycap
+import part_screw
 import part_lid
 import part_retainers
 import part_shoulder
@@ -130,7 +131,7 @@ def print_items():
     groups = (part_base.build() + part_shoulder.build() + part_lid.build()
               + part_base_joint.build() + part_arms.build() + part_head.build()
               + part_horn.build() + part_retainers.build()
-              + part_keycap.build())
+              + part_keycap.build() + part_screw.build())
     out = []
     for name, mesh, _c in groups:
         m = mesh.copy()
