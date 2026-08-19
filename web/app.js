@@ -380,7 +380,7 @@ function buildMoods() {
 }
 
 const TICKER = ["NODS WHEN YOU TALK", "SULKS WHEN IGNORED", "22 PRINTED PARTS",
-  "FITS AN A1 MINI", "NO SUPPORTS", "FOUR SERVOS", "ONE WEEKEND BUILD",
+  "FITS AN A1 MINI", "ONE SCREW YOU PRINT", "FOUR SERVOS", "ONE WEEKEND BUILD",
   "OPEN SOURCE CAD"];
 $("#run").innerHTML = [...TICKER, ...TICKER]
   .map(t => `<span>${t} <i>✦</i></span>`).join("");
@@ -408,7 +408,11 @@ $("#caps").innerHTML = CAPS.map(([n, h, p]) =>
       fetch("./spec.json").then(r => r.json()),
     ]);
     RIG = rig; RIG.yokeBelow = 16.0;
-    PARTS = upload(nodes);
+    // The rig also carries the loose-parts tray for the viewer. The hero is a
+    // portrait of the lamp, so they are dropped here rather than floating
+    // beside it.
+    const loose = new Set(rig.loose || []);
+    PARTS = upload(nodes.filter(n => !loose.has(n.name)));
     PARTS.forEach(p => ROLE.set(p.name, p));
     for (const j of J) { cur[j] = RIG.neutral[j]; vel[j] = 0; tgt[j] = cur[j]; }
 
