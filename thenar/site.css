@@ -1,0 +1,150 @@
+/* site.css — the design system.
+ *
+ * Rebuilt to the landing-page-design rules. What changed and why:
+ *   font      Inter and the Impact class display face are both disallowed.
+ *             Manrope throughout, capped at 700; no ultra bold, no italic.
+ *   theme     dark, from the approved background set only. Blue and pink stay
+ *             as accents so it is still the same brand.
+ *   sizes     every one lands on a Tailwind type scale step.
+ *   spacing   every value comes from the spacing table.
+ *   gradients removed from every background. The single permitted gradient is
+ *             on the hero heading text.
+ */
+
+:root{
+  /* approved dark backgrounds */
+  --bg:#000000; --surface:#181818; --surface-2:#1F1F1F; --line:#272727;
+  --line-2:#313131;
+  --fg:#FFFFFF; --fg-dim:#9B9B9B; --fg-mute:#6E6E6E;
+  --blue:#4D17F5; --pink:#FA9DCD;
+
+  /* spacing tokens — nothing between, nothing outside */
+  --s-25:2px;  --s-50:4px;  --s-75:8px;   --s-100:12px; --s-200:16px;
+  --s-300:24px; --s-400:32px; --s-500:40px; --s-600:48px; --s-700:64px;
+  --s-800:80px; --s-900:96px;
+
+  /* motion: mass and spring, never a default curve */
+  --ease:cubic-bezier(0.32,0.72,0,1);
+  --t-press:200ms; --t-ui:400ms; --t-enter:800ms;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--fg);
+  font-family:Manrope,system-ui,sans-serif;font-weight:400;
+  font-size:16px;line-height:24px;   /* text-base */
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  text-wrap:pretty}
+h1,h2,h3{font-weight:700;text-wrap:balance;letter-spacing:-0.02em}
+a{color:inherit;text-decoration:none}
+img,svg{display:block}
+::selection{background:var(--blue);color:#fff}
+
+.wrap{max-width:1120px;margin:0 auto;padding-left:var(--s-300);
+  padding-right:var(--s-300)}
+.measure{max-width:680px}          /* hero heading + subheading cap */
+
+/* skip link — keyboard users need a way past the nav */
+.skip{position:absolute;left:var(--s-200);top:-64px;background:var(--blue);
+  color:#fff;padding:var(--s-75) var(--s-100);border-radius:8px;z-index:200;
+  font-size:14px;line-height:20px;font-weight:600;
+  transition:top var(--t-ui) var(--ease)}
+.skip:focus{top:var(--s-200)}
+
+/* ---------------- header ----------------
+   Full width bar: wordmark hard left, actions hard right. The island pill was
+   centred and small, which buried the brand in the middle of nothing. */
+header.top{position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:var(--s-300);padding:var(--s-200) var(--s-400);
+  background:linear-gradient(to bottom,rgba(0,0,0,.86),rgba(0,0,0,0));
+  /* the one background gradient here is a scrim so the bar reads over the
+     model; it fades to nothing rather than drawing a box */
+  pointer-events:none}
+header.top > *{pointer-events:auto}
+.brand{display:flex;align-items:center;color:var(--fg);line-height:0}
+.brand svg{height:22px;width:auto}
+@media(min-width:768px){ .brand svg{height:26px} }
+.topnav{display:flex;gap:var(--s-400);align-items:center}
+.topnav a{font-size:15px;line-height:20px;font-weight:600;color:var(--fg-dim);
+  transition:color var(--t-ui) var(--ease)}
+.topnav a:hover,.topnav a[aria-current="page"]{color:var(--fg)}
+@media(max-width:860px){ .topnav{display:none} }
+/* content pages sit under the bar rather than behind it, so it gets a real
+   background instead of the scrim the hero uses */
+header.top.solid{background:var(--bg);border-bottom:1px solid var(--line)}
+body:has(header.top.solid) main{padding-top:var(--s-900)}
+
+/* ---------------- buttons ---------------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;
+  gap:var(--s-75);font-family:inherit;font-size:16px;line-height:24px;
+  font-weight:600;padding:var(--s-75) var(--s-100);border-radius:9999px;
+  border:1px solid transparent;background:var(--surface-2);color:var(--fg);
+  cursor:pointer;
+  transition:background var(--t-ui) var(--ease),
+             transform var(--t-press) var(--ease),
+             border-color var(--t-ui) var(--ease)}
+.btn.sm{font-size:14px;line-height:20px}
+.btn.primary{background:var(--blue);color:#fff}
+.btn.ghost{background:transparent;border-color:var(--line-2);color:var(--fg-dim)}
+.btn:hover{background:var(--line-2)}
+.btn.primary:hover{background:#5B29FF}
+.btn.ghost:hover{color:var(--fg);border-color:var(--fg-mute)}
+.btn:active{transform:scale(.98)}
+.btn:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+.btn[disabled],.btn[aria-disabled="true"]{opacity:.45;pointer-events:none}
+
+/* ---------------- sections ---------------- */
+main{padding-top:var(--s-900)}
+section{padding-top:var(--s-900);padding-bottom:var(--s-900)}
+.eyebrow{font-size:14px;line-height:20px;font-weight:600;color:var(--blue);
+  margin-bottom:var(--s-100)}
+h2{font-size:36px;line-height:40px}                 /* text-4xl */
+@media(min-width:768px){ h2{font-size:48px;line-height:1} }  /* text-5xl */
+.lede{color:var(--fg-dim);font-size:18px;line-height:28px}   /* text-lg */
+
+.card{background:var(--surface);border:1px solid var(--line);
+  border-radius:16px;padding:var(--s-300)}
+.card h3{font-size:20px;line-height:28px;margin-bottom:var(--s-75)}
+.card p{color:var(--fg-dim);font-size:14px;line-height:20px}
+.grid{display:grid;gap:var(--s-200)}
+.g3{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+
+/* ---------------- scroll reveal ----------------
+   Heavy fade up with a blur, per the motion rules. Decorative only: the
+   element is interactive before it resolves, and if IntersectionObserver is
+   missing nothing ever hides. */
+.reveal{opacity:0;transform:translateY(64px);filter:blur(12px);
+  transition:opacity var(--t-enter) var(--ease),
+             transform var(--t-enter) var(--ease),
+             filter var(--t-enter) var(--ease)}
+.reveal.in{opacity:1;transform:none;filter:none}
+
+/* ---------------- tagline reveal ----------------
+   Words activate one at a time in reading order as they cross the trigger. */
+.tagline{font-size:36px;line-height:40px;font-weight:700;max-width:680px;
+  letter-spacing:-0.02em}
+@media(min-width:768px){ .tagline{font-size:60px;line-height:1} }
+.tagline w{display:inline-block;color:rgba(255,255,255,.28);
+  transition:color 700ms var(--ease)}
+.tagline w.lit{color:var(--fg)}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .reveal{transform:none;filter:none;transition-duration:300ms}
+  .btn:active{transform:none}
+  .tagline w{transition-duration:200ms}
+}
+
+/* ---------------- additions for the Thenar site ---------------- */
+
+/* Visually hidden but still announced. The comparison table needs a caption
+   for screen readers; sighted users already have the section heading. */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+footer{border-top:1px solid var(--line);padding:var(--s-500) 0;
+  color:var(--fg-mute);font-size:14px;line-height:20px}
+footer a{color:var(--fg-dim);transition:color var(--t-ui) var(--ease)}
+footer a:hover{color:var(--fg)}

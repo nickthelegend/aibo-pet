@@ -7,6 +7,13 @@
       "runtimeArgs": ["-m", "http.server", "8765"],
       "port": 8765,
       "url": "http://localhost:8765"
+    },
+    {
+      "name": "thenar",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8766", "--directory", "thenar"],
+      "port": 8766,
+      "url": "http://localhost:8766"
     }
   ]
 }

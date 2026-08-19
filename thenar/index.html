@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>THENAR — contact data for physical AI</title>
+<meta name="description" content="Robots can see. They still cannot feel. Thenar instruments the human hand and sells the one signal manipulation models are missing: force.">
+<link rel="icon" href="./mark.svg" type="image/svg+xml">
+<meta property="og:title" content="THENAR — contact data for physical AI">
+<meta property="og:description" content="Manipulation models train on pixels and joint angles. Neither records how hard the hand squeezed. We do.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://thenar.io/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./site.css">
+<style>
+/* Thenar runs on Hotaru's design system so the parent and the product read as
+   one house. Same tokens, same curve, same palette. Only the argument changes. */
+.chero{padding-top:var(--s-900);padding-bottom:var(--s-700)}
+.chero h1{font-size:44px;line-height:1;max-width:760px;letter-spacing:-0.03em;
+  background:linear-gradient(90deg,#FFFFFF 0%,#9B9B9B 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+@media(min-width:768px){ .chero h1{font-size:76px} }
+.chero .lede{margin-top:var(--s-300);max-width:680px}
+.chero .actions{margin-top:var(--s-400);display:flex;gap:var(--s-100);flex-wrap:wrap}
+
+.big{font-size:56px;line-height:1;font-weight:700;letter-spacing:-0.03em}
+@media(min-width:768px){ .big{font-size:88px} }
+.big .dim{color:var(--fg-mute)}
+
+/* stat strip: only numbers we can actually stand behind */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:var(--s-200);margin-top:var(--s-700);border-top:1px solid var(--line);
+  padding-top:var(--s-400)}
+.stats b{display:block;font-size:36px;line-height:40px;letter-spacing:-0.02em}
+.stats span{display:block;margin-top:var(--s-50);font-size:14px;line-height:20px;
+  color:var(--fg-mute)}
+
+.loop{counter-reset:s}
+.loop .card{position:relative;padding-top:var(--s-500)}
+.loop .card::before{counter-increment:s;content:"0" counter(s);
+  position:absolute;top:var(--s-300);left:var(--s-300);
+  font-size:14px;line-height:20px;font-weight:700;color:var(--blue)}
+
+.tagbar{display:flex;gap:var(--s-75);flex-wrap:wrap;margin-top:var(--s-200)}
+.tg{font-size:12px;line-height:16px;font-weight:600;color:var(--fg-mute);
+  border:1px solid var(--line-2);border-radius:9999px;padding:2px 10px}
+.tg.live{color:var(--fg);border-color:var(--blue);background:rgba(77,23,245,.16)}
+.prod .card{display:flex;flex-direction:column}
+/* Only the tag row drops to the card floor. space-between on the whole
+   card pushed a gap under the heading of the card with no button. */
+.prod .card .tagbar{margin-top:auto;padding-top:var(--s-200)}
+
+.rail{border-left:1px solid var(--line);padding-left:var(--s-300);
+  display:grid;gap:var(--s-400);max-width:760px}
+.rail h3{font-size:20px;line-height:28px}
+.rail p{color:var(--fg-dim);margin-top:var(--s-75)}
+
+.note{border:1px solid var(--line-2);border-radius:16px;padding:var(--s-300);
+  color:var(--fg-dim);max-width:760px;margin-top:var(--s-500)}
+.note b{color:var(--fg)}
+
+/* comparison: wide content scrolls in its own box, never the page body */
+.tscroll{overflow-x:auto;margin-top:var(--s-600);border:1px solid var(--line);
+  border-radius:16px}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:14px;
+  line-height:20px}
+th,td{text-align:left;padding:var(--s-200) var(--s-300);
+  border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:600;color:var(--fg-mute);font-size:12px;line-height:16px;
+  letter-spacing:.04em;text-transform:uppercase}
+tbody tr:last-child td{border-bottom:0}
+tr.us{background:rgba(77,23,245,.10)}
+tr.us td{color:var(--fg)}
+td.what{color:var(--fg-dim)}
+
+.namebox{display:flex;gap:var(--s-300);align-items:flex-start;flex-wrap:wrap;
+  border:1px solid var(--line);border-radius:16px;padding:var(--s-300);
+  max-width:760px;margin-top:var(--s-600);background:var(--surface)}
+.namebox svg{flex:none;width:64px;height:64px}
+.namebox p{color:var(--fg-dim);flex:1;min-width:240px}
+.namebox b{color:var(--fg)}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top solid">
+  <a class="brand" href="./" aria-label="Thenar home">
+    <svg viewBox="0 0 340 92" aria-hidden="true" style="height:24px">
+      <text x="0" y="70" font-family="Manrope,sans-serif" font-size="72"
+            font-weight="700" letter-spacing="-2" fill="currentColor">THENAR</text>
+    </svg>
+  </a>
+  <nav class="topnav" aria-label="Primary">
+    <a href="#gap">The gap</a>
+    <a href="#build">What we build</a>
+    <a href="#engine">The engine</a>
+    <a href="#stands">Where we stand</a>
+  </nav>
+  <a class="btn primary" href="mailto:hello@thenar.io">Talk to us</a>
+</header>
+
+<main id="main">
+
+  <section class="wrap chero">
+    <p class="eyebrow">Contact data for physical AI</p>
+    <h1>Robots can see.<br>They still<br>cannot feel.</h1>
+    <p class="lede">Manipulation models train on pixels and joint angles.
+      Neither one records the signal that decides whether the glass lifts or
+      shatters: how hard the hand squeezed, and how fast it corrected when the
+      object began to slip. Thenar instruments the human hand and sells that
+      signal.</p>
+    <div class="actions">
+      <a class="btn primary" href="#engine">How the engine works</a>
+      <a class="btn ghost" href="https://aibo.loompad.tech">See the hardware we ship</a>
+    </div>
+
+    <div class="stats">
+      <div><b>22</b><span>printed parts shipping today, open CAD</span></div>
+      <div><b>3s</b><span>settlement, sub cent, live on Algorand</span></div>
+      <div><b>6 axes</b><span>per hand once the band is instrumented</span></div>
+      <div><b>0</b><span>public datasets carrying grip force at scale</span></div>
+    </div>
+  </section>
+
+  <section class="wrap" id="gap">
+    <p class="eyebrow">The bottleneck</p>
+    <p class="big">Everyone is<br>recording video.<br>
+      <span class="dim">Nobody records force.</span></p>
+    <div class="grid g3" style="margin-top:var(--s-600)">
+      <article class="card">
+        <h3>Simulation is weakest exactly where manipulation happens</h3>
+        <p>Contact is the least accurate part of every physics engine. Friction,
+          deformation and slip are approximated, so teleoperating a simulated
+          arm yields a clean trajectory through an interaction that never had to
+          obey a real surface. That is the sim to real gap, and it is a contact
+          gap.</p>
+      </article>
+      <article class="card">
+        <h3>Video cannot recover force</h3>
+        <p>You can estimate a hand's pose from footage to within a few
+          millimetres. You cannot estimate the newtons it applied, or the
+          correction it made forty milliseconds after the object shifted in its
+          grip. That correction is the entire skill, and it is invisible.</p>
+      </article>
+      <article class="card">
+        <h3>Instrumented capture does not leave the lab</h3>
+        <p>Force sensing gloves exist, bolted to a bench in a handful of
+          research groups, producing hours. A model needs years. Nobody has put
+          contact sensing on a hand that walks out of the building and into a
+          kitchen.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="wrap" id="build">
+    <p class="eyebrow">What we build</p>
+    <h2>An instrument, a proof,<br>and a rail</h2>
+    <p class="lede" style="margin-top:var(--s-200);max-width:680px">
+      Three products that only work together. A sensor without a network
+      collects a demo. A network without a rail cannot pay per clip. A rail
+      without hardware has nothing to settle.</p>
+
+    <div class="grid g3 prod" style="margin-top:var(--s-600)">
+      <article class="card">
+        <h3>Thenar Band</h3>
+        <p style="margin-top:var(--s-100)">A wrist and palm unit worn while you
+          do ordinary work. Egocentric camera, inertial measurement, and
+          pressure across the thenar eminence and the fingertips, time aligned
+          at the source rather than stitched together afterwards.</p>
+        <p style="margin-top:var(--s-100);color:var(--fg-mute)">The wrist is the
+          point. A phone in a pocket cannot tell you how hard somebody gripped,
+          and grip is most of the task.</p>
+        <div class="tagbar">
+          <span class="tg">In design</span><span class="tg">Egocentric</span>
+          <span class="tg">Force</span>
+        </div>
+      </article>
+
+      <article class="card">
+        <h3>Hotaru</h3>
+        <p style="margin-top:var(--s-100)">A desk robot with four servos, a
+          microphone and a speaker. It leans toward whoever is talking and folds
+          down when the room goes quiet. Twenty two printed parts, every one on a
+          180 mm bed, CAD open in pure Python with public audits.</p>
+        <p style="margin-top:var(--s-100);color:var(--fg-mute)">Not a collection
+          device. It is the proof we take hardware from parameters to a shipped
+          object, which is what you want established before wearing anything we
+          make.</p>
+        <div class="tagbar">
+          <span class="tg live">Shipping</span><span class="tg">Open CAD</span>
+        </div>
+        <p style="margin-top:var(--s-200)">
+          <a class="btn sm" href="https://aibo.loompad.tech">Meet Hotaru</a></p>
+      </article>
+
+      <article class="card">
+        <h3>Ripar</h3>
+        <p style="margin-top:var(--s-100)">The settlement rail. Per request USDC
+          over x402, settling on Algorand in about three seconds for a fraction
+          of a cent, which is the only reason paying somebody for a single
+          accepted clip is possible at all.</p>
+        <p style="margin-top:var(--s-100);color:var(--fg-mute)">Built and shipped
+          first because it is the hard constraint. Contributor payouts and agent
+          calls are the same problem: the fee has to cost less than the payment.</p>
+        <div class="tagbar">
+          <span class="tg live">Live</span><span class="tg">Algorand</span>
+          <span class="tg">x402</span>
+        </div>
+        <p style="margin-top:var(--s-200)">
+          <a class="btn sm" href="https://ripar.io">Open it</a></p>
+      </article>
+    </div>
+  </section>
+
+  <section class="wrap" id="engine">
+    <p class="eyebrow">The engine</p>
+    <h2>Capture, settle,<br>license, repeat</h2>
+    <p class="lede" style="margin-top:var(--s-200);max-width:680px">
+      Every failure a buyer reports becomes a capture target we pay for. The
+      network gets more valuable the more it is used, which is the only kind of
+      data business worth building.</p>
+    <div class="grid g4 loop" style="margin-top:var(--s-600)">
+      <article class="card"><h3>Instrument</h3>
+        <p>Our own device, so we control what is sensed and how it is
+          synchronised. Vision, inertial and contact on one clock.</p></article>
+      <article class="card"><h3>Capture</h3>
+        <p>Contributors record real tasks in real kitchens and workshops.
+          Consent is captured with the data, not asserted about it later.</p></article>
+      <article class="card"><h3>Settle</h3>
+        <p>Each accepted contribution is written on chain with its terms and its
+          author. Provenance and payment are the same record.</p></article>
+      <article class="card"><h3>License</h3>
+        <p>Buyers take slices by task, object and material. Their failures come
+          back to us as the next thing we pay to record.</p></article>
+    </div>
+
+    <div class="tscroll">
+      <table>
+        <caption class="sr-only">How contact data compares across collection approaches</caption>
+        <thead><tr>
+          <th scope="col">Approach</th><th scope="col">What it captures</th>
+          <th scope="col">What it misses</th><th scope="col">Scale</th>
+        </tr></thead>
+        <tbody>
+          <tr><td>Browser teleoperation of simulated arms</td>
+              <td class="what">Trajectories, object poses, task metadata</td>
+              <td class="what">Real friction, deformation, slip</td>
+              <td class="what">Very high</td></tr>
+          <tr><td>Scraped and egocentric video</td>
+              <td class="what">Hand pose, scene, intent</td>
+              <td class="what">All force, all correction</td>
+              <td class="what">Very high</td></tr>
+          <tr><td>Lab force rigs</td>
+              <td class="what">Contact, richly</td>
+              <td class="what">Everyday tasks, variety, volume</td>
+              <td class="what">Hours</td></tr>
+          <tr class="us"><td><b>Thenar</b></td>
+              <td>Vision, inertial and contact force, one clock</td>
+              <td>Whole body motion, for now</td>
+              <td>Network</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="namebox">
+      <svg viewBox="0 0 32 32" aria-hidden="true">
+        <rect width="32" height="32" rx="7" fill="#4D17F5"/>
+        <path d="M8 25 C8 13, 14 7, 24 7" fill="none" stroke="#fff"
+              stroke-width="3.2" stroke-linecap="round"/>
+        <circle cx="8" cy="25" r="3.4" fill="#FA9DCD"/>
+      </svg>
+      <p><b>Why the name.</b> The thenar eminence is the mound of muscle at the
+        base of your thumb. Its job is opposition, swinging the thumb across to
+        meet each fingertip, and modulating how hard it presses once it arrives.
+        It is the anatomy that separates a hand from a claw, and it is the exact
+        capability robots have not learned. The mark is that arc.</p>
+    </div>
+  </section>
+
+  <section class="wrap" id="stands">
+    <p class="eyebrow">Honest status</p>
+    <h2>Where this<br>actually stands</h2>
+    <div class="rail" style="margin-top:var(--s-600)">
+      <div>
+        <h3>Shipped</h3>
+        <p>Hotaru is real hardware with open CAD, printable STLs, and interface
+          audits anyone can run. Ripar is live and settling calls on Algorand
+          today.</p>
+      </div>
+      <div>
+        <h3>In design</h3>
+        <p>The Thenar Band is a specification and a sensor selection, not a
+          product you can buy. We are building it around the first dataset we
+          sell rather than guessing at a spec first.</p>
+      </div>
+      <div>
+        <h3>Not yet</h3>
+        <p>The contributor network is the model we are building toward, not
+          something you can join this week. We would rather say that here than
+          have you find it out after signing something.</p>
+      </div>
+    </div>
+
+    <div class="note">
+      <b>What we are looking for.</b> Robotics teams training manipulation
+      policies who will tell us which twenty tasks are failing, and hardware
+      people who have shipped a sensor at volume. If either is you, the fastest
+      route is a direct email.
+    </div>
+
+    <p style="margin-top:var(--s-600);display:flex;gap:var(--s-100);flex-wrap:wrap">
+      <a class="btn primary" href="mailto:hello@thenar.io">hello@thenar.io</a>
+      <a class="btn ghost" href="https://ripar.io">Use the part that is live</a>
+    </p>
+  </section>
+</main>
+
+<footer><div class="wrap" style="display:flex;gap:var(--s-300);flex-wrap:wrap;
+  justify-content:space-between">
+  <span>THENAR — contact data for physical AI.</span>
+  <span style="display:flex;gap:var(--s-300);flex-wrap:wrap">
+    <a href="https://aibo.loompad.tech">Hotaru</a>
+    <a href="https://ripar.io">Ripar</a>
+    <a href="https://github.com/nickthelegend/aibo-pet">Source</a>
+  </span>
+</div></footer>
+
+<script>
+/* Reveal is added by script, never in the markup, so a JS failure leaves the
+   page fully readable instead of blank. */
+(function () {
+  if (!("IntersectionObserver" in window)) return;
+  var els = document.querySelectorAll(".card, .rail > div, .stats > div, .namebox, .tscroll");
+  els.forEach(function (el) { el.classList.add("reveal"); });
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+    });
+  }, { rootMargin: "0px 0px -10% 0px" });
+  els.forEach(function (el) { io.observe(el); });
+})();
+</script>
+</body>
+</html>
