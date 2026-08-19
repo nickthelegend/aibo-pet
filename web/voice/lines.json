@@ -1,0 +1,86 @@
+{
+ "voice": "Samantha",
+ "rate": 178,
+ "lines": {
+  "intro": [
+   {
+    "src": "./voice/intro.0.mp3",
+    "text": "Hello. I am a desk lamp with four servos and opinions about where you are sitting."
+   },
+   {
+    "src": "./voice/intro.1.mp3",
+    "text": "Oh good, someone. I am a desk lamp, and I have been waiting to be useful."
+   }
+  ],
+  "menu": [
+   {
+    "src": "./voice/menu.0.mp3",
+    "text": "What do you want to know?"
+   },
+   {
+    "src": "./voice/menu.1.mp3",
+    "text": "Ask me something."
+   }
+  ],
+  "move": [
+   {
+    "src": "./voice/move.0.mp3",
+    "text": "Four joints. Base, shoulder, elbow, and a tilt at the head. Every move runs through a spring that overshoots a little, which is the difference between a servo turning and something looking alive."
+   }
+  ],
+  "need": [
+   {
+    "src": "./voice/need.0.mp3",
+    "text": "Three big servos, one small one, a microphone, a speaker, and a board to run them. Twenty two printed parts, and every one fits the smallest Bambu bed."
+   }
+  ],
+  "print": [
+   {
+    "src": "./voice/print.0.mp3",
+    "text": "Nine plates. Start with the test plate, it takes fifteen minutes and tells you whether the printed spline fits your servo before you commit to an eight hour tub."
+   }
+  ],
+  "why": [
+   {
+    "src": "./voice/why.0.mp3",
+    "text": "Because a lamp that only switches on is furniture. This one notices you walked in."
+   }
+  ],
+  "ask_name": [
+   {
+    "src": "./voice/ask_name.0.mp3",
+    "text": "Before I send anything. What should I call you?"
+   }
+  ],
+  "ask_printer": [
+   {
+    "src": "./voice/ask_printer.0.mp3",
+    "text": "What are you printing on?"
+   }
+  ],
+  "ask_email": [
+   {
+    "src": "./voice/ask_email.0.mp3",
+    "text": "And where do I send the files?"
+   }
+  ],
+  "bad_email": [
+   {
+    "src": "./voice/bad_email.0.mp3",
+    "text": "That does not look like an email address. Try again."
+   }
+  ],
+  "done": [
+   {
+    "src": "./voice/done.0.mp3",
+    "text": "You are on the list. I will be here, leaning slightly to the left."
+   }
+  ],
+  "again": [
+   {
+    "src": "./voice/again.0.mp3",
+    "text": "Again? Fine. I have nowhere else to be."
+   }
+  ]
+ }
+}

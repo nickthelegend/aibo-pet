@@ -76,7 +76,7 @@ void main(){
   float key  = max(dot(n, normalize(vec3(0.45, 0.55, 0.85))), 0.0);
   float fill = max(dot(n, normalize(vec3(-0.6, -0.2, 0.35))), 0.0);
   float rim  = pow(1.0 - max(dot(n, vec3(0,0,1)), 0.0), 2.5);
-  vec3 c = col * (0.30 + 0.80*key + 0.22*fill) + vec3(0.30,0.20,0.55)*rim*0.30;
+  vec3 c = col * (0.22 + 0.86*key + 0.26*fill) + vec3(0.30,0.20,0.55)*rim*0.55;
   o = vec4(pow(c, vec3(1.0/2.2)), 1.0);
 }`;
 

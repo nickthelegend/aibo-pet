@@ -83,7 +83,7 @@ async function loadGLB(url) {
 /* -------------------------------------------------------------- gl ----- */
 const cv = $("#c");
 const gl = cv.getContext("webgl2", { antialias: true, alpha: false });
-if (!gl) $("#load").textContent = "THIS BROWSER HAS NO WEBGL2";
+if (!gl) $("#skel").textContent = "This browser does not support WebGL2.";
 
 const VS = `#version 300 es
 in vec3 p; uniform mat4 mvp, mv; out vec3 vp;
@@ -98,7 +98,7 @@ void main(){
   float key  = max(dot(n, normalize(vec3(0.45, 0.55, 0.85))), 0.0);
   float fill = max(dot(n, normalize(vec3(-0.6, -0.2, 0.35))), 0.0);
   float rim  = pow(1.0 - max(dot(n, vec3(0,0,1)), 0.0), 2.5);
-  vec3 c = col * (0.30 + 0.80*key + 0.22*fill) + vec3(0.30,0.20,0.55)*rim*0.30;
+  vec3 c = col * (0.22 + 0.86*key + 0.26*fill) + vec3(0.30,0.20,0.55)*rim*0.55;
   o = vec4(pow(c, vec3(1.0/2.2)), 1.0);
 }`;
 
@@ -199,22 +199,22 @@ function worldBounds() {
 /* Each is a timeline of [t seconds, {joint: offset from neutral}]. Offsets,
  * not absolutes, so every move reads relative to the resting pose. */
 const MOODS = {
-  idle:    { label: "IDLE",    loop: true, keys: [
+  idle:    { label: "Idle",    loop: true, keys: [
     [0.0, {}], [2.2, { shoulder: 2.5, head: -2.0 }], [4.4, {}] ] },
-  nod:     { label: "NOD YES", loop: false, keys: [
+  nod:     { label: "Nod", loop: false, keys: [
     [0.00, {}], [0.16, { head: 24, shoulder: -5 }], [0.34, { head: -12 }],
     [0.50, { head: 20, shoulder: -3 }], [0.66, { head: -7 }], [0.90, {}] ] },
-  curious: { label: "CURIOUS", loop: false, keys: [
+  curious: { label: "Curious", loop: false, keys: [
     [0.00, {}], [0.30, { base: 13, shoulder: -14, elbow: 12, head: -26 }],
     [1.30, { base: 13, shoulder: -14, elbow: 12, head: -26 }], [1.75, {}] ] },
-  perk:    { label: "PERK UP", loop: false, keys: [
+  perk:    { label: "Perk up", loop: false, keys: [
     [0.00, {}], [0.14, { shoulder: -8, elbow: -10, head: -18 }],
     [0.30, { base: -12, shoulder: -22, elbow: -18, head: -30 }],
     [0.95, { base: -12, shoulder: -22, elbow: -18, head: -30 }], [1.5, {}] ] },
-  sulk:    { label: "SULK",    loop: false, keys: [
+  sulk:    { label: "Sulk",    loop: false, keys: [
     [0.00, {}], [0.75, { base: 16, shoulder: 20, elbow: 22, head: 34 }],
     [2.20, { base: 16, shoulder: 20, elbow: 22, head: 34 }], [3.0, {}] ] },
-  scan:    { label: "SCAN",    loop: false, keys: [
+  scan:    { label: "Scan",    loop: false, keys: [
     [0.00, {}], [0.45, { base: -9, head: -20 }], [1.05, { base: 11, head: 14 }],
     [1.65, { base: -6, head: -12 }], [2.2, {}] ] },
 };
@@ -258,7 +258,8 @@ function fitCamera() {
   update(1 / 60);
   CTR = [0, (lo[1] + hi[1]) / 2, (lo[2] + hi[2]) / 2];
   const span = Math.max(hi[2] - lo[2], hi[0] - lo[0], hi[1] - lo[1]);
-  dist = (span * 1.16) / (2 * Math.tan(FOVY / 2));
+  // the stage is a tall full-viewport panel now, so leave more air
+  dist = (span * 1.34) / (2 * Math.tan(FOVY / 2));
 }
 
 
@@ -312,10 +313,14 @@ function draw() {
     cv.width = w * dpr; cv.height = h * dpr;
   }
   gl.viewport(0, 0, cv.width, cv.height);
-  gl.clearColor(0.933, 0.933, 0.925, 1);
+  gl.clearColor(0.094, 0.094, 0.094, 1);   // --surface #181818
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-  const ctr = CTR;
+  // The sheet occupies the bottom of the stage, so the model is framed
+  // against the visible area above it rather than the whole canvas.
+  const sheet = document.querySelector(".sheet");
+  const lift = sheet ? (sheet.getBoundingClientRect().height / cv.clientHeight) : 0;
+  const ctr = [CTR[0], CTR[1], CTR[2] - lift * 190];
   const eye = [ctr[0] + dist * Math.cos(el) * Math.sin(az),
                ctr[1] + dist * Math.cos(el) * Math.cos(az),
                ctr[2] + dist * Math.sin(el)];
@@ -365,42 +370,300 @@ window.__aibo = {
   },
 };
 
-/* --------------------------------------------------------------- ui ---- */
-function syncButtons() {
-  document.querySelectorAll(".mood").forEach(b =>
-    b.classList.toggle("on", b.dataset.k === mood));
-}
+
+/* =====================================================================
+ * UI
+ * ===================================================================== */
+
+const BENEFITS = [
+  ["Leans toward the talker",
+   "An INMP441 on the front wall picks direction. The arm turns to whoever is speaking rather than waiting to be addressed."],
+  ["Answers out loud",
+   "A MAX98357A drives a 40 by 20 mm oval. The whole tub is its back volume, 749 cm3 of it, so it does not sound like a phone."],
+  ["Nods, perks up, sulks",
+   "Four joints driven through a spring damped just under critical. The overshoot is what makes a nod read as a nod."],
+  ["One real button",
+   "A single Cherry MX in the lid with a printed cap. That is the entire interface. There is no screen and no app."],
+  ["Nothing leaves the desk",
+   "Wake word inference runs on the ESP32-S3. No audio is uploaded, because there is nowhere for it to go."],
+  ["Rebuilds from one file",
+   "Every dimension is a parameter. Change the servo, run the build, print the new tub."],
+];
+
+const FAQ = [
+  ["Do I need anything besides a printer?",
+   "Three MG996R servos, one SG90, an ESP32-S3, a MAX98357A amp, an INMP441 microphone, a 40 by 20 mm oval driver, one Cherry MX switch, plus 15 M3 screws with heat set inserts and 5 M2 self tappers."],
+  ["Will it fit my printer?",
+   "Every part fits a Bambu A1 mini, which is the smallest bed this was designed against. The widest part is the tub at 160 mm and the tallest is an arm segment at 154 mm."],
+  ["Does anything need supports?",
+   "One thing. The shade collar sits at 51 degrees off vertical, which most printers bridge and some will not. Everything else measured clean under an overhang audit that reads the actual mesh."],
+  ["How long does it take to print?",
+   "Roughly 492 cm3 of plastic, about 610 g in PLA, spread over nine plates. The tub is the long one at about eight hours; the small parts plate is under two."],
+  ["What if my servo is a clone with different dimensions?",
+   "Torque goes through a cross slot rather than the horn screws, so clone screw patterns do not matter. If the body differs, edit the four numbers in the params file and rebuild."],
+  ["Can I print the screws too?",
+   "The arm keepers already are. They are M6 with a 2 mm pitch, coarse enough to survive a 0.4 mm nozzle, which a real M3 thread is not. The other 15 fasteners are metal."],
+  ["Is the CAD really open?",
+   "Yes. It is pure Python with two dependencies, no OpenSCAD and no CadQuery, and the STLs are in the repo with direct download links."],
+  ["What state is the project in?",
+   "The geometry is audited and the models are complete. Several component dimensions still come from listings rather than calipers, so measure your parts before printing the tub."],
+];
+
+/* Play a movement by name. The conversation drives this; there is no manual
+ * chip row on the character stage. */
+function play(k) { if (MOODS[k]) { mood = k; moodT = 0; } }
+
+/* ---- voice -----------------------------------------------------------
+ * Pre-rendered mp3, not speechSynthesis. lisa.locomotive.ca does the same
+ * thing -- its network log is a bank of lisa.intro.3.mp3 style files -- and
+ * for the same reason: the browser voice is robotic, differs on every
+ * machine, and on some has no usable English voice at all. cad/build_voice.py
+ * renders the bank; this only ever plays audio.
+ *
+ * Off until asked for. Browsers block unprompted audio anyway, and a page
+ * that starts talking at you is hostile. */
+const voice = {
+  on: false, bank: null, cur: null,
+  async load() {
+    try { this.bank = (await (await fetch("./voice/lines.json")).json()).lines; }
+    catch { this.bank = null; }
+  },
+  play(key, onEnd) {
+    this.stop();
+    if (!this.on || !this.bank || !this.bank[key]) { onEnd && onEnd(); return; }
+    const vs = this.bank[key];
+    const pick = vs[Math.floor(Math.random() * vs.length)];
+    const a = new Audio(pick.src);
+    a.volume = 0.9;
+    a.onended = () => onEnd && onEnd();
+    a.onerror = () => onEnd && onEnd();
+    this.cur = a;
+    a.play().catch(() => onEnd && onEnd());
+  },
+  stop() { if (this.cur) { this.cur.pause(); this.cur = null; } },
+};
+
+/* ---- the conversation ----------------------------------------------
+ * A graph, not a queue: every answer returns to the menu, and the way out is
+ * always on screen. `say` is the voice key AND the id of the line text, so a
+ * line can never drift from its audio. */
+const SCRIPT = {
+  intro:  { say: "intro",
+            chips: [["How does it move?", "move"], ["What do I need?", "need"],
+                    ["How long to print?", "print"], ["Why?", "why"],
+                    ["Send me the files", "signup", true]] },
+  menu:   { say: "menu", chips: null },   // chips filled from intro
+  move:   { say: "move", back: true },
+  need:   { say: "need", back: true },
+  print:  { say: "print", back: true },
+  why:    { say: "why", back: true },
+};
+
+const talk = {
+  node: "intro", timer: null, answers: {}, step: null,
+  el: {},
+
+  boot() {
+    this.el = { line: $("#line"), chips: $("#chips"), err: $("#conv-err") };
+    $("#restart").onclick = () => { this.answers = {}; this.go("intro", "again"); };
+    const on = $("#snd-on"), off = $("#snd-off");
+    const set = v => {
+      voice.on = v;
+      on.setAttribute("aria-pressed", String(v));
+      off.setAttribute("aria-pressed", String(!v));
+      if (!v) voice.stop();
+    };
+    on.onclick = () => { set(true); voice.play(this.lastKey); };
+    off.onclick = () => set(false);
+    this.go("intro");
+  },
+
+  /* Which movement goes with which line. The character reacting to its own
+     words is what makes it read as one thing rather than a model next to a
+     transcript. */
+  moodFor(key) {
+    return ({ intro: "perk", again: "perk", menu: "curious",
+              move: "nod", need: "curious", print: "curious", why: "sulk",
+              ask_name: "curious", ask_printer: "curious",
+              ask_email: "curious", bad_email: "sulk", done: "nod"
+            })[key] || "curious";
+  },
+
+  /* Type the line and start its audio together. The typing is the primary
+     channel: if audio is off or fails, nothing waits on it. */
+  type(text, key, after) {
+    clearInterval(this.timer);
+    const el = this.el.line;
+    el.textContent = ""; el.classList.add("typing"); el.classList.remove("done");
+    this.lastKey = key;
+    play(this.moodFor(key));
+    voice.play(key);
+    let i = 0;
+    this.timer = setInterval(() => {
+      el.textContent = text.slice(0, ++i);
+      if (i >= text.length) {
+        clearInterval(this.timer);
+        el.classList.remove("typing"); el.classList.add("done");
+        after && after();
+      }
+    }, 16);
+  },
+
+  lineFor(key) {
+    const vs = voice.bank && voice.bank[key];
+    return vs ? vs[0].text : "";
+  },
+
+  chips(list) {
+    this.el.chips.innerHTML = list.map(([label, to, go]) =>
+      `<button class="chip${go ? " go" : ""}" type="button" data-to="${to}">${label}</button>`
+    ).join("");
+    const bs = [...this.el.chips.querySelectorAll(".chip")];
+    bs.forEach((b, k) => {
+      setTimeout(() => b.classList.add("in"), 60 * k);
+      b.onclick = () => this.go(b.dataset.to);
+    });
+  },
+
+  field(placeholder, type, onSubmit) {
+    this.el.chips.innerHTML =
+      `<input id="conv-in" type="${type}" placeholder="${placeholder}"
+              aria-label="${placeholder}" autocomplete="${type === "email" ? "email" : "name"}">
+       <button class="chip go" type="button" id="conv-go">Continue</button>`;
+    const i = $("#conv-in"), b = $("#conv-go");
+    setTimeout(() => { i.classList.add("in"); b.classList.add("in"); }, 40);
+    const send = () => onSubmit(i.value);
+    b.onclick = send;
+    i.onkeydown = e => { if (e.key === "Enter") { e.preventDefault(); send(); } };
+    i.focus({ preventScroll: true });
+  },
+
+  go(node, sayKey) {
+    this.el.err.textContent = "";
+    this.el.chips.innerHTML = "";
+    if (node === "signup") return this.askName();
+    const n = SCRIPT[node] || SCRIPT.intro;
+    const key = sayKey || n.say;
+    this.type(this.lineFor(key), key, () => {
+      const opts = n.back
+        ? [...SCRIPT.intro.chips.filter(c => c[1] !== node)]
+        : SCRIPT.intro.chips;
+      this.chips(opts);
+    });
+  },
+
+  askName() {
+    this.type(this.lineFor("ask_name"), "ask_name", () =>
+      this.field("Your name", "text", v => {
+        if (v.trim().length < 2) { this.el.err.textContent = "That is a little short."; return; }
+        this.answers.name = v.trim();
+        this.askPrinter();
+      }));
+  },
+  askPrinter() {
+    this.type(this.lineFor("ask_printer"), "ask_printer", () => {
+      const opts = ["Bambu A1 mini", "Another Bambu", "Prusa", "Something else", "No printer yet"];
+      this.el.chips.innerHTML = opts.map(o =>
+        `<button class="chip" type="button" data-v="${o}">${o}</button>`).join("");
+      [...this.el.chips.querySelectorAll(".chip")].forEach((b, k) => {
+        setTimeout(() => b.classList.add("in"), 60 * k);
+        b.onclick = () => { this.answers.printer = b.dataset.v; this.askEmail(); };
+      });
+    });
+  },
+  askEmail() {
+    this.type(this.lineFor("ask_email"), "ask_email", () =>
+      this.field("you@example.com", "email", v => {
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim())) {
+          this.el.err.textContent = this.lineFor("bad_email") || "That does not look like an email address.";
+          voice.play("bad_email");
+          $("#conv-in").setAttribute("aria-invalid", "true");
+          return;
+        }
+        this.answers.email = v.trim();
+        this.finish();
+      }));
+  },
+  finish() {
+    const KEY = "aibo-waitlist";
+    const list = JSON.parse(localStorage.getItem(KEY) || "[]");
+    if (!list.some(x => x && x.email === this.answers.email)) list.push(this.answers);
+    localStorage.setItem(KEY, JSON.stringify(list));
+    this.type(this.lineFor("done"), "done", () => {
+      this.el.chips.innerHTML =
+        `<span class="chip in" style="cursor:default">Saved in this browser only</span>
+         <a class="chip go in" href="./viewer.html">Open the parts viewer</a>`;
+    });
+  },
+};
+
+/* ---- mood chips ---- */
 function buildMoods() {
+  if (!$("#moods")) return;          // the character stage has no chip row
   $("#moods").innerHTML = Object.entries(MOODS)
     .filter(([k]) => k !== "idle")
-    .map(([k, m]) => `<button class="mood" data-k="${k}">${m.label}</button>`).join("");
+    .map(([k, m]) => `<button class="mood" type="button" data-k="${k}"
+        aria-pressed="false">${m.label}</button>`).join("");
   document.querySelectorAll(".mood").forEach(b => b.onclick = () => {
     mood = b.dataset.k; moodT = 0; syncButtons();
   });
 }
+function syncButtons() {
+  if (!document.querySelector(".mood")) return;
+  document.querySelectorAll(".mood").forEach(b =>
+    b.setAttribute("aria-pressed", String(b.dataset.k === mood)));
+}
 
-const TICKER = ["NODS WHEN YOU TALK", "SULKS WHEN IGNORED", "22 PRINTED PARTS",
-  "FITS AN A1 MINI", "ONE SCREW YOU PRINT", "FOUR SERVOS", "ONE WEEKEND BUILD",
-  "OPEN SOURCE CAD"];
-$("#run").innerHTML = [...TICKER, ...TICKER]
-  .map(t => `<span>${t} <i>✦</i></span>`).join("");
+/* ---- tagline: words light one at a time, in reading order ---- */
+function taglineReveal() {
+  const el = $("#tagline");
+  if (!el) return;
+  const words = el.textContent.trim().split(/\s+/);
+  el.innerHTML = words.map(w => `<w>${w}</w>`).join(" ");
+  const ws = [...el.querySelectorAll("w")];
+  if (!("IntersectionObserver" in window)) {
+    ws.forEach(w => w.classList.add("lit")); return;
+  }
+  const io = new IntersectionObserver(es => {
+    es.forEach(e => {
+      if (!e.isIntersecting) return;
+      const k = ws.indexOf(e.target);
+      setTimeout(() => e.target.classList.add("lit"), Math.min(k, 24) * 26);
+      io.unobserve(e.target);
+    });
+  }, { rootMargin: "0px 0px -22% 0px", threshold: 1 });
+  ws.forEach(w => io.observe(w));
+}
 
-const CAPS = [
-  ["01", "Nods and shakes", "Head tilt plus a shoulder counter-move. The overshoot is what sells it as alive rather than actuated."],
-  ["02", "Follows the room", "INMP441 mic on the front wall picks direction; the arm leans toward whoever is talking."],
-  ["03", "Wakes to a word", "ESP32-S3 runs wake-word inference on-device. Nothing leaves the desk."],
-  ["04", "Talks back", "MAX98357A into a 40 × 20 driver, with the whole 749 cm³ tub as its back volume."],
-  ["05", "Sulks", "Ignore it long enough and the whole arm folds down. It is a posture, not a light."],
-  ["06", "Perks up", "Fast extension on all four joints — the move it makes when it notices you."],
-  ["07", "One real button", "A single Cherry MX on the lid. Blue cap. That is the entire interface."],
-  ["08", "Reaches 345 mm", "316 mm tall in its neutral pose, and it can put the shade anywhere in that radius."],
-  ["09", "Rebuilds itself", "Every dimension is one parameter. Change the servo, re-run, re-print."],
-];
-$("#caps").innerHTML = CAPS.map(([n, h, p]) =>
-  `<div class="cap"><div class="n">${n}</div><h3>${h}</h3><p>${p}</p></div>`).join("");
+/* ---- scroll reveal ---- */
+function revealOnScroll() {
+  const els = [...document.querySelectorAll(
+    "section .eyebrow, section h2, section .lede, .card, .tablewrap, .grid > *, #conv")];
+  if (!("IntersectionObserver" in window)) return;   // leave everything visible
+  els.forEach(e => e.classList.add("reveal"));
+  const io = new IntersectionObserver(es => {
+    es.filter(e => e.isIntersecting).forEach((e, k) => {
+      e.target.style.transitionDelay = Math.min(k * 60, 240) + "ms";
+      e.target.classList.add("in");
+      io.unobserve(e.target);
+    });
+  }, { rootMargin: "0px 0px -8% 0px", threshold: 0.06 });
+  els.forEach(e => io.observe(e));
+}
 
 /* ------------------------------------------------------------- boot ---- */
 (async function boot() {
+  $("#benefits").innerHTML = BENEFITS.map(([h, p]) =>
+    `<article class="card"><h3>${h}</h3><p>${p}</p></article>`).join("");
+
+  $("#faqlist").innerHTML = FAQ.map(([q, a]) =>
+    `<details><summary>${q}<span class="chev" aria-hidden="true">⌄</span></summary>
+     <p>${a}</p></details>`).join("");
+
+  await voice.load();
+  talk.boot();
+  taglineReveal();
+
   try {
     const [nodes, rig, spec] = await Promise.all([
       loadGLB("./aibo-rig.glb"),
@@ -409,8 +672,7 @@ $("#caps").innerHTML = CAPS.map(([n, h, p]) =>
     ]);
     RIG = rig; RIG.yokeBelow = 16.0;
     // The rig also carries the loose-parts tray for the viewer. The hero is a
-    // portrait of the lamp, so they are dropped here rather than floating
-    // beside it.
+    // portrait of the lamp, so they are dropped here.
     const loose = new Set(rig.loose || []);
     PARTS = upload(nodes.filter(n => !loose.has(n.name)));
     PARTS.forEach(p => ROLE.set(p.name, p));
@@ -418,74 +680,30 @@ $("#caps").innerHTML = CAPS.map(([n, h, p]) =>
 
     const S = spec.stats;
     $("#stats").innerHTML = [
-      [S.parts, "printed parts"], [S.interfaces, "interfaces"],
-      [S.joints, "driven joints"], [S.plates, "print plates"],
-      [S.height_mm + "mm", "tall, posed"], [S.reach_mm + "mm", "reach"],
-      [S.plastic_cm3, "cm³ of plastic"], [S.m3 + "+" + S.m2, "M3 + M2 screws"],
-    ].map(([b, s]) => `<div class="stat"><b>${b}</b><span>${s}</span></div>`).join("");
+      [S.parts, "printed parts"], [S.plates, "print plates"],
+      [S.joints, "driven joints"], [S.height_mm + " mm", "tall in pose"],
+      [S.reach_mm + " mm", "reach"], [S.plastic_cm3 + " cm3", "of plastic"],
+      [S.m3 + " + " + S.m2, "M3 and M2 screws"], [S.bed_mm + " mm", "bed needed"],
+    ].map(([b, s]) =>
+      `<div class="card"><h3 class="num">${b}</h3><p>${s}</p></div>`).join("");
 
-    $("#parts-tbl").innerHTML =
-      "<tr><th>part</th><th>size mm</th><th>cm³</th><th>A1 mini</th></tr>" +
-      spec.parts.map(p => `<tr><td class="nm">${p.name}</td>
-        <td class="mono">${p.mm[0]} × ${p.mm[1]} × ${p.mm[2]}</td>
-        <td class="mono">${p.cm3}</td>
-        <td><span class="pill">${p.fits ? "fits" : "NO"}</span></td></tr>`).join("");
-
-    $("#iface-tbl").innerHTML =
-      "<tr><th>interface</th><th>what wants to separate</th><th>held by</th></tr>" +
-      spec.interfaces.map(i => `<tr><td class="nm">${i.a} → ${i.b}</td>
-        <td>${i.dof}</td><td>${i.held_by}</td></tr>`).join("");
+    $("#parts-table").innerHTML =
+      `<thead><tr><th>Part</th><th>Size in mm</th><th>Volume</th><th>A1 mini</th></tr></thead>
+       <tbody>` + spec.parts.map(p =>
+        `<tr><td class="k">${p.name}</td>
+         <td class="num">${p.mm[0]} × ${p.mm[1]} × ${p.mm[2]}</td>
+         <td class="num">${p.cm3} cm3</td>
+         <td>${p.fits ? "Fits" : "Does not fit"}</td></tr>`).join("") + "</tbody>";
 
     fitCamera();
     buildMoods(); syncButtons();
+    const sk = $("#skel");
+    sk.style.opacity = "0";
+    setTimeout(() => sk.style.display = "none", 420);
     revealOnScroll();
-    const ld = $("#load");
-    ld.style.opacity = "0";
-    setTimeout(() => ld.style.display = "none", 260);
     requestAnimationFrame(frame);
   } catch (e) {
-    $("#load").textContent = "COULD NOT LOAD: " + e.message;
+    $("#skel").textContent = "The model could not load. " + e.message;
     console.error(e);
   }
 })();
-
-/* Scroll reveal. Cards, stats and section bodies used to appear fully formed
- * the moment they crossed the fold. This bridges that with a 12 px rise and a
- * fade, staggered 55 ms across a group.
- *
- * Strictly decorative, so it is built to be harmless: elements are already
- * interactive before it runs, anything still unrevealed when the observer is
- * unavailable simply shows, and reduced-motion drops the travel in CSS. */
-function revealOnScroll() {
-  const groups = [
-    ...document.querySelectorAll("#caps .cap"),
-    ...document.querySelectorAll("#stats .stat"),
-    ...document.querySelectorAll("section .eyebrow, section h2, .scroller, .wait > div"),
-  ];
-  if (!("IntersectionObserver" in window)) return;   // leave them visible
-  groups.forEach(el => el.classList.add("reveal"));
-  const io = new IntersectionObserver((entries) => {
-    const hit = entries.filter(e => e.isIntersecting);
-    hit.forEach((e, i) => {
-      const el = e.target;
-      el.style.transitionDelay = Math.min(i * 55, 220) + "ms";
-      el.classList.add("in");
-      io.unobserve(el);
-    });
-  }, { rootMargin: "0px 0px -8% 0px", threshold: 0.08 });
-  groups.forEach(el => io.observe(el));
-}
-
-/* waitlist — local only, and the page says so */
-const KEY = "aibo-waitlist";
-const list = () => JSON.parse(localStorage.getItem(KEY) || "[]");
-$("#wcount").textContent = list().length;
-$("#wf").addEventListener("submit", e => {
-  e.preventDefault();
-  const v = $("#em").value.trim().toLowerCase();
-  const L = list();
-  if (v && !L.includes(v)) { L.push(v); localStorage.setItem(KEY, JSON.stringify(L)); }
-  $("#wcount").textContent = L.length;
-  $("#ok").classList.add("show");
-  $("#em").value = "";
-});

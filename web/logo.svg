@@ -1,12 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 316 92" role="img" aria-label="AIBO">
-  <!-- Wordmark. Letters are paths, not type: the site's display face is a
-       system stack and a logo cannot depend on which one a machine happens
-       to resolve.
-
-       Everything structural uses currentColor so one file works on paper and
-       on blue by setting `color`. The first version relied on filter:invert
-       for the dark variant, which flipped the pink dot to GREEN, the one
-       colour that is off the table. Fixed palette stays fixed. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 292 92" role="img" aria-label="AIBO">
+  <!-- Wordmark. The O is a LETTER first and a lamp second.
+       The previous version hung an arm and a base off it, which made it read
+       as a magnifying glass sitting next to the word rather than the fourth
+       letter of it. Now it matches the cap height and stroke weight of the
+       other three, sits on the same baseline, and the only lamp reference
+       left is the lit centre. It reads AIBO before it reads anything else. -->
   <g fill="currentColor">
     <path d="M4 78 L27 8 h17 l23 70 h-19 l-3.6-12H26.6L23 78 Z M30.4 51 h10.2 L35.5 33 Z"/>
     <path d="M75 8 h18 v70 h-18 Z"/>
@@ -14,14 +12,13 @@
              7.8 2.2 12.2 8.2 12.2 16.6 0 11.8-9 19.6-24 19.6 H103 Z
              M121 35 h10.8 c4.8 0 7.4-2.2 7.4-6 0-3.9-2.6-5.8-7.4-5.8H121 Z
              M121 62.6 h12 c5.2 0 8-2.2 8-6.4 0-4.1-2.8-6.2-8-6.2H121 Z"/>
+    <!-- O: same 8..78 cap height as A, I and B. Ring drawn as one path with
+         an inner counter so it inherits currentColor like the rest. -->
+    <path d="M170 43 a35 35 0 1 1 70 0 a35 35 0 1 1 -70 0 Z
+             M188 43 a17 17 0 1 0 34 0 a17 17 0 1 0 -34 0 Z"
+          fill-rule="evenodd"/>
   </g>
-
-  <!-- O as the lamp: shade ring, lit centre, and enough arm and base under it
-       that it reads as a lamp rather than a lollipop -->
-  <circle cx="238" cy="41" r="32" fill="#4D17F5"
-          stroke="currentColor" stroke-width="7"/>
-  <circle cx="238" cy="41" r="12.5" fill="#FA9DCD"/>
-  <path d="M262 63 L279 74" fill="none" stroke="currentColor" stroke-width="11"
-        stroke-linecap="round"/>
-  <rect x="258" y="79" width="46" height="11" rx="5.5" fill="currentColor"/>
+  <!-- the lit centre: the whole lamp reference, and it sits INSIDE the letter -->
+  <circle cx="205" cy="43" r="10.5" fill="#4D17F5"/>
+  <circle cx="205" cy="43" r="4.4" fill="#FA9DCD"/>
 </svg>

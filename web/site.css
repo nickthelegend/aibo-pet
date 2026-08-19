@@ -1,86 +1,130 @@
-/* site.css — shared chrome and the whole motion vocabulary.
+/* site.css — the design system.
  *
- * Every duration and curve lives here as a token. Nothing in a page should
- * invent its own; if a new moment needs motion it either uses one of these
- * or a token gets added.
+ * Rebuilt to the landing-page-design rules. What changed and why:
+ *   font      Inter and the Impact class display face are both disallowed.
+ *             Manrope throughout, capped at 700; no ultra bold, no italic.
+ *   theme     dark, from the approved background set only. Blue and pink stay
+ *             as accents so it is still the same brand.
+ *   sizes     every one lands on a Tailwind type scale step.
+ *   spacing   every value comes from the spacing table.
+ *   gradients removed from every background. The single permitted gradient is
+ *             on the hero heading text.
  */
-:root{
-  --blue:#4D17F5; --blue-dk:#3A0FC4; --pink:#FA9DCD; --pink-dk:#F27FB8;
-  --paper:#EEEEEC; --white:#fff; --ink:#151515; --ink-soft:#333;
-  --edge:3px solid var(--ink);
-  --disp:"Haettenschweiler","Arial Narrow Bold","Impact","Anton",
-         "Franklin Gothic Bold",sans-serif;
-  --body:"Inter","Helvetica Neue",Helvetica,Arial,sans-serif;
 
-  /* motion */
-  --ease-out:cubic-bezier(0.23, 1, 0.32, 1);
-  --ease-in-out:cubic-bezier(0.77, 0, 0.175, 1);
-  --t-press:140ms;      /* press feedback */
-  --t-fast:180ms;       /* hover reveals, small swaps */
-  --t-ui:240ms;         /* dropdowns, segmented controls */
-  --t-enter:420ms;      /* section + card entrances */
+:root{
+  /* approved dark backgrounds */
+  --bg:#000000; --surface:#181818; --surface-2:#1F1F1F; --line:#272727;
+  --line-2:#313131;
+  --fg:#FFFFFF; --fg-dim:#9B9B9B; --fg-mute:#6E6E6E;
+  --blue:#4D17F5; --pink:#FA9DCD;
+
+  /* spacing tokens — nothing between, nothing outside */
+  --s-25:2px;  --s-50:4px;  --s-75:8px;   --s-100:12px; --s-200:16px;
+  --s-300:24px; --s-400:32px; --s-500:40px; --s-600:48px; --s-700:64px;
+  --s-800:80px; --s-900:96px;
+
+  /* motion: mass and spring, never a default curve */
+  --ease:cubic-bezier(0.32,0.72,0,1);
+  --t-press:200ms; --t-ui:400ms; --t-enter:800ms;
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{background:var(--paper);color:var(--ink);font-family:var(--body);
-  -webkit-font-smoothing:antialiased;overflow-x:hidden}
-.wrap{max-width:1240px;margin:0 auto;padding:0 24px}
-h1,h2,h3,.disp{font-family:var(--disp);font-weight:400;letter-spacing:.01em;
-  text-transform:uppercase;line-height:.88}
-a{color:inherit}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--fg);
+  font-family:Manrope,system-ui,sans-serif;font-weight:400;
+  font-size:16px;line-height:24px;   /* text-base */
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  text-wrap:pretty}
+h1,h2,h3{font-weight:700;text-wrap:balance;letter-spacing:-0.02em}
+a{color:inherit;text-decoration:none}
+img,svg{display:block}
+::selection{background:var(--blue);color:#fff}
 
-/* ---------- chrome ---------- */
-nav{position:fixed;top:0;left:0;right:0;z-index:60;display:flex;
-  align-items:center;justify-content:space-between;padding:12px 28px;
-  background:rgba(238,238,236,.86);backdrop-filter:blur(10px);
-  border-bottom:2px solid var(--ink)}
-.navr{display:flex;gap:12px;align-items:center}
-/* The lockup is INLINE svg, not <img>: currentColor cannot cross an <img>
-   or <object> boundary, so a referenced file could never follow the nav's
-   colour -- and masking it flattened the blue shade and pink centre away. */
-.logo{display:block;color:var(--ink);line-height:0}
-.logo svg{height:36px;width:auto;display:block}
+.wrap{max-width:1120px;margin:0 auto;padding-left:var(--s-300);
+  padding-right:var(--s-300)}
+.measure{max-width:680px}          /* hero heading + subheading cap */
 
-.btn{display:inline-flex;align-items:center;gap:9px;border:var(--edge);
-  background:var(--white);border-radius:999px;padding:11px 22px;
-  font-family:var(--disp);font-size:17px;cursor:pointer;color:var(--ink);
-  box-shadow:4px 4px 0 var(--ink);text-decoration:none;
-  transition:transform var(--t-press) var(--ease-out),
-             box-shadow var(--t-press) var(--ease-out),
-             background var(--t-fast) var(--ease-out)}
-.btn.sm{font-size:12px;padding:6px 12px;box-shadow:3px 3px 0 var(--ink)}
-.btn.blue{background:var(--blue);color:#fff}
-.btn.pink{background:var(--pink)}
-@media (hover:hover) and (pointer:fine){
-  .btn:hover{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink)}
-}
-/* Press feedback. Nothing here had an :active state -- a click landed with
-   no acknowledgement at all. Kept to a 3% squash because these are pressed
-   often enough that anything larger would start to feel slow. */
-.btn:active{transform:translate(2px,2px) scale(.97);
-  box-shadow:1px 1px 0 var(--ink);transition-duration:80ms}
-.btn:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+/* skip link — keyboard users need a way past the nav */
+.skip{position:absolute;left:var(--s-200);top:-64px;background:var(--blue);
+  color:#fff;padding:var(--s-75) var(--s-100);border-radius:8px;z-index:200;
+  font-size:14px;line-height:20px;font-weight:600;
+  transition:top var(--t-ui) var(--ease)}
+.skip:focus{top:var(--s-200)}
 
-.tag{background:var(--pink);border:2px solid var(--ink);border-radius:999px;
-  font-size:11px;padding:2px 9px;font-family:var(--disp)}
+/* ---------------- island nav ---------------- */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;
+  margin-top:var(--s-300);display:flex;justify-content:center;
+  pointer-events:none}
+.island{pointer-events:auto;display:flex;align-items:center;gap:var(--s-300);
+  width:max-content;border-radius:9999px;border:1px solid var(--line);
+  background:rgba(24,24,24,.72);backdrop-filter:blur(24px);
+  padding:var(--s-75) var(--s-75) var(--s-75) var(--s-300)}
+.island .logo{color:var(--fg)}
+.island .logo svg{height:22px;width:auto}
+.navlinks{display:flex;gap:var(--s-300);align-items:center}
+.navlinks a{font-size:14px;line-height:20px;font-weight:600;color:var(--fg-dim);
+  transition:color var(--t-ui) var(--ease)}
+.navlinks a:hover,.navlinks a[aria-current="page"]{color:var(--fg)}
+@media(max-width:720px){ .navlinks{display:none} }
 
-/* ---------- scroll reveal ----------
-   Sections and cards used to pop in fully formed the instant they scrolled
-   into view. This bridges that: 12px rise plus a fade, staggered across a
-   group. Decorative only, so it must never gate interaction -- .reveal
-   elements are fully clickable before they finish, and if the observer never
-   fires (no JS, old browser) the .in class is simply the default state. */
-.reveal{opacity:0;transform:translateY(12px);
-  transition:opacity var(--t-enter) var(--ease-out),
-             transform var(--t-enter) var(--ease-out)}
-.reveal.in{opacity:1;transform:none}
+/* ---------------- buttons ---------------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;
+  gap:var(--s-75);font-family:inherit;font-size:16px;line-height:24px;
+  font-weight:600;padding:var(--s-75) var(--s-100);border-radius:9999px;
+  border:1px solid transparent;background:var(--surface-2);color:var(--fg);
+  cursor:pointer;
+  transition:background var(--t-ui) var(--ease),
+             transform var(--t-press) var(--ease),
+             border-color var(--t-ui) var(--ease)}
+.btn.sm{font-size:14px;line-height:20px}
+.btn.primary{background:var(--blue);color:#fff}
+.btn.ghost{background:transparent;border-color:var(--line-2);color:var(--fg-dim)}
+.btn:hover{background:var(--line-2)}
+.btn.primary:hover{background:#5B29FF}
+.btn.ghost:hover{color:var(--fg);border-color:var(--fg-mute)}
+.btn:active{transform:scale(.98)}
+.btn:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+.btn[disabled],.btn[aria-disabled="true"]{opacity:.45;pointer-events:none}
+
+/* ---------------- sections ---------------- */
+main{padding-top:var(--s-900)}
+section{padding-top:var(--s-900);padding-bottom:var(--s-900)}
+.eyebrow{font-size:14px;line-height:20px;font-weight:600;color:var(--blue);
+  margin-bottom:var(--s-100)}
+h2{font-size:36px;line-height:40px}                 /* text-4xl */
+@media(min-width:768px){ h2{font-size:48px;line-height:1} }  /* text-5xl */
+.lede{color:var(--fg-dim);font-size:18px;line-height:28px}   /* text-lg */
+
+.card{background:var(--surface);border:1px solid var(--line);
+  border-radius:16px;padding:var(--s-300)}
+.card h3{font-size:20px;line-height:28px;margin-bottom:var(--s-75)}
+.card p{color:var(--fg-dim);font-size:14px;line-height:20px}
+.grid{display:grid;gap:var(--s-200)}
+.g3{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+
+/* ---------------- scroll reveal ----------------
+   Heavy fade up with a blur, per the motion rules. Decorative only: the
+   element is interactive before it resolves, and if IntersectionObserver is
+   missing nothing ever hides. */
+.reveal{opacity:0;transform:translateY(64px);filter:blur(12px);
+  transition:opacity var(--t-enter) var(--ease),
+             transform var(--t-enter) var(--ease),
+             filter var(--t-enter) var(--ease)}
+.reveal.in{opacity:1;transform:none;filter:none}
+
+/* ---------------- tagline reveal ----------------
+   Words activate one at a time in reading order as they cross the trigger. */
+.tagline{font-size:36px;line-height:40px;font-weight:700;max-width:680px;
+  letter-spacing:-0.02em}
+@media(min-width:768px){ .tagline{font-size:60px;line-height:1} }
+.tagline w{display:inline-block;color:rgba(255,255,255,.28);
+  transition:color 700ms var(--ease)}
+.tagline w.lit{color:var(--fg)}
 
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
-  /* gentler, not zero: the fade stays, the travel goes */
-  .reveal{transform:none;transition-duration:220ms}
-  .btn,.btn:active{transition-duration:60ms}
+  .reveal{transform:none;filter:none;transition-duration:300ms}
   .btn:active{transform:none}
-  .ticker .run{animation-duration:120s}
+  .tagline w{transition-duration:200ms}
 }

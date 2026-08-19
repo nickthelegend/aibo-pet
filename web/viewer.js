@@ -8,7 +8,7 @@
  * Download links point at raw.githubusercontent.com on refs/heads/main, so
  * a future rebuild replaces what they serve instead of breaking them.
  */
-import { M4, loadGLB, makeGL } from "./gl.js?v=047c5fce";
+import { M4, loadGLB, makeGL } from "./gl.js?v=3d7212e4";
 
 const $ = s => document.querySelector(s);
 const cv = $("#vc");
@@ -156,7 +156,7 @@ function frame() {
     cv.width = w * dpr; cv.height = h * dpr;
   }
   gl.viewport(0, 0, cv.width, cv.height);
-  gl.clearColor(0.933, 0.933, 0.925, 1);
+  gl.clearColor(0.094, 0.094, 0.094, 1);   // --surface #181818
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
   const eye = [CTR[0] + dist * Math.cos(el) * Math.sin(az),
