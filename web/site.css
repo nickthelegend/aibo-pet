@@ -1,0 +1,86 @@
+/* site.css — shared chrome and the whole motion vocabulary.
+ *
+ * Every duration and curve lives here as a token. Nothing in a page should
+ * invent its own; if a new moment needs motion it either uses one of these
+ * or a token gets added.
+ */
+:root{
+  --blue:#4D17F5; --blue-dk:#3A0FC4; --pink:#FA9DCD; --pink-dk:#F27FB8;
+  --paper:#EEEEEC; --white:#fff; --ink:#151515; --ink-soft:#333;
+  --edge:3px solid var(--ink);
+  --disp:"Haettenschweiler","Arial Narrow Bold","Impact","Anton",
+         "Franklin Gothic Bold",sans-serif;
+  --body:"Inter","Helvetica Neue",Helvetica,Arial,sans-serif;
+
+  /* motion */
+  --ease-out:cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out:cubic-bezier(0.77, 0, 0.175, 1);
+  --t-press:140ms;      /* press feedback */
+  --t-fast:180ms;       /* hover reveals, small swaps */
+  --t-ui:240ms;         /* dropdowns, segmented controls */
+  --t-enter:420ms;      /* section + card entrances */
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);
+  -webkit-font-smoothing:antialiased;overflow-x:hidden}
+.wrap{max-width:1240px;margin:0 auto;padding:0 24px}
+h1,h2,h3,.disp{font-family:var(--disp);font-weight:400;letter-spacing:.01em;
+  text-transform:uppercase;line-height:.88}
+a{color:inherit}
+
+/* ---------- chrome ---------- */
+nav{position:fixed;top:0;left:0;right:0;z-index:60;display:flex;
+  align-items:center;justify-content:space-between;padding:12px 28px;
+  background:rgba(238,238,236,.86);backdrop-filter:blur(10px);
+  border-bottom:2px solid var(--ink)}
+.navr{display:flex;gap:12px;align-items:center}
+/* The lockup is INLINE svg, not <img>: currentColor cannot cross an <img>
+   or <object> boundary, so a referenced file could never follow the nav's
+   colour -- and masking it flattened the blue shade and pink centre away. */
+.logo{display:block;color:var(--ink);line-height:0}
+.logo svg{height:36px;width:auto;display:block}
+
+.btn{display:inline-flex;align-items:center;gap:9px;border:var(--edge);
+  background:var(--white);border-radius:999px;padding:11px 22px;
+  font-family:var(--disp);font-size:17px;cursor:pointer;color:var(--ink);
+  box-shadow:4px 4px 0 var(--ink);text-decoration:none;
+  transition:transform var(--t-press) var(--ease-out),
+             box-shadow var(--t-press) var(--ease-out),
+             background var(--t-fast) var(--ease-out)}
+.btn.sm{font-size:12px;padding:6px 12px;box-shadow:3px 3px 0 var(--ink)}
+.btn.blue{background:var(--blue);color:#fff}
+.btn.pink{background:var(--pink)}
+@media (hover:hover) and (pointer:fine){
+  .btn:hover{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink)}
+}
+/* Press feedback. Nothing here had an :active state -- a click landed with
+   no acknowledgement at all. Kept to a 3% squash because these are pressed
+   often enough that anything larger would start to feel slow. */
+.btn:active{transform:translate(2px,2px) scale(.97);
+  box-shadow:1px 1px 0 var(--ink);transition-duration:80ms}
+.btn:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+
+.tag{background:var(--pink);border:2px solid var(--ink);border-radius:999px;
+  font-size:11px;padding:2px 9px;font-family:var(--disp)}
+
+/* ---------- scroll reveal ----------
+   Sections and cards used to pop in fully formed the instant they scrolled
+   into view. This bridges that: 12px rise plus a fade, staggered across a
+   group. Decorative only, so it must never gate interaction -- .reveal
+   elements are fully clickable before they finish, and if the observer never
+   fires (no JS, old browser) the .in class is simply the default state. */
+.reveal{opacity:0;transform:translateY(12px);
+  transition:opacity var(--t-enter) var(--ease-out),
+             transform var(--t-enter) var(--ease-out)}
+.reveal.in{opacity:1;transform:none}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  /* gentler, not zero: the fade stays, the travel goes */
+  .reveal{transform:none;transition-duration:220ms}
+  .btn,.btn:active{transition-duration:60ms}
+  .btn:active{transform:none}
+  .ticker .run{animation-duration:120s}
+}

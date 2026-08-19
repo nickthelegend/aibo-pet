@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 316 92" role="img" aria-label="AIBO">
+  <!-- Wordmark. Letters are paths, not type: the site's display face is a
+       system stack and a logo cannot depend on which one a machine happens
+       to resolve.
+
+       Everything structural uses currentColor so one file works on paper and
+       on blue by setting `color`. The first version relied on filter:invert
+       for the dark variant, which flipped the pink dot to GREEN, the one
+       colour that is off the table. Fixed palette stays fixed. -->
+  <g fill="currentColor">
+    <path d="M4 78 L27 8 h17 l23 70 h-19 l-3.6-12H26.6L23 78 Z M30.4 51 h10.2 L35.5 33 Z"/>
+    <path d="M75 8 h18 v70 h-18 Z"/>
+    <path d="M103 8 h31 c13.6 0 22 7.6 22 18.4 0 7.4-3.8 12.8-10 15.4
+             7.8 2.2 12.2 8.2 12.2 16.6 0 11.8-9 19.6-24 19.6 H103 Z
+             M121 35 h10.8 c4.8 0 7.4-2.2 7.4-6 0-3.9-2.6-5.8-7.4-5.8H121 Z
+             M121 62.6 h12 c5.2 0 8-2.2 8-6.4 0-4.1-2.8-6.2-8-6.2H121 Z"/>
+  </g>
+
+  <!-- O as the lamp: shade ring, lit centre, and enough arm and base under it
+       that it reads as a lamp rather than a lollipop -->
+  <circle cx="238" cy="41" r="32" fill="#4D17F5"
+          stroke="currentColor" stroke-width="7"/>
+  <circle cx="238" cy="41" r="12.5" fill="#FA9DCD"/>
+  <path d="M262 63 L279 74" fill="none" stroke="currentColor" stroke-width="11"
+        stroke-linecap="round"/>
+  <rect x="258" y="79" width="46" height="11" rx="5.5" fill="currentColor"/>
+</svg>

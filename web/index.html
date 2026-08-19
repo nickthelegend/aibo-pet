@@ -4,44 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>AIBO — a desk lamp with opinions</title>
+<link rel="icon" href="./mark.svg" type="image/svg+xml">
+<link rel="stylesheet" href="./site.css">
 <style>
-/* Palette lifted off byooooob.com: electric blue, pink, paper, ink.
-   No green anywhere -- that was explicit. */
-:root{
-  --blue:#4D17F5; --blue-dk:#3A0FC4; --pink:#FA9DCD; --pink-dk:#F27FB8;
-  --paper:#EEEEEC; --white:#fff; --ink:#151515; --ink-soft:#333;
-  --edge:3px solid var(--ink);
-  --disp:"Haettenschweiler","Arial Narrow Bold","Impact","Anton",
-         "Franklin Gothic Bold",sans-serif;
-  --body:"Inter","Helvetica Neue",Helvetica,Arial,sans-serif;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{background:var(--paper);color:var(--ink);font-family:var(--body);
-  -webkit-font-smoothing:antialiased;overflow-x:hidden}
-.wrap{max-width:1240px;margin:0 auto;padding:0 24px}
-h1,h2,h3,.disp{font-family:var(--disp);font-weight:400;letter-spacing:.01em;
-  text-transform:uppercase;line-height:.88}
-a{color:inherit}
-
-/* ---------- chrome ---------- */
-nav{position:fixed;top:0;left:0;right:0;z-index:60;display:flex;
-  align-items:center;justify-content:space-between;padding:14px 28px;
-  background:rgba(238,238,236,.82);backdrop-filter:blur(10px);
-  border-bottom:2px solid var(--ink)}
-.logo{font-family:var(--disp);font-size:26px;letter-spacing:.02em}
-.logo b{color:var(--blue)}
-.btn{display:inline-flex;align-items:center;gap:9px;border:var(--edge);
-  background:var(--white);border-radius:999px;padding:11px 22px;
-  font-family:var(--disp);font-size:17px;cursor:pointer;
-  box-shadow:4px 4px 0 var(--ink);text-decoration:none;
-  transition:transform .12s ease, box-shadow .12s ease}
-.btn:hover{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink)}
-.btn.blue{background:var(--blue);color:#fff}
-.btn.pink{background:var(--pink)}
-.tag{background:var(--pink);border:2px solid var(--ink);border-radius:999px;
-  font-size:11px;padding:2px 9px;font-family:var(--disp)}
-
 /* ---------- hero ---------- */
 header{padding:120px 0 0;position:relative;overflow:hidden}
 header .grid-bg{position:absolute;inset:0;
@@ -69,11 +34,20 @@ canvas:active{cursor:grabbing}
   gap:7px;flex-wrap:wrap;justify-content:center;z-index:3}
 .mood{font-family:var(--disp);font-size:14px;padding:8px 13px;border:2px solid var(--ink);
   border-radius:999px;background:var(--white);cursor:pointer;
-  box-shadow:3px 3px 0 var(--ink);transition:transform .1s}
-.mood:hover{transform:translate(1px,1px);box-shadow:2px 2px 0 var(--ink)}
+  box-shadow:3px 3px 0 var(--ink);
+  transition:transform var(--t-press) var(--ease-out),
+             box-shadow var(--t-press) var(--ease-out),
+             background var(--t-fast) var(--ease-out)}
+@media (hover:hover) and (pointer:fine){
+  .mood:hover{transform:translate(1px,1px);box-shadow:2px 2px 0 var(--ink)}
+}
+.mood:active{transform:translate(1px,1px) scale(.97);
+  box-shadow:1px 1px 0 var(--ink);transition-duration:80ms}
+.mood:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
 .mood.on{background:var(--blue);color:#fff}
 .loading{position:absolute;inset:0;display:grid;place-items:center;z-index:4;
-  font-family:var(--disp);font-size:19px;background:var(--paper)}
+  font-family:var(--disp);font-size:19px;background:var(--paper);
+  transition:opacity var(--t-ui) var(--ease-out)}
 
 /* ---------- ticker ---------- */
 .ticker{background:var(--blue);border-top:var(--edge);border-bottom:var(--edge);
@@ -133,7 +107,13 @@ input[type=email]{flex:1;min-width:230px;border:var(--edge);border-radius:999px;
   padding:15px 20px;font-size:16px;font-family:var(--body);background:var(--white)}
 input[type=email]:focus{outline:3px solid var(--blue);outline-offset:2px}
 .note{margin-top:12px;font-size:13px;opacity:.8}
-.ok{margin-top:14px;font-family:var(--disp);font-size:20px;color:var(--blue);display:none}
+/* Rare, high-emotion moment: this is where the delight budget goes. Rises
+   and fades in rather than appearing fully formed. */
+.ok{margin-top:14px;font-family:var(--disp);font-size:20px;color:var(--blue);
+  opacity:0;transform:translateY(8px);pointer-events:none;
+  transition:opacity var(--t-ui) var(--ease-out),
+             transform var(--t-ui) var(--ease-out)}
+.ok.show{opacity:1;transform:none}
 footer{padding:44px 0 60px;border-top:var(--edge);font-size:13px;color:var(--ink-soft)}
 footer a{color:var(--blue)}
 
@@ -146,9 +126,21 @@ footer a{color:var(--blue)}
 <body>
 
 <nav>
-  <div class="logo">AI<b>BO</b>.</div>
-  <div style="display:flex;gap:12px;align-items:center">
-    <span class="tag">OPEN SOURCE</span>
+  <a class="logo" href="./index.html" aria-label="AIBO home">
+    <svg viewBox="0 0 316 92" aria-hidden="true">
+      <g fill="currentColor">
+        <path d="M4 78 L27 8 h17 l23 70 h-19 l-3.6-12H26.6L23 78 Z M30.4 51 h10.2 L35.5 33 Z"/>
+        <path d="M75 8 h18 v70 h-18 Z"/>
+        <path d="M103 8 h31 c13.6 0 22 7.6 22 18.4 0 7.4-3.8 12.8-10 15.4 7.8 2.2 12.2 8.2 12.2 16.6 0 11.8-9 19.6-24 19.6 H103 Z M121 35 h10.8 c4.8 0 7.4-2.2 7.4-6 0-3.9-2.6-5.8-7.4-5.8H121 Z M121 62.6 h12 c5.2 0 8-2.2 8-6.4 0-4.1-2.8-6.2-8-6.2H121 Z"/>
+      </g>
+      <circle cx="238" cy="41" r="32" fill="#4D17F5" stroke="currentColor" stroke-width="7"/>
+      <circle cx="238" cy="41" r="12.5" fill="#FA9DCD"/>
+      <path d="M262 63 L279 74" fill="none" stroke="currentColor" stroke-width="11" stroke-linecap="round"/>
+      <rect x="258" y="79" width="46" height="11" rx="5.5" fill="currentColor"/>
+    </svg>
+  </a>
+  <div class="navr">
+    <a class="btn" href="./viewer.html">PARTS VIEWER</a>
     <a class="btn blue" href="#waitlist">JOIN THE WAITLIST</a>
   </div>
 </nav>

@@ -1,0 +1,5 @@
+# The site is stdlib-only: no pip install, nothing to build.
+providers = ["python"]
+
+[phases.install]
+cmds = ["echo 'no dependencies -- server.py is stdlib only'"]

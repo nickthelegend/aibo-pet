@@ -434,13 +434,43 @@ $("#caps").innerHTML = CAPS.map(([n, h, p]) =>
 
     fitCamera();
     buildMoods(); syncButtons();
-    $("#load").style.display = "none";
+    revealOnScroll();
+    const ld = $("#load");
+    ld.style.opacity = "0";
+    setTimeout(() => ld.style.display = "none", 260);
     requestAnimationFrame(frame);
   } catch (e) {
     $("#load").textContent = "COULD NOT LOAD: " + e.message;
     console.error(e);
   }
 })();
+
+/* Scroll reveal. Cards, stats and section bodies used to appear fully formed
+ * the moment they crossed the fold. This bridges that with a 12 px rise and a
+ * fade, staggered 55 ms across a group.
+ *
+ * Strictly decorative, so it is built to be harmless: elements are already
+ * interactive before it runs, anything still unrevealed when the observer is
+ * unavailable simply shows, and reduced-motion drops the travel in CSS. */
+function revealOnScroll() {
+  const groups = [
+    ...document.querySelectorAll("#caps .cap"),
+    ...document.querySelectorAll("#stats .stat"),
+    ...document.querySelectorAll("section .eyebrow, section h2, .scroller, .wait > div"),
+  ];
+  if (!("IntersectionObserver" in window)) return;   // leave them visible
+  groups.forEach(el => el.classList.add("reveal"));
+  const io = new IntersectionObserver((entries) => {
+    const hit = entries.filter(e => e.isIntersecting);
+    hit.forEach((e, i) => {
+      const el = e.target;
+      el.style.transitionDelay = Math.min(i * 55, 220) + "ms";
+      el.classList.add("in");
+      io.unobserve(el);
+    });
+  }, { rootMargin: "0px 0px -8% 0px", threshold: 0.08 });
+  groups.forEach(el => io.observe(el));
+}
 
 /* waitlist — local only, and the page says so */
 const KEY = "aibo-waitlist";
@@ -452,6 +482,6 @@ $("#wf").addEventListener("submit", e => {
   const L = list();
   if (v && !L.includes(v)) { L.push(v); localStorage.setItem(KEY, JSON.stringify(L)); }
   $("#wcount").textContent = L.length;
-  $("#ok").style.display = "block";
+  $("#ok").classList.add("show");
   $("#em").value = "";
 });

@@ -156,6 +156,27 @@ def main():
                          "servo": [cn for cn, _m, _c in for_part(name)],
                          "length": length})
 
+    # ---- the loose parts -------------------------------------------------
+    # Retainers, horns and the test coupon are never placed in the assembly
+    # chain, so they had no 3D at all -- the parts viewer listed 13 of 22 and
+    # silently dropped the rest. Laid out in a row beside the base instead,
+    # in print pose, so every printed part has something to look at.
+    import part_horn, part_retainers, part_screw
+    loose_src = (part_horn.build() + part_retainers.build()
+                 + part_screw.build() + part_keycap.build())
+    loose, x = [], 0.0
+    for n, m, c in loose_src:
+        b = m.bounds()
+        w = b[3] - b[0]
+        lm = m.copy()
+        lm.translate(dx=-(b[0] + b[3]) / 2 + 120.0 + x + w / 2,
+                     dy=-(b[1] + b[4]) / 2 - 96.0,
+                     dz=-b[2])
+        items.append((n, lm, c))
+        loose.append(n)
+        x += w + 9.0
+    rig["loose"] = loose
+
     shade_name, shade_mesh, shade_col = part_head.build()[0]
     sm = shade_mesh.copy()
     sm.translate(dz=-part_head.TILT)
@@ -200,6 +221,27 @@ def main():
             "bed_mm": int(man["build_plate_mm"]),
         },
     }
+    # ---- one zip of every STL, and the raw pointers that serve them ------
+    # Pinned to refs/heads/main, NOT to a commit: the ask was that a future
+    # rebuild must not break these links, so they have to track the branch.
+    import zipfile
+    exp = os.path.normpath(os.path.join(HERE, "..", "exports"))
+    stls = sorted(f for f in os.listdir(exp)
+                  if f.endswith(".stl") and not f.startswith("plate-"))
+    zpath = os.path.join(exp, "all-stls.zip")
+    with zipfile.ZipFile(zpath, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as z:
+        for f in stls:
+            z.write(os.path.join(exp, f), f)
+    RAW = "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/"
+    spec["downloads"] = {
+        "base": RAW,
+        "zip": RAW + "all-stls.zip",
+        "zip_mb": round(os.path.getsize(zpath) / 1e6, 1),
+        "files": {f[:-4]: RAW + f for f in stls},
+        "plates": {f[:-4]: RAW + f for f in sorted(os.listdir(exp))
+                   if f.endswith(".stl") and f.startswith("plate-")},
+    }
+
     with open(os.path.join(WEB, "spec.json"), "w") as f:
         json.dump(spec, f, indent=1)
 
@@ -211,6 +253,8 @@ def main():
     print(f"web/rig.json      {len(seg_meta)} driven segments + shade")
     print(f"web/spec.json     {spec['stats']['parts']} parts, "
           f"{spec['stats']['interfaces']} interfaces")
+    print(f"exports/all-stls.zip  {len(stls)} STLs, "
+          f"{spec['downloads']['zip_mb']} MB")
     return 0
 
 

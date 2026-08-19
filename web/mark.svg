@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="AIBO">
+  <!-- Tab icon. Everything here is sized to survive 16px: one silhouette,
+       two fills, no strokes under 3px and no detail that closes up. -->
+  <rect x="2" y="2" width="60" height="60" rx="15" fill="#4D17F5"/>
+  <rect x="2" y="2" width="60" height="60" rx="15" fill="none" stroke="#151515" stroke-width="4"/>
+
+  <!-- light cone, pink, thrown down-left from the shade -->
+  <path d="M31 27 L11 52 L31 52 Z" fill="#FA9DCD"/>
+
+  <!-- the arm: two segments and the base, the lamp's whole gesture in 3 strokes -->
+  <path d="M46 50 L44 33 L33 26" fill="none" stroke="#EEEEEC" stroke-width="5"
+        stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="38" y="48" width="16" height="6" rx="3" fill="#EEEEEC"/>
+
+  <!-- the shade, tilted to look -->
+  <path d="M22 18 L38 24 L31 32 L20 27 Z" fill="#EEEEEC" stroke="#151515"
+        stroke-width="3" stroke-linejoin="round"/>
+</svg>

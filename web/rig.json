@@ -33,6 +33,18 @@
   "spk-dome",
   "spk-wires"
  ],
+ "loose": [
+  "horn-mg996r",
+  "horn-sg90",
+  "horn-adapter",
+  "spline-test",
+  "spk-clamp",
+  "mic-tab",
+  "esp-tab",
+  "amp-tab",
+  "yoke-screw",
+  "keycap"
+ ],
  "segments": [
   {
    "parts": [
