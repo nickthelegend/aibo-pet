@@ -51,21 +51,29 @@ img,svg{display:block}
   transition:top var(--t-ui) var(--ease)}
 .skip:focus{top:var(--s-200)}
 
-/* ---------------- island nav ---------------- */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;
-  margin-top:var(--s-300);display:flex;justify-content:center;
+/* ---------------- header ----------------
+   Full width bar: wordmark hard left, actions hard right. The island pill was
+   centred and small, which buried the brand in the middle of nothing. */
+header.top{position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:var(--s-300);padding:var(--s-200) var(--s-400);
+  background:linear-gradient(to bottom,rgba(0,0,0,.86),rgba(0,0,0,0));
+  /* the one background gradient here is a scrim so the bar reads over the
+     model; it fades to nothing rather than drawing a box */
   pointer-events:none}
-.island{pointer-events:auto;display:flex;align-items:center;gap:var(--s-300);
-  width:max-content;border-radius:9999px;border:1px solid var(--line);
-  background:rgba(24,24,24,.72);backdrop-filter:blur(24px);
-  padding:var(--s-75) var(--s-75) var(--s-75) var(--s-300)}
-.island .logo{color:var(--fg)}
-.island .logo svg{height:22px;width:auto}
-.navlinks{display:flex;gap:var(--s-300);align-items:center}
-.navlinks a{font-size:14px;line-height:20px;font-weight:600;color:var(--fg-dim);
+header.top > *{pointer-events:auto}
+.brand{display:flex;align-items:center;color:var(--fg);line-height:0}
+.brand svg{height:30px;width:auto}
+@media(min-width:768px){ .brand svg{height:38px} }
+.topnav{display:flex;gap:var(--s-400);align-items:center}
+.topnav a{font-size:15px;line-height:20px;font-weight:600;color:var(--fg-dim);
   transition:color var(--t-ui) var(--ease)}
-.navlinks a:hover,.navlinks a[aria-current="page"]{color:var(--fg)}
-@media(max-width:720px){ .navlinks{display:none} }
+.topnav a:hover,.topnav a[aria-current="page"]{color:var(--fg)}
+@media(max-width:860px){ .topnav{display:none} }
+/* content pages sit under the bar rather than behind it, so it gets a real
+   background instead of the scrim the hero uses */
+header.top.solid{background:var(--bg);border-bottom:1px solid var(--line)}
+body:has(header.top.solid) main{padding-top:var(--s-900)}
 
 /* ---------------- buttons ---------------- */
 .btn{display:inline-flex;align-items:center;justify-content:center;

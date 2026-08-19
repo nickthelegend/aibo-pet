@@ -259,7 +259,7 @@ function fitCamera() {
   CTR = [0, (lo[1] + hi[1]) / 2, (lo[2] + hi[2]) / 2];
   const span = Math.max(hi[2] - lo[2], hi[0] - lo[0], hi[1] - lo[1]);
   // the stage is a tall full-viewport panel now, so leave more air
-  dist = (span * 1.34) / (2 * Math.tan(FOVY / 2));
+  dist = (span * 1.46) / (2 * Math.tan(FOVY / 2));
 }
 
 
@@ -318,10 +318,14 @@ function draw() {
 
   // The sheet occupies the bottom of the stage, so the model is framed
   // against the visible area above it rather than the whole canvas.
-  const sheet = document.querySelector(".sheet");
-  const lift = sheet ? (sheet.getBoundingClientRect().height / cv.clientHeight) : 0;
-  // title occupies the top, sheet the bottom: sit the model between them
-  const ctr = [CTR[0], CTR[1], CTR[2] - lift * 190 + 26];
+  // Title scrim owns the top, sheet the bottom. Centre the model in what is
+  // left between them rather than in the raw canvas.
+  const t = document.querySelector(".title");
+  const sh = document.querySelector(".sheet");
+  const top = t ? t.getBoundingClientRect().height : 0;
+  const bot = sh ? sh.getBoundingClientRect().height * 0.55 : 0;
+  const bias = ((top - bot) / cv.clientHeight) * 210;
+  const ctr = [CTR[0], CTR[1], CTR[2] + bias];
   const eye = [ctr[0] + dist * Math.cos(el) * Math.sin(az),
                ctr[1] + dist * Math.cos(el) * Math.cos(az),
                ctr[2] + dist * Math.sin(el)];
@@ -375,40 +379,6 @@ window.__aibo = {
 /* =====================================================================
  * UI
  * ===================================================================== */
-
-const BENEFITS = [
-  ["Leans toward the talker",
-   "An INMP441 on the front wall picks direction. The arm turns to whoever is speaking rather than waiting to be addressed."],
-  ["Answers out loud",
-   "A MAX98357A drives a 40 by 20 mm oval. The whole tub is its back volume, 749 cm3 of it, so it does not sound like a phone."],
-  ["Nods, perks up, sulks",
-   "Four joints driven through a spring damped just under critical. The overshoot is what makes a nod read as a nod."],
-  ["One real button",
-   "A single Cherry MX in the lid with a printed cap. That is the entire interface. There is no screen and no app."],
-  ["Nothing leaves the desk",
-   "Wake word inference runs on the ESP32-S3. No audio is uploaded, because there is nowhere for it to go."],
-  ["Rebuilds from one file",
-   "Every dimension is a parameter. Change the servo, run the build, print the new tub."],
-];
-
-const FAQ = [
-  ["Do I need anything besides a printer?",
-   "Three MG996R servos, one SG90, an ESP32-S3, a MAX98357A amp, an INMP441 microphone, a 40 by 20 mm oval driver, one Cherry MX switch, plus 15 M3 screws with heat set inserts and 5 M2 self tappers."],
-  ["Will it fit my printer?",
-   "Every part fits a Bambu A1 mini, which is the smallest bed this was designed against. The widest part is the tub at 160 mm and the tallest is an arm segment at 154 mm."],
-  ["Does anything need supports?",
-   "One thing. The shade collar sits at 51 degrees off vertical, which most printers bridge and some will not. Everything else measured clean under an overhang audit that reads the actual mesh."],
-  ["How long does it take to print?",
-   "Roughly 492 cm3 of plastic, about 610 g in PLA, spread over nine plates. The tub is the long one at about eight hours; the small parts plate is under two."],
-  ["What if my servo is a clone with different dimensions?",
-   "Torque goes through a cross slot rather than the horn screws, so clone screw patterns do not matter. If the body differs, edit the four numbers in the params file and rebuild."],
-  ["Can I print the screws too?",
-   "The arm keepers already are. They are M6 with a 2 mm pitch, coarse enough to survive a 0.4 mm nozzle, which a real M3 thread is not. The other 15 fasteners are metal."],
-  ["Is the CAD really open?",
-   "Yes. It is pure Python with two dependencies, no OpenSCAD and no CadQuery, and the STLs are in the repo with direct download links."],
-  ["What state is the project in?",
-   "The geometry is audited and the models are complete. Several component dimensions still come from listings rather than calipers, so measure your parts before printing the tub."],
-];
 
 /* Play a movement by name. The conversation drives this; there is no manual
  * chip row on the character stage. */
@@ -615,93 +585,27 @@ function syncButtons() {
     b.setAttribute("aria-pressed", String(b.dataset.k === mood)));
 }
 
-/* ---- tagline: words light one at a time, in reading order ---- */
-function taglineReveal() {
-  const el = $("#tagline");
-  if (!el) return;
-  const words = el.textContent.trim().split(/\s+/);
-  el.innerHTML = words.map(w => `<w>${w}</w>`).join(" ");
-  const ws = [...el.querySelectorAll("w")];
-  if (!("IntersectionObserver" in window)) {
-    ws.forEach(w => w.classList.add("lit")); return;
-  }
-  const io = new IntersectionObserver(es => {
-    es.forEach(e => {
-      if (!e.isIntersecting) return;
-      const k = ws.indexOf(e.target);
-      setTimeout(() => e.target.classList.add("lit"), Math.min(k, 24) * 26);
-      io.unobserve(e.target);
-    });
-  }, { rootMargin: "0px 0px -22% 0px", threshold: 1 });
-  ws.forEach(w => io.observe(w));
-}
-
-/* ---- scroll reveal ---- */
-function revealOnScroll() {
-  const els = [...document.querySelectorAll(
-    "section .eyebrow, section h2, section .lede, .card, .tablewrap, .grid > *, #conv")];
-  if (!("IntersectionObserver" in window)) return;   // leave everything visible
-  els.forEach(e => e.classList.add("reveal"));
-  const io = new IntersectionObserver(es => {
-    es.filter(e => e.isIntersecting).forEach((e, k) => {
-      e.target.style.transitionDelay = Math.min(k * 60, 240) + "ms";
-      e.target.classList.add("in");
-      io.unobserve(e.target);
-    });
-  }, { rootMargin: "0px 0px -8% 0px", threshold: 0.06 });
-  els.forEach(e => io.observe(e));
-}
-
 /* ------------------------------------------------------------- boot ---- */
 (async function boot() {
-  $("#benefits").innerHTML = BENEFITS.map(([h, p]) =>
-    `<article class="card"><h3>${h}</h3><p>${p}</p></article>`).join("");
-
-  $("#faqlist").innerHTML = FAQ.map(([q, a]) =>
-    `<details><summary>${q}<span class="chev" aria-hidden="true">⌄</span></summary>
-     <p>${a}</p></details>`).join("");
-
   await voice.load();
   talk.boot();
-  taglineReveal();
 
   try {
-    const [nodes, rig, spec] = await Promise.all([
+    const [nodes, rig] = await Promise.all([
       loadGLB("./aibo-rig.glb"),
       fetch("./rig.json").then(r => r.json()),
-      fetch("./spec.json").then(r => r.json()),
     ]);
     RIG = rig; RIG.yokeBelow = 16.0;
-    // The rig also carries the loose-parts tray for the viewer. The hero is a
-    // portrait of the lamp, so they are dropped here.
+    // the rig carries the viewer's loose-parts tray; the hero is a portrait
     const loose = new Set(rig.loose || []);
     PARTS = upload(nodes.filter(n => !loose.has(n.name)));
     PARTS.forEach(p => ROLE.set(p.name, p));
     for (const j of J) { cur[j] = RIG.neutral[j]; vel[j] = 0; tgt[j] = cur[j]; }
 
-    const S = spec.stats;
-    $("#stats").innerHTML = [
-      [S.parts, "printed parts"], [S.plates, "print plates"],
-      [S.joints, "driven joints"], [S.height_mm + " mm", "tall in pose"],
-      [S.reach_mm + " mm", "reach"], [S.plastic_cm3 + " cm3", "of plastic"],
-      [S.m3 + " + " + S.m2, "M3 and M2 screws"], [S.bed_mm + " mm", "bed needed"],
-    ].map(([b, s]) =>
-      `<div class="card"><h3 class="num">${b}</h3><p>${s}</p></div>`).join("");
-
-    $("#parts-table").innerHTML =
-      `<thead><tr><th>Part</th><th>Size in mm</th><th>Volume</th><th>A1 mini</th></tr></thead>
-       <tbody>` + spec.parts.map(p =>
-        `<tr><td class="k">${p.name}</td>
-         <td class="num">${p.mm[0]} × ${p.mm[1]} × ${p.mm[2]}</td>
-         <td class="num">${p.cm3} cm3</td>
-         <td>${p.fits ? "Fits" : "Does not fit"}</td></tr>`).join("") + "</tbody>";
-
     fitCamera();
-    buildMoods(); syncButtons();
     const sk = $("#skel");
     sk.style.opacity = "0";
     setTimeout(() => sk.style.display = "none", 420);
-    revealOnScroll();
     requestAnimationFrame(frame);
   } catch (e) {
     $("#skel").textContent = "The model could not load. " + e.message;

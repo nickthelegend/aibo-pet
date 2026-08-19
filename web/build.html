@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AIBO — build guide</title>
+<meta name="description" content="How to print and assemble AIBO. Guide in progress.">
+<link rel="icon" href="./mark.svg" type="image/svg+xml">
+<meta property="og:title" content="AIBO — build guide">
+<meta property="og:description" content="How to print and assemble AIBO. Guide in progress.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./site.css">
+
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="top solid">
+  <a class="brand" href="./index.html" aria-label="AIBO home">
+    <svg viewBox="0 0 292 92" aria-hidden="true">
+      <g fill="currentColor">
+        <path d="M4 78 L27 8 h17 l23 70 h-19 l-3.6-12H26.6L23 78 Z M30.4 51 h10.2 L35.5 33 Z"/>
+        <path d="M75 8 h18 v70 h-18 Z"/>
+        <path d="M103 8 h31 c13.6 0 22 7.6 22 18.4 0 7.4-3.8 12.8-10 15.4 7.8 2.2 12.2 8.2 12.2 16.6 0 11.8-9 19.6-24 19.6 H103 Z M121 35 h10.8 c4.8 0 7.4-2.2 7.4-6 0-3.9-2.6-5.8-7.4-5.8H121 Z M121 62.6 h12 c5.2 0 8-2.2 8-6.4 0-4.1-2.8-6.2-8-6.2H121 Z"/>
+        <path d="M170 43 a35 35 0 1 1 70 0 a35 35 0 1 1 -70 0 Z M188 43 a17 17 0 1 0 34 0 a17 17 0 1 0 -34 0 Z" fill-rule="evenodd"/>
+      </g>
+      <circle cx="205" cy="43" r="10.5" fill="#4D17F5"/>
+      <circle cx="205" cy="43" r="4.4" fill="#FA9DCD"/>
+    </svg>
+  </a>
+  <nav class="topnav" aria-label="Primary">
+    <a href="./parts.html">Parts</a>
+    <a href="./build.html" aria-current="page">Build</a>
+    <a href="./faq.html">FAQ</a>
+    <a href="./buy.html">Buy</a>
+  </nav>
+  <a class="btn primary" href="./buy.html">Get the files</a>
+</header>
+
+<main id="main"><section class="wrap">
+  <h1 style="font-size:48px;line-height:1">Build guide</h1>
+  <p class="lede" style="margin-top:var(--s-200);max-width:680px">
+    The mechanical side is finished and audited. The step by step guide, with
+    photos of a real assembly, lands when the first batch is built and the
+    firmware works. Nothing here is a placeholder for something that exists.</p>
+
+  <div class="card" style="margin-top:var(--s-500);max-width:680px;
+    border-color:var(--blue)">
+    <h3>Not written yet</h3>
+    <p>Rather than publish a wiring diagram nobody has followed, this page
+      waits until the build is done once end to end. In the meantime the parts
+      list, the sizes and every download are real and complete.</p>
+  </div>
+
+  <h2 style="margin-top:var(--s-800)">What is already settled</h2>
+  <div class="grid g3" style="margin-top:var(--s-400)">
+    <div class="card step"><span class="n">1</span><div>
+      <h3>Print the test plate</h3>
+      <p>Two parts, 7 mm tall, about 15 minutes. It proves the printed spline
+        fits your servo before you commit to an eight hour tub.</p></div></div>
+    <div class="card step"><span class="n">2</span><div>
+      <h3>Run the nine plates</h3>
+      <p>One arm segment per plate, so a knock over costs one part rather than
+        three. Sizes and volumes are on the parts page.</p></div></div>
+    <div class="card step"><span class="n">3</span><div>
+      <h3>Drop the electronics in</h3>
+      <p>The tub opens to its full bore, so every board and the speaker lower
+        straight in. The shoulder ring goes on last.</p></div></div>
+  </div>
+
+  <p style="margin-top:var(--s-600)">
+    <a class="btn primary" href="./parts.html">See every part</a></p>
+</section></main>
+<footer><div class="wrap" style="display:flex;gap:var(--s-300);
+  flex-wrap:wrap;justify-content:space-between">
+  <span>AIBO — parametric CAD in pure Python.</span>
+  <span style="display:flex;gap:var(--s-300);flex-wrap:wrap">
+    <a href="https://github.com/nickthelegend/aibo-pet">Source</a>
+    <a href="./index.html">Home</a>
+  </span>
+</div></footer>
+</body>
+</html>

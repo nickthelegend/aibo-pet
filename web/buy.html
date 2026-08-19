@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AIBO — buy a kit</title>
+<meta name="description" content="Buy an AIBO kit for 69.99 dollars, or download the files free.">
+<link rel="icon" href="./mark.svg" type="image/svg+xml">
+<meta property="og:title" content="AIBO — buy a kit">
+<meta property="og:description" content="Buy an AIBO kit for 69.99 dollars, or download the files free.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./site.css">
+
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="top solid">
+  <a class="brand" href="./index.html" aria-label="AIBO home">
+    <svg viewBox="0 0 292 92" aria-hidden="true">
+      <g fill="currentColor">
+        <path d="M4 78 L27 8 h17 l23 70 h-19 l-3.6-12H26.6L23 78 Z M30.4 51 h10.2 L35.5 33 Z"/>
+        <path d="M75 8 h18 v70 h-18 Z"/>
+        <path d="M103 8 h31 c13.6 0 22 7.6 22 18.4 0 7.4-3.8 12.8-10 15.4 7.8 2.2 12.2 8.2 12.2 16.6 0 11.8-9 19.6-24 19.6 H103 Z M121 35 h10.8 c4.8 0 7.4-2.2 7.4-6 0-3.9-2.6-5.8-7.4-5.8H121 Z M121 62.6 h12 c5.2 0 8-2.2 8-6.4 0-4.1-2.8-6.2-8-6.2H121 Z"/>
+        <path d="M170 43 a35 35 0 1 1 70 0 a35 35 0 1 1 -70 0 Z M188 43 a17 17 0 1 0 34 0 a17 17 0 1 0 -34 0 Z" fill-rule="evenodd"/>
+      </g>
+      <circle cx="205" cy="43" r="10.5" fill="#4D17F5"/>
+      <circle cx="205" cy="43" r="4.4" fill="#FA9DCD"/>
+    </svg>
+  </a>
+  <nav class="topnav" aria-label="Primary">
+    <a href="./parts.html">Parts</a>
+    <a href="./build.html">Build</a>
+    <a href="./faq.html">FAQ</a>
+    <a href="./buy.html" aria-current="page">Buy</a>
+  </nav>
+  <a class="btn primary" href="./buy.html">Get the files</a>
+</header>
+
+<main id="main"><section class="wrap">
+  <h1 style="font-size:48px;line-height:1">Get one</h1>
+  <p class="lede" style="margin-top:var(--s-200);max-width:680px">
+    The CAD and the STLs are free and always will be. The kit is for people who
+    would rather not source eleven separate parts.</p>
+
+  <div class="grid g3" style="margin-top:var(--s-600);align-items:start">
+    <div class="card">
+      <h3>Files</h3>
+      <p style="margin-top:var(--s-75)">
+        <span style="font-size:36px;line-height:40px;font-weight:700;
+          color:var(--fg)">Free</span></p>
+      <p style="margin-top:var(--s-200)">All 22 STLs, the nine print plates and
+        the full parametric CAD. Downloads track the main branch, so they stay
+        current as the design changes.</p>
+      <p style="margin-top:var(--s-300)">
+        <a class="btn" href="./parts.html">Download the STLs</a></p>
+    </div>
+
+    <div class="card" style="border-color:var(--blue)">
+      <h3>Hardware kit</h3>
+      <p style="margin-top:var(--s-75)">
+        <span style="font-size:36px;line-height:40px;font-weight:700;
+          color:var(--fg)">$69.99</span></p>
+      <p style="margin-top:var(--s-200)">Every non printed part in one box:
+        three MG996R, one SG90, ESP32-S3, MAX98357A, INMP441, the driver, one
+        Cherry MX, and the 20 fasteners with inserts. You print the shell.</p>
+      <p style="margin-top:var(--s-300)">
+        <button class="btn primary" id="notify" type="button">Tell me when it ships</button></p>
+      <p class="err" id="buyerr" role="alert"></p>
+    </div>
+
+    <div class="card">
+      <h3>Fully assembled</h3>
+      <p style="margin-top:var(--s-75)">
+        <span style="font-size:36px;line-height:40px;font-weight:700;
+          color:var(--fg-mute)">Later</span></p>
+      <p style="margin-top:var(--s-200)">Printed, wired and tested. Not offered
+        yet, because the firmware is not finished and shipping something that
+        half works helps nobody.</p>
+    </div>
+  </div>
+
+  <p class="lede" style="margin-top:var(--s-700);max-width:680px">
+    Nothing is for sale yet. The kit price is set and the parts list is final;
+    what is missing is the firmware. Leave your email on the home page and you
+    will hear once, when it is real.</p>
+</section></main>
+<script type="module">
+const b = document.querySelector("#notify");
+b.addEventListener("click", () => {
+  document.querySelector("#buyerr").style.color = "var(--fg-dim)";
+  document.querySelector("#buyerr").textContent =
+    "Not taking orders yet. Talk to AIBO on the home page and it will take your email.";
+});
+</script>
+<footer><div class="wrap" style="display:flex;gap:var(--s-300);
+  flex-wrap:wrap;justify-content:space-between">
+  <span>AIBO — parametric CAD in pure Python.</span>
+  <span style="display:flex;gap:var(--s-300);flex-wrap:wrap">
+    <a href="https://github.com/nickthelegend/aibo-pet">Source</a>
+    <a href="./index.html">Home</a>
+  </span>
+</div></footer>
+</body>
+</html>
