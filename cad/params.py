@@ -153,6 +153,20 @@ MX_BODY_DROP  = 6.5    # plate underside -> switch base
 MX_PIN_DROP   = 3.5    # pins below the switch base
 MX_SOCKET_W   = 1.6    # relief pocket wall
 
+# ---- board hold-downs -------------------------------------------------
+# The ESP32 and the amp were located in XY and free in Z: rails and a cage
+# beside the ESP32 with nothing over it, and corner tabs overhanging the
+# amp's PCB by 0.2 mm, which is not a fixing. Same pattern as spk-clamp and
+# mic-tab: a fixed lip on one edge to slide under, a screwed bar on the other.
+BOARD_LIP     = 1.0    # how far a fixed lip reaches over the PCB edge.
+                       # Sized to the AMP, which has only 1.1 mm of bare
+                       # PCB past its header; the ESP32 has 2.8. Both lips
+                       # sit on the SHORT (X) ends -- along Y the headers
+                       # come within 0.3 mm of the board edge.
+BOARD_LIP_T   = 1.4    # lip thickness
+BOARD_TAB_W   = 8.0    # screwed retainer bar width
+BOARD_TAB_T   = 2.0
+
 # ------------------------------------------------ MX switch + keycap ----
 # Cherry MX geometry above the plate. The switch itself is bought; the cap
 # is printed. TODO verify against your actual switch -- clone uppers vary.

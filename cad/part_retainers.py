@@ -9,6 +9,8 @@ the base, and both print flat with no supports.
               driver's leads.
   mic-tab     drops over the mic board's slot mouth (belt and braces on top
               of the two moulded retaining lips).
+  esp-tab     over the ESP32's +Y edge; the -Y edge is under fixed lips.
+  amp-tab     the same for the amp's +X edge.
 """
 from __future__ import annotations
 
@@ -59,8 +61,23 @@ def build():
         affinity.translate(pl.circle(P.M2_CLEAR), 0.0, 1.6))
     mic = pl.prism(tab, 0.0, 2.0)
     mic += pl.prism(box(-d / 2 + 1.0, -3.5, d / 2 - 1.0, -1.6), 2.0 - OVL, 2.0 + 1.2)
+    # Board hold-downs. Each screws to a post on one edge of its board and
+    # reaches back over the PCB; the board's other edge is already tucked
+    # under a fixed lip in the base. Before these, the ESP32 and the amp were
+    # located in XY and free to lift straight out.
+    def _bar(reach):
+        d = P.BOARD_TAB_W
+        prof = pl.rounded_rect(reach + d, d, 1.5)
+        prof = prof.difference(affinity.translate(pl.circle(P.M2_CLEAR),
+                                                  reach / 2, 0.0))
+        return pl.prism(prof, 0.0, P.BOARD_TAB_T)
+
+    esp = _bar(8.0)
+    amp = _bar(7.0)
     return [("spk-clamp", clamp, P.COLORS["joint"]),
-            ("mic-tab", mic, P.COLORS["joint"])]
+            ("mic-tab", mic, P.COLORS["joint"]),
+            ("esp-tab", esp, P.COLORS["joint"]),
+            ("amp-tab", amp, P.COLORS["joint"])]
 
 
 if __name__ == "__main__":

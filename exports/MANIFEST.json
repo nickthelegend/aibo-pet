@@ -11,9 +11,9 @@
   "build_plate_mm": 180.0,
   "parts": {
     "base": {
-      "shells": 102,
-      "triangles": 15468,
-      "volume_mm3": 127790.15,
+      "shells": 106,
+      "triangles": 16036,
+      "volume_mm3": 128676.08,
       "watertight": true,
       "fits_a1_mini": true,
       "bbox_mm": [
@@ -224,6 +224,30 @@
         21.1,
         7.0,
         3.2
+      ]
+    },
+    "esp-tab": {
+      "shells": 1,
+      "triangles": 432,
+      "volume_mm3": 243.05,
+      "watertight": true,
+      "fits_a1_mini": true,
+      "bbox_mm": [
+        16.0,
+        8.0,
+        2.0
+      ]
+    },
+    "amp-tab": {
+      "shells": 1,
+      "triangles": 432,
+      "volume_mm3": 227.05,
+      "watertight": true,
+      "fits_a1_mini": true,
+      "bbox_mm": [
+        15.0,
+        8.0,
+        2.0
       ]
     },
     "keycap": {

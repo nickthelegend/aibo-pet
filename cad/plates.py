@@ -63,7 +63,7 @@ BATCHES = [
     ("5-small", "everything that is quick", ["base-joint", "cap-base", "cap-shoulder",
                                              "cap-elbow", "cap-head", "horn-sg90",
                                              "horn-adapter", "spk-clamp", "mic-tab",
-                                             "keycap"]
+                                             "keycap", "esp-tab", "amp-tab"]
      + ["yoke-screw"] * 4),          # one per joint: base, shoulder, elbow, head
 ]
 

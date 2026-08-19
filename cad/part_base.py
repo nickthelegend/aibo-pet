@@ -174,6 +174,16 @@ def _board_bay():
     for tx in (x0 + 16.0, x0 + 46.0):
         m += pl.prism(box(tx - 6, y0 - 2.1, tx + 6, y0 - 0.1), P.FLOOR - OVL, cage_z)
         m += pl.prism(box(tx - 6, y1 + 0.1, tx + 6, y1 + 2.1), P.FLOOR - OVL, cage_z)
+    # Fixed lip on the -X END. It has to go on an end, not a long side: the
+    # header rows run to within 0.3 mm of both Y edges, and only the X ends
+    # carry bare PCB (2.8 mm). The board tucks under this, then esp-tab
+    # screws down on the far end.
+    m += pl.prism(box(x0 - 1.0, y0 + 3.0, x0 + P.BOARD_LIP, y1 - 3.0),
+                  top + P.ESP_T, top + P.ESP_T + P.BOARD_LIP_T)
+    # M2 post just off the +X end for esp-tab
+    m += pl.prism(box(x1 + 0.4, BY - 3.0, x1 + 6.0, BY + 3.0).difference(
+        affinity.translate(pl.circle(P.M2_PILOT), x1 + 3.2, BY)),
+        P.FLOOR - OVL, top + P.ESP_T)
     return m
 
 
@@ -273,6 +283,17 @@ def _amp_pocket():
                               max(cx, cx - sx * 1.6), max(cy, cy - sy * 5.0)),
                           P.FLOOR + P.AMP_STANDOFF - OVL,
                           P.FLOOR + P.AMP_STANDOFF + P.AMP_T + 1.6)
+    # Those corner tabs overhang the PCB by 0.2 mm, which locates it in XY and
+    # holds it down not at all. Fixed lip on the -X end, amp-tab screwed on
+    # the +X end. Ends, not sides: the header runs to 0.3 mm of the +Y edge.
+    pcb_top = P.FLOOR + P.AMP_STANDOFF + P.AMP_T
+    m += pl.prism(box(ax - P.AMP_L / 2 - 1.6, ay - 6.0,
+                      ax - P.AMP_L / 2 + P.BOARD_LIP, ay + 2.0),
+                  pcb_top, pcb_top + P.BOARD_LIP_T)
+    m += pl.prism(box(ax + P.AMP_L / 2 + 0.4, ay - 5.0,
+                      ax + P.AMP_L / 2 + 6.0, ay + 1.0).difference(
+        affinity.translate(pl.circle(P.M2_PILOT), ax + P.AMP_L / 2 + 3.2, ay - 2.0)),
+        P.FLOOR - OVL, pcb_top)
     return m
 
 
