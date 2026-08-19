@@ -13,7 +13,7 @@
     "base": {
       "shells": 102,
       "triangles": 15468,
-      "volume_mm3": 138042.14,
+      "volume_mm3": 127790.15,
       "watertight": true,
       "fits_a1_mini": true,
       "bbox_mm": [
@@ -25,25 +25,25 @@
     "shoulder": {
       "shells": 16,
       "triangles": 24456,
-      "volume_mm3": 41421.61,
+      "volume_mm3": 50714.93,
       "watertight": true,
       "fits_a1_mini": true,
       "bbox_mm": [
         160.0,
         160.0,
-        25.4
+        33.4
       ]
     },
     "lid": {
       "shells": 5,
       "triangles": 10412,
-      "volume_mm3": 42522.36,
+      "volume_mm3": 41211.07,
       "watertight": true,
       "fits_a1_mini": true,
       "bbox_mm": [
         113.8,
         113.8,
-        9.4
+        6.4
       ]
     },
     "base-joint": {

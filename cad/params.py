@@ -184,7 +184,10 @@ BASE_H        = 58.0   # floor bottom -> shoulder top (TALL: the wire volume)
 # the speaker especially -- physically cannot be got in past it. Split at
 # BASE_STRAIGHT and the tub is open to its full bore; everything drops
 # straight down into place.
-BASE_STRAIGHT = 42.0   # tub rim / shoulder split line
+# Z34: as low as the taper can start. The speaker pocket tops out at Z32.4
+# and the tub wall has to stay straight past it, so this is the constraint,
+# not a preference. Every mm of taper height is a degree off the overhang.
+BASE_STRAIGHT = 34.0   # tub rim / shoulder split line
 BASE_TOP_D    = 118.0  # diameter where the shoulder meets the lid
 # The lid drops INSIDE that bore and its top face finishes flush with the
 # shoulder's rim, so the base reads as one turned form. It used to be
@@ -205,7 +208,7 @@ FOOT_H        = 3.0    # lifts the base so the speaker slots breathe
 # fragile plastic to hold a lid that is already clamped by the base joint's
 # four M3s (they pass through the lid into the bulkhead inserts). The rim is
 # held by a snap bead on the skirt instead.
-LID_SEAT_Z    = 52.0   # shoulder stops tapering here; straight rebate above,
+LID_SEAT_Z    = 55.0   # shoulder stops tapering here; straight rebate above,
 #                        so the skirt has a CONSTANT bore to fit
 SNAP_BEAD     = 0.45   # bead on the skirt / groove in the seat
 SNAP_Z        = 55.0

@@ -62,7 +62,7 @@ def _shoulder_od(z):
     """Quarter-sine shoulder: tangent to the cylinder where it leaves it, so
     the two blend into one turned form instead of meeting at a hard step."""
     t = min(max((z - P.BASE_STRAIGHT) / (P.LID_SEAT_Z - P.BASE_STRAIGHT), 0.0), 1.0)
-    return P.BASE_D - (P.BASE_D - P.BASE_TOP_D) * math.sin(t * math.pi / 2)
+    return P.BASE_D - (P.BASE_D - P.BASE_TOP_D) * t
 
 
 # ------------------------------------------------------------- openings ----

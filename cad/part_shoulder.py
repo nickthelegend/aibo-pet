@@ -7,9 +7,10 @@ pocket past it. Nothing near the wall can. Split here and the tub is open to
 its full bore, so every component drops straight down into place, then this
 ring goes on.
 
-  42 .. 45   inward flange, 3 M3 clearance holes down into the tub's inserts
-  36 .. 42   locating skirt dropping inside the tub bore
-  42 .. 52   quarter-sine taper, O160 -> O118, tangent to the tub at the rim
+  34 .. 37   inward flange, 3 M3 clearance holes down into the tub's inserts
+  28 .. 34   locating skirt dropping inside the tub bore
+  34 .. 52   STRAIGHT taper, O160 -> O118, 47.9 deg off vertical. It was a
+             quarter-sine over 42..52 -- prettier, unprintable at 73.1 deg.
   52 .. 61.4 straight lid rebate + the lid's snap groove. It carries on past
              the 58 seat by the lid's 3.4 thickness, so the lid drops INSIDE
              the ring and the two top faces finish flush -- no proud step.
@@ -36,14 +37,29 @@ import partlib as pl
 OVL = pl.OVL
 SEAT_IN = P.BASE_TOP_D - 2 * P.WALL_STRUCT      # 113.2, constant lid bore
 FLANGE_R = 68.0
-SKIRT_Z0 = 36.0
+SKIRT_Z0 = P.BASE_STRAIGHT - 6.0   # 6 mm of skirt DOWN inside the tub bore.
+                                   # Was hardcoded 36, which sat above the rim
+                                   # once the taper moved down to 34 and turned
+                                   # the skirt inside out.
 
 
 def shoulder_od(z):
-    """Quarter-sine: tangent to the tub's cylinder where it leaves it, so the
-    two read as one turned form instead of meeting at a hard step."""
+    """Straight cone.
+
+    It was a quarter-sine, tangent to the tub at the rim so the two read as
+    one turned form. It looked better and it could not be printed: a sine
+    puts its STEEPEST slope right at the rim, pi/2 times the average, which
+    over a 10 mm taper is 73.1 degrees off vertical. On a shell that is 5,700
+    mm2 of unsupported inner surface, and flipping the part rim-down only
+    moves it to the outer surface and makes it worse (6,660 mm2, measured).
+
+    Linear spends the same height at a constant angle instead of front-
+    loading it, and starting at Z34 rather than Z42 buys 8 mm more run.
+    73.1 -> 47.9 degrees. Under 45 would need either a wider neck or a taller
+    base -- the speaker pocket tops out at Z32.4 and the wall has to stay
+    straight past it, so 34 is the floor."""
     t = min(max((z - P.BASE_STRAIGHT) / (P.LID_SEAT_Z - P.BASE_STRAIGHT), 0.0), 1.0)
-    return P.BASE_D - (P.BASE_D - P.BASE_TOP_D) * math.sin(t * math.pi / 2)
+    return P.BASE_D - (P.BASE_D - P.BASE_TOP_D) * t
 
 
 def build():
