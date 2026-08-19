@@ -18,6 +18,9 @@
 <style>
 /* Thenar runs on Hotaru's design system so the parent and the product read as
    one house. Same tokens, same curve, same palette. Only the argument changes. */
+/* The header is fixed, so an anchor jump would otherwise park the section
+   heading underneath it. */
+section[id]{scroll-margin-top:84px}
 .chero{padding-top:var(--s-900);padding-bottom:var(--s-700)}
 .chero h1{font-size:44px;line-height:1;max-width:760px;letter-spacing:-0.03em;
   background:linear-gradient(90deg,#FFFFFF 0%,#9B9B9B 100%);
@@ -85,6 +88,44 @@ td.what{color:var(--fg-dim)}
 .namebox svg{flex:none;width:64px;height:64px}
 .namebox p{color:var(--fg-dim);flex:1;min-width:240px}
 .namebox b{color:var(--fg)}
+/* ---- the demo: one grasp, two recordings ---- */
+.demo{border:1px solid var(--line);border-radius:20px;background:var(--surface);
+  padding:var(--s-300);margin-top:var(--s-600)}
+@media(min-width:900px){ .demo{padding:var(--s-400)} }
+.demo .stage{display:grid;grid-template-columns:1fr;gap:var(--s-400);
+  align-items:center}
+@media(min-width:900px){ .demo .stage{grid-template-columns:250px 1fr} }
+.hand{width:100%;max-width:250px;margin:0 auto;display:block}
+.hand .bone{fill:none;stroke:var(--line-2);stroke-width:22;stroke-linecap:round}
+.hand .thumb{stroke-width:26}
+.hand .palm{fill:var(--line-2);stroke:none}
+.hand .emin{fill:rgba(77,23,245,.22);stroke:var(--blue);stroke-width:1.5;
+  stroke-dasharray:3 3}
+.hand .lbl{fill:var(--fg-mute);font-size:9px;font-weight:600;
+  font-family:Manrope,sans-serif;letter-spacing:.06em}
+#trace{width:100%;height:300px;display:block;cursor:ew-resize;touch-action:none}
+@media(min-width:900px){ #trace{height:330px} }
+.demo .foot{display:flex;gap:var(--s-200);flex-wrap:wrap;align-items:center;
+  justify-content:space-between;margin-top:var(--s-300);
+  padding-top:var(--s-300);border-top:1px solid var(--line)}
+.tagline .dim w.lit{color:var(--fg-mute)}
+.demo .foot p{color:var(--fg-mute);font-size:13px;line-height:20px;max-width:64ch}
+.demo .ctrl{display:flex;gap:var(--s-75);flex:none}
+.readout{display:flex;gap:var(--s-300);flex-wrap:wrap;margin-top:var(--s-200)}
+.readout div{font-size:13px;line-height:20px;color:var(--fg-mute)}
+.readout b{color:var(--fg);font-weight:700}
+
+/* ---- the shipped robot, in the proof card ---- */
+.viz{position:relative;border-radius:12px;overflow:hidden;background:var(--surface-2);
+  aspect-ratio:4/3;margin-bottom:var(--s-200)}
+.viz canvas{width:100%;height:100%;display:block;opacity:0;
+  transition:opacity 700ms var(--ease)}
+.viz.ready canvas{opacity:1}
+.viz.band::after{content:"ONE CLOCK \00b7 RATES ARE A DESIGN TARGET"}
+.viz.band canvas{opacity:1}
+.viz::after{content:"LIVE MODEL, NOT A RENDER";position:absolute;left:10px;
+  bottom:8px;font-size:9px;font-weight:700;letter-spacing:.08em;
+  color:var(--fg-mute)}
 </style>
 </head>
 <body>
@@ -128,10 +169,71 @@ td.what{color:var(--fg-dim)}
     </div>
   </section>
 
+
+  <section class="wrap" id="demo" style="padding-top:var(--s-700)">
+    <p class="eyebrow">The whole argument, in 2.4 seconds</p>
+    <h2>One grasp.<br>Two recordings.</h2>
+    <p class="lede" style="margin-top:var(--s-200);max-width:680px">
+      Somebody picks up a glass and it starts to slide. Watch what each sensor
+      has to say about the moment it happens. Drag the trace to scrub.</p>
+
+    <div class="demo">
+      <div class="stage">
+        <svg class="hand" viewBox="0 0 200 264" role="img"
+             aria-label="Right hand, palm view, with pressure at the thenar eminence and fingertips">
+          <rect class="palm" x="56" y="96" width="100" height="100" rx="26"/>
+          <path class="bone" d="M70 116 L70 48"/>
+          <path class="bone" d="M96 116 L96 36"/>
+          <path class="bone" d="M122 116 L122 46"/>
+          <path class="bone" d="M146 116 L146 70"/>
+          <path class="bone thumb" d="M66 168 L30 208"/>
+          <ellipse class="emin" cx="80" cy="158" rx="19" ry="24"
+                   transform="rotate(-16 80 158)"/>
+          <defs>
+            <radialGradient id="pg">
+              <stop offset="0%"   stop-color="#FA9DCD" stop-opacity=".95"/>
+              <stop offset="55%"  stop-color="#FA9DCD" stop-opacity=".32"/>
+              <stop offset="100%" stop-color="#FA9DCD" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <g id="pads">
+            <circle class="pp" data-w="1"   cx="80"  cy="158" r="0" fill="url(#pg)"/>
+            <circle class="pp" data-w=".62" cx="34"  cy="204" r="0" fill="url(#pg)"/>
+            <circle class="pp" data-w=".52" cx="70"  cy="52"  r="0" fill="url(#pg)"/>
+            <circle class="pp" data-w=".52" cx="96"  cy="40"  r="0" fill="url(#pg)"/>
+            <circle class="pp" data-w=".44" cx="122" cy="50"  r="0" fill="url(#pg)"/>
+            <circle class="pp" data-w=".34" cx="146" cy="74"  r="0" fill="url(#pg)"/>
+          </g>
+          <text class="lbl" x="100" y="248" text-anchor="middle">THENAR EMINENCE</text>
+        </svg>
+
+        <div>
+          <canvas id="trace" aria-label="Grip force and video derived pose over one grasp"></canvas>
+          <div class="readout">
+            <div>Peak correction <b>14.2 N</b></div>
+            <div>Pose movement at slip <b>0.9 mm</b></div>
+            <div>Reflex latency <b>70 ms</b></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="foot">
+        <p>The glass begins to slide at the marked instant. Grip force collapses,
+          then the corrective squeeze lands about seventy milliseconds later. The
+          pose track moves under a millimetre, which is inside the noise floor of
+          every hand tracker there is. A camera can watch this happen and record
+          nothing about it.</p>
+        <div class="ctrl">
+          <button class="btn sm" id="play" aria-pressed="true">Pause</button>
+          <button class="btn sm ghost" id="replay">Replay</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="wrap" id="gap">
     <p class="eyebrow">The bottleneck</p>
-    <p class="big">Everyone is<br>recording video.<br>
-      <span class="dim">Nobody records force.</span></p>
+    <p class="big tagline" id="bigline">Everyone is recording video. <span class="dim">Nobody records force.</span></p>
     <div class="grid g3" style="margin-top:var(--s-600)">
       <article class="card">
         <h3>Simulation is weakest exactly where manipulation happens</h3>
@@ -168,6 +270,7 @@ td.what{color:var(--fg-dim)}
 
     <div class="grid g3 prod" style="margin-top:var(--s-600)">
       <article class="card">
+        <div class="viz band"><canvas id="bandc"></canvas></div>
         <h3>Thenar Band</h3>
         <p style="margin-top:var(--s-100)">A wrist and palm unit worn while you
           do ordinary work. Egocentric camera, inertial measurement, and
@@ -183,6 +286,7 @@ td.what{color:var(--fg-dim)}
       </article>
 
       <article class="card">
+        <div class="viz"><canvas id="hot"></canvas></div>
         <h3>Hotaru</h3>
         <p style="margin-top:var(--s-100)">A desk robot with four servos, a
           microphone and a speaker. It leans toward whoever is talking and folds
@@ -313,20 +417,91 @@ td.what{color:var(--fg-dim)}
   </span>
 </div></footer>
 
-<script>
+<script type="module">
+import { makeGrasp } from "./grasp.js";
+import { mountHotaru } from "./hotaru.js";
+import { mountBand } from "./band.js";
+
 /* Reveal is added by script, never in the markup, so a JS failure leaves the
    page fully readable instead of blank. */
-(function () {
-  if (!("IntersectionObserver" in window)) return;
-  var els = document.querySelectorAll(".card, .rail > div, .stats > div, .namebox, .tscroll");
-  els.forEach(function (el) { el.classList.add("reveal"); });
-  var io = new IntersectionObserver(function (entries) {
-    entries.forEach(function (e) {
+if ("IntersectionObserver" in window) {
+  const els = document.querySelectorAll(
+    ".card, .rail > div, .stats > div, .namebox, .tscroll, .demo");
+  els.forEach(el => el.classList.add("reveal"));
+  const io = new IntersectionObserver(es => {
+    es.forEach(e => {
       if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
     });
   }, { rootMargin: "0px 0px -10% 0px" });
-  els.forEach(function (el) { io.observe(el); });
+  els.forEach(el => io.observe(el));
+}
+
+/* The headline statement lights word by word as it crosses the viewport. Words
+   are wrapped here rather than in the markup so the sentence stays one
+   selectable, translatable string in the HTML. */
+(function () {
+  const root = document.querySelector("#bigline");
+  if (!root) return;
+  const walk = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const texts = []; let n;
+  while ((n = walk.nextNode())) texts.push(n);
+  for (const t of texts) {
+    const frag = document.createDocumentFragment();
+    for (const tok of t.textContent.split(/(\s+)/)) {
+      if (!tok) continue;
+      if (/^\s+$/.test(tok)) { frag.appendChild(document.createTextNode(tok)); continue; }
+      const w = document.createElement("w");
+      w.textContent = tok;
+      frag.appendChild(w);
+    }
+    t.parentNode.replaceChild(frag, t);
+  }
+  const words = [...root.querySelectorAll("w")];
+  let queued = false;
+  function lite() {
+    queued = false;
+    const r = root.getBoundingClientRect();
+    const p = (innerHeight * 0.82 - r.top) / (r.height + innerHeight * 0.30);
+    const k = Math.round(Math.max(0, Math.min(1, p)) * words.length);
+    words.forEach((w, i) => w.classList.toggle("lit", i < k));
+  }
+  addEventListener("scroll", () => {
+    if (!queued) { queued = true; requestAnimationFrame(lite); }
+  }, { passive: true });
+  addEventListener("resize", lite, { passive: true });
+  lite();
 })();
+
+/* The grasp demo drives both the trace and the pressure on the hand from one
+   clock, so the mound lights at exactly the frame the force spikes. */
+(function () {
+  const cv = document.querySelector("#trace");
+  if (!cv) return;
+  const pads = [...document.querySelectorAll(".pp")];
+  const g = makeGrasp(cv, (t, f) => {
+    const p = Math.min(f / 16, 1);
+    for (const el of pads) {
+      const w = parseFloat(el.dataset.w);
+      el.setAttribute("r", (5 + p * 27 * w).toFixed(1));
+      el.style.opacity = (0.12 + p * 0.88).toFixed(2);
+    }
+  });
+  const play = document.querySelector("#play");
+  play.addEventListener("click", () => {
+    const on = g.toggle();
+    play.textContent = on ? "Pause" : "Play";
+    play.setAttribute("aria-pressed", String(on));
+  });
+  document.querySelector("#replay").addEventListener("click", () => {
+    g.replay();
+    play.textContent = "Pause";
+    play.setAttribute("aria-pressed", "true");
+  });
+  if (!g.playing) { play.textContent = "Play"; play.setAttribute("aria-pressed", "false"); }
+})();
+
+mountHotaru(document.querySelector("#hot"));
+mountBand(document.querySelector("#bandc"));
 </script>
 </body>
 </html>
