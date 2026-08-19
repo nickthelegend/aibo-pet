@@ -48,8 +48,8 @@ SPEED = 1.0
 # what stops a repeated line sounding like a recording on the second hearing.
 LINES = {
     "intro": [
-        "Hello. I am a desk lamp with four servos and opinions about where you are sitting.",
-        "Oh good, someone. I am a desk lamp, and I have been waiting to be useful.",
+        "Hello. I am Hotaru. A desk lamp with four servos and opinions about where you are sitting.",
+        "Oh good, someone. I am Hotaru, and I have been waiting to be useful.",
     ],
     "menu": [
         "What do you want to know?",
@@ -86,8 +86,16 @@ LINES = {
     "bad_email": [
         "That does not look like an email address. Try again.",
     ],
+    "sending": [
+        "One moment. Writing it down.",
+    ],
     "done": [
-        "You are on the list. I will be here, leaning slightly to the left.",
+        "Done. Check your inbox, I have sent you something. "
+        "I will be here, leaning slightly to the left.",
+    ],
+    "send_failed": [
+        "I could not get that email out. You are on the list here, but "
+        "something on my end is broken. Try again in a moment.",
     ],
     "again": [
         "Again? Fine. I have nowhere else to be.",

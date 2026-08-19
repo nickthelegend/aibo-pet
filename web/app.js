@@ -1,6 +1,6 @@
 /* app.js — the live lamp.
  *
- * exports/aibo-assembled.glb has the arm baked at one pose. web/aibo-rig.glb
+ * exports/aibo-assembled.glb has the arm baked at one pose. web/hotaru-rig.glb
  * (cad/export_web.py) instead ships every moving segment in its OWN frame,
  * sitting on its yoke pivot pointing +Z, plus rig.json describing how they
  * chain. This rebuilds the pose every frame from four joint angles, which is
@@ -578,16 +578,44 @@ const talk = {
         this.finish();
       }));
   },
-  finish() {
-    const KEY = "aibo-waitlist";
+  async finish() {
+    // Local copy first, so a network failure never loses what they typed.
+    const KEY = "hotaru-waitlist";
     const list = JSON.parse(localStorage.getItem(KEY) || "[]");
     if (!list.some(x => x && x.email === this.answers.email)) list.push(this.answers);
     localStorage.setItem(KEY, JSON.stringify(list));
-    this.type(this.lineFor("done"), "done", () => {
-      this.el.chips.innerHTML =
-        `<span class="chip in" style="cursor:default">Saved in this browser only</span>
-         <a class="chip go in" href="./viewer.html">Open the parts viewer</a>`;
-    });
+
+    this.type(this.lineFor("sending"), "sending");
+    this.el.chips.innerHTML = "";
+
+    let ok = false, why = "";
+    try {
+      const r = await fetch("./api/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(this.answers),
+      });
+      const j = await r.json().catch(() => ({}));
+      ok = r.ok && j.ok;
+      why = j.detail || j.error || "";
+    } catch (e) { why = e.message; }
+
+    if (ok) {
+      this.type(this.lineFor("done"), "done", () => {
+        this.el.chips.innerHTML =
+          `<span class="chip in" style="cursor:default">Sent to ${this.answers.email}</span>
+           <a class="chip go in" href="./parts.html">See every part</a>`;
+      });
+    } else {
+      // Say what actually went wrong rather than pretending it worked.
+      this.type(this.lineFor("send_failed"), "send_failed", () => {
+        this.el.chips.innerHTML =
+          `<button class="chip go in" type="button" id="retry">Try again</button>
+           <a class="chip in" href="./parts.html">See every part</a>`;
+        $("#retry").onclick = () => this.finish();
+      });
+      if (why) this.el.err.textContent = why;
+    }
   },
 };
 
@@ -615,7 +643,7 @@ function syncButtons() {
 
   try {
     const [nodes, rig] = await Promise.all([
-      loadGLB("./aibo-rig.glb"),
+      loadGLB("./hotaru-rig.glb"),
       fetch("./rig.json").then(r => r.json()),
     ]);
     RIG = rig; RIG.yokeBelow = 16.0;

@@ -5,11 +5,11 @@
   "intro": [
    {
     "src": "./voice/intro.0.mp3",
-    "text": "Hello. I am a desk lamp with four servos and opinions about where you are sitting."
+    "text": "Hello. I am Hotaru. A desk lamp with four servos and opinions about where you are sitting."
    },
    {
     "src": "./voice/intro.1.mp3",
-    "text": "Oh good, someone. I am a desk lamp, and I have been waiting to be useful."
+    "text": "Oh good, someone. I am Hotaru, and I have been waiting to be useful."
    }
   ],
   "menu": [
@@ -70,10 +70,22 @@
     "text": "That does not look like an email address. Try again."
    }
   ],
+  "sending": [
+   {
+    "src": "./voice/sending.0.mp3",
+    "text": "One moment. Writing it down."
+   }
+  ],
   "done": [
    {
     "src": "./voice/done.0.mp3",
-    "text": "You are on the list. I will be here, leaning slightly to the left."
+    "text": "Done. Check your inbox, I have sent you something. I will be here, leaning slightly to the left."
+   }
+  ],
+  "send_failed": [
+   {
+    "src": "./voice/send_failed.0.mp3",
+    "text": "I could not get that email out. You are on the list here, but something on my end is broken. Try again in a moment."
    }
   ],
   "again": [

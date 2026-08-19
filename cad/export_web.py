@@ -10,7 +10,7 @@ describe how they chain together. The page rebuilds the pose every frame from
 four joint angles, which is exactly what assembly.world_items() does once at
 build time.
 
-    .venv/bin/python cad/export_web.py   ->  web/aibo-rig.glb + web/rig.json
+    .venv/bin/python cad/export_web.py   ->  web/hotaru-rig.glb + web/rig.json
 """
 from __future__ import annotations
 
@@ -195,7 +195,7 @@ def main():
     for n, m, c in items:
         v, f = weld(m)
         packed.append((n, v, f, c))
-    write_glb(os.path.join(WEB, "aibo-rig.glb"), packed)
+    write_glb(os.path.join(WEB, "hotaru-rig.glb"), packed)
     with open(os.path.join(WEB, "rig.json"), "w") as f:
         json.dump(rig, f, indent=1)
 
@@ -281,8 +281,8 @@ def main():
 
     tris = sum(len(f) for _n, _v, f, _c in packed)
     vts = sum(len(v) for _n, v, _f, _c in packed)
-    size = os.path.getsize(os.path.join(WEB, "aibo-rig.glb")) / 1e6
-    print(f"web/aibo-rig.glb  {len(packed)} nodes, {tris:,} tris, "
+    size = os.path.getsize(os.path.join(WEB, "hotaru-rig.glb")) / 1e6
+    print(f"web/hotaru-rig.glb  {len(packed)} nodes, {tris:,} tris, "
           f"{vts:,} verts, {size:.1f} MB")
     print(f"web/rig.json      {len(seg_meta)} driven segments + shade")
     print(f"web/spec.json     {spec['stats']['parts']} parts, "

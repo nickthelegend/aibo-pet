@@ -1,6 +1,6 @@
 /* viewer.js — the parts browser.
  *
- * Reuses web/aibo-rig.glb (2.1 MB) rather than exports/aibo-assembled.glb
+ * Reuses web/hotaru-rig.glb (2.1 MB) rather than exports/aibo-assembled.glb
  * (6.9 MB): the rig already has every part indexed, welded and normal-free,
  * and it carries the chain, so assembled and exploded are both just poses
  * rather than two more files to ship.
@@ -182,7 +182,7 @@ function frame() {
 (async function () {
   try {
     const [nodes, rig, spec] = await Promise.all([
-      loadGLB("./aibo-rig.glb"),
+      loadGLB("./hotaru-rig.glb"),
       fetch("./rig.json").then(r => r.json()),
       fetch("./spec.json").then(r => r.json()),
     ]);
