@@ -394,7 +394,11 @@ function play(k) { if (MOODS[k]) { mood = k; moodT = 0; } }
  * Off until asked for. Browsers block unprompted audio anyway, and a page
  * that starts talking at you is hostile. */
 const voice = {
-  on: false, bank: null, cur: null,
+  // ON by default. It was off, which meant the visitor had to find a toggle
+  // before the thing ever spoke -- so in practice nobody heard it. Browsers
+  // still block audio until a real gesture, so `unlocked` gates the first
+  // play and any click, tap or key anywhere opens it.
+  on: true, unlocked: false, bank: null, cur: null, pending: null,
   async load() {
     try { this.bank = (await (await fetch("./voice/lines.json")).json()).lines; }
     catch { this.bank = null; }
@@ -402,6 +406,7 @@ const voice = {
   play(key, onEnd) {
     this.stop();
     if (!this.on || !this.bank || !this.bank[key]) { onEnd && onEnd(); return; }
+    if (!this.unlocked) { this.pending = key; onEnd && onEnd(); return; }
     const vs = this.bank[key];
     const pick = vs[Math.floor(Math.random() * vs.length)];
     const a = new Audio(pick.src);
@@ -412,6 +417,22 @@ const voice = {
     a.play().catch(() => onEnd && onEnd());
   },
   stop() { if (this.cur) { this.cur.pause(); this.cur = null; } },
+
+  /* First gesture anywhere unlocks audio and speaks whatever is on screen.
+     Listeners are `once` and cover pointer, touch and keyboard so it opens
+     however the visitor arrived. */
+  arm(onOpen) {
+    const open = () => {
+      if (this.unlocked) return;
+      this.unlocked = true;
+      document.body.classList.add("audio-on");
+      const k = this.pending; this.pending = null;
+      if (k) this.play(k);
+      onOpen && onOpen();
+    };
+    ["pointerdown", "keydown", "touchstart"].forEach(e =>
+      addEventListener(e, open, { once: true, passive: true }));
+  },
 };
 
 /* ---- the conversation ----------------------------------------------
@@ -438,13 +459,15 @@ const talk = {
     this.el = { line: $("#line"), chips: $("#chips"), err: $("#conv-err") };
     $("#restart").onclick = () => { this.answers = {}; this.go("intro", "again"); };
     const on = $("#snd-on"), off = $("#snd-off");
+    voice.arm(() => { const p = $("#tap"); if (p) p.remove(); });
     const set = v => {
       voice.on = v;
       on.setAttribute("aria-pressed", String(v));
       off.setAttribute("aria-pressed", String(!v));
       if (!v) voice.stop();
     };
-    on.onclick = () => { set(true); voice.play(this.lastKey); };
+    set(voice.on);                       // on by default
+    on.onclick = () => { voice.unlocked = true; set(true); voice.play(this.lastKey); };
     off.onclick = () => set(false);
     this.go("intro");
   },

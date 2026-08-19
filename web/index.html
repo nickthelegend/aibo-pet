@@ -102,6 +102,23 @@ html,body{height:100%;overflow:hidden}
 .chips input:focus{outline:2px solid var(--blue);outline-offset:2px}
 .err{color:#FF9A8A;font-size:14px;line-height:20px;margin-top:var(--s-75);
   min-height:20px}
+/* Audio cannot start without a gesture, so say so instead of silently
+   waiting. Removes itself the moment the first click, tap or key lands. */
+.tap{position:fixed;left:50%;bottom:calc(var(--s-400) + 148px);
+  transform:translateX(-50%);z-index:6;display:inline-flex;align-items:center;
+  gap:var(--s-75);font-family:inherit;font-size:14px;line-height:20px;
+  font-weight:600;color:var(--fg);cursor:pointer;
+  padding:var(--s-75) var(--s-200);border-radius:9999px;
+  border:1px solid var(--line-2);background:rgba(24,24,24,.86);
+  backdrop-filter:blur(16px);
+  animation:rise 600ms var(--ease) both 900ms}
+@keyframes rise{from{opacity:0;transform:translate(-50%,10px)}
+                to{opacity:1;transform:translate(-50%,0)}}
+.tap .dot{width:7px;height:7px;border-radius:9999px;background:var(--blue);
+  animation:ping 1.6s var(--ease) infinite}
+@keyframes ping{0%,100%{opacity:.35;transform:scale(.8)}50%{opacity:1;transform:scale(1.25)}}
+body.audio-on .tap{display:none}
+
 .hint{position:fixed;right:var(--s-400);bottom:var(--s-300);z-index:3;
   font-size:12px;line-height:16px;color:var(--fg-mute);pointer-events:none}
 </style>
@@ -173,8 +190,12 @@ html,body{height:100%;overflow:hidden}
   <p class="err" id="conv-err" role="alert"></p>
 </div>
 
+<button class="tap" id="tap" type="button">
+  <span class="dot" aria-hidden="true"></span>
+  Tap anywhere to hear it
+</button>
 <p class="hint">drag to orbit</p>
 
-<script type="module" src="./app.js?v=a5761c69"></script>
+<script type="module" src="./app.js?v=2cb07dc8"></script>
 </body>
 </html>
