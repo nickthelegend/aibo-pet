@@ -30,12 +30,20 @@ class Handler(SimpleHTTPRequestHandler):
     }
 
     def end_headers(self):
+        # Everything here revalidates. The first version put max-age=3600 on
+        # .js/.css, which meant a redeploy was invisible to anyone who had
+        # already loaded the site -- two fixes shipped and neither reached a
+        # browser that had the old bundle. Nothing on this site is
+        # content-hashed, so nothing may be cached blind.
+        #
+        # no-cache does NOT mean "do not store": the browser keeps the file
+        # and revalidates with If-Modified-Since, so an unchanged asset costs
+        # a 304 and no body.
         p = self.path.split("?")[0]
-        if p.endswith((".glb", ".json")):
-            # short: a redeploy should actually reach people
-            self.send_header("Cache-Control", "public, max-age=300")
-        elif p.endswith((".css", ".js", ".svg")):
-            self.send_header("Cache-Control", "public, max-age=3600")
+        if p.endswith((".glb",)):
+            self.send_header("Cache-Control", "public, max-age=600, must-revalidate")
+        else:
+            self.send_header("Cache-Control", "no-cache")
         self.send_header("X-Content-Type-Options", "nosniff")
         super().end_headers()
 
