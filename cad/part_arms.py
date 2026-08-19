@@ -21,6 +21,7 @@ import os
 import sys
 
 import numpy as np
+from shapely import affinity
 from shapely.geometry import box
 from shapely.ops import unary_union
 
@@ -113,18 +114,36 @@ def sg_housing(axis_z):
     _ax.rotate_y(90.0)
     _ax.translate(dx=-SG_HX - P.AXLE_LEN + OVL, dz=axis_z)
     m += _ax
+    # Cap screw bosses. This cup had NONE -- sg_cap punched four rectangular
+    # slots through a plate with nothing underneath them, so the SG90 was
+    # never actually held down by anything.
+    body_top = axis_z + P.SG_SHAFT_OFF
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            xa, xb = sorted((sx * (SG_HX - P.CAP_BOSS), sx * SG_HX))
+            ya, yb = sorted((sy * (SG_HY - P.CAP_BOSS), sy * SG_HY))
+            bore = affinity.translate(pl.circle(P.M3_INSERT_D),
+                                      sx * (SG_HX - P.CAP_BOSS / 2),
+                                      sy * (SG_HY - P.CAP_BOSS / 2))
+            m += pl.banded(box(xa, ya, xb, yb).difference(bore),
+                           body_top + P.CAP_BOSS_GAP, z_top, [])
     return m, z_bot, z_top
 
 
 def sg_cap(z_top):
+    """Round, counterbored M3 holes on the cup's boss centres. They were
+    rectangular slots on centres of their own, over a cup that had no
+    bosses at all."""
     outer = pl.rounded_rect(2 * SG_HX, 2 * SG_HY, 2.5)
-    holes = []
-    for sx in (-1, 1):
-        for sy in (-1, 1):
-            xa, xb = sorted((sx * (SG_HX - 4.0), sx * (SG_HX - 1.6)))
-            ya, yb = sorted((sy * (SG_HY - 3.6), sy * (SG_HY - 1.6)))
-            holes.append(box(xa, ya, xb, yb))
-    return pl.prism(outer.difference(unary_union(holes)), z_top, z_top + 2.5)
+    ctrs = [(sx * (SG_HX - P.CAP_BOSS / 2), sy * (SG_HY - P.CAP_BOSS / 2))
+            for sx in (-1, 1) for sy in (-1, 1)]
+    clear = unary_union([affinity.translate(pl.circle(P.M3_CLEAR), x, y)
+                         for x, y in ctrs])
+    heads = unary_union([affinity.translate(pl.circle(P.M3_HEAD_D), x, y)
+                         for x, y in ctrs])
+    return pl.banded(outer, z_top, z_top + P.CAP_T,
+                     [(clear, z_top - OVL, z_top + P.CAP_T + OVL),
+                      (heads, z_top + P.CAP_T - P.CAP_CB, z_top + P.CAP_T + OVL)])
 
 
 def build():

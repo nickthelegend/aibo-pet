@@ -340,6 +340,13 @@ SCREW_HEAD_D  = 16.0   # > idler bore, which is the whole point
 SCREW_HEAD_T  = 3.5
 SCREW_KNURL_N = 12
 JOINT_WALL    = 3.0    # housing wall
+# Servo-cup cap fixing. CAP_BOSS has to clear an M3 insert bore with 1.6 of
+# wall round it, so it cannot live in the 3.0 rim -- it grows inward from the
+# cup corner instead, ABOVE the servo body where there is nothing to hit.
+CAP_BOSS      = 7.2    # M3_INSERT_D 4.0 + 2 x 1.6
+CAP_BOSS_GAP  = 0.5    # boss starts this far above the servo's top face
+CAP_T         = 3.0    # cap plate thickness
+CAP_CB        = 1.8    # counterbore so the M3 heads sit flush
 FLARE_Z       = 16.0   # 45-deg-safe tube -> housing transition
 CONVERGE_Z    = 28.0   # yoke plates -> tube (inner edge travels 25.45 @ 42 deg)
 

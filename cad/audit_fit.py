@@ -231,6 +231,28 @@ chk("MX pocket stays inside the lid",
     math.hypot(_mxh, abs(P.MX_CTR[1]) + _mxh) < P.LID_OD / 2 - 2.0,
     f"far corner r{math.hypot(_mxh, abs(P.MX_CTR[1]) + _mxh):.1f} "
     f"vs rim r{P.LID_OD / 2:.1f}")
+# Every servo cup cap used to have holes over NOTHING: the MG996R cups had
+# solid bosses with no bore and rectangular slots that did not line up with
+# them, and the SG90 cup had no bosses at all. Four caps that could not be
+# fastened, under a comment claiming M3 inserts.
+import part_arms as _PAR
+_cupdefs = [("MG996R cup", J.H_HX, J.H_HY, P.MG_SHAFT_OFF),
+            ("SG90 cup", _PAR.SG_HX, _PAR.SG_HY, P.SG_SHAFT_OFF)]
+for _nm, _hx, _hy, _off in _cupdefs:
+    _wall = (P.CAP_BOSS - P.M3_INSERT_D) / 2
+    chk(f"{_nm}: boss holds an M3 insert", _wall >= 1.5,
+        f"{P.CAP_BOSS} boss round a O{P.M3_INSERT_D} bore = {_wall:.2f} mm wall")
+    chk(f"{_nm}: boss is deep enough for the insert",
+        (_off + 8.0) - (_off + P.CAP_BOSS_GAP) >= P.M3_INSERT_L,
+        f"{(8.0 - P.CAP_BOSS_GAP):.1f} mm of boss vs a {P.M3_INSERT_L} mm insert")
+    chk(f"{_nm}: boss clears the servo body", P.CAP_BOSS_GAP > 0,
+        f"starts {P.CAP_BOSS_GAP} mm above the body's top face")
+    chk(f"{_nm}: cap counterbore stays on the plate",
+        P.CAP_BOSS / 2 >= P.M3_HEAD_D / 2,
+        f"head O{P.M3_HEAD_D} on centres {P.CAP_BOSS/2:.1f} in from the corner")
+chk("cap plate is thicker than its counterbore", P.CAP_T > P.CAP_CB,
+    f"{P.CAP_T} plate, {P.CAP_CB} counterbore -> {P.CAP_T - P.CAP_CB:.1f} mm left")
+
 # The yoke had NO axial retention at all -- 3 mm of stub-axle engagement and
 # friction. These check the printed keeper actually keeps.
 import part_screw as _PSC

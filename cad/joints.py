@@ -23,6 +23,7 @@ import os
 import sys
 
 import numpy as np
+from shapely import affinity
 from shapely.geometry import box
 from shapely.ops import unary_union
 
@@ -153,25 +154,43 @@ def housing(axis_z, extra=()):
     axle.rotate_y(90.0)              # +Z -> +X
     axle.translate(dx=-H_HX - P.AXLE_LEN + OVL, dz=axis_z)
     m += axle
-    # cap screw bosses: 4 M3 inserts in the cup rim
+    # Cap screw bosses. These used to be 4.6 x 4.2 SOLID blocks with a
+    # comment claiming they held M3 inserts -- there was no bore in them at
+    # all, and the cap's matching "holes" were rectangular slots smaller than
+    # the blocks, so nothing could ever have been screwed down. On top of
+    # that they started at z_top - 10, which is 2 mm BELOW the servo body's
+    # top face, and clashed with it 1.8 x 1.2 x 2.0 at every corner.
+    #
+    # They sit above the body now and carry a real insert bore.
+    body_top = axis_z + P.MG_SHAFT_OFF
     for sx in (-1, 1):
         for sy in (-1, 1):
-            xa, xb = sorted((sx * (H_HX - 5.2), sx * (H_HX - 0.6)))
-            ya, yb = sorted((sy * (H_HY - 4.6), sy * (H_HY - 0.4)))
-            m += pl.prism(box(xa, ya, xb, yb), z_top - 10.0, z_top)
+            xa, xb = sorted((sx * (H_HX - P.CAP_BOSS), sx * H_HX))
+            ya, yb = sorted((sy * (H_HY - P.CAP_BOSS), sy * H_HY))
+            bore = affinity.translate(pl.circle(P.M3_INSERT_D),
+                                      sx * (H_HX - P.CAP_BOSS / 2),
+                                      sy * (H_HY - P.CAP_BOSS / 2))
+            m += pl.banded(box(xa, ya, xb, yb).difference(bore),
+                           body_top + P.CAP_BOSS_GAP, z_top, [])
     return m, z_bot, z_top
 
 
 def housing_cap(axis_z, z_top):
-    """The plate that closes the cup and clamps the servo's upper tab."""
+    """The plate that closes the cup and clamps the servo's upper tab.
+
+    Round M3 clearance holes, counterbored so the heads sit flush, on the
+    SAME centres as the cup's insert bosses. They were rectangular slots on
+    centres of their own before, lining up with nothing."""
     outer = pl.rounded_rect(2 * H_HX, 2 * H_HY, 3.0)
-    holes = []
-    for sx in (-1, 1):
-        for sy in (-1, 1):
-            xa, xb = sorted((sx * (H_HX - 4.4), sx * (H_HX - 1.4)))
-            ya, yb = sorted((sy * (H_HY - 3.4), sy * (H_HY - 1.4)))
-            holes.append(box(xa, ya, xb, yb))
-    return pl.prism(outer.difference(unary_union(holes)), z_top, z_top + 3.0)
+    ctrs = [(sx * (H_HX - P.CAP_BOSS / 2), sy * (H_HY - P.CAP_BOSS / 2))
+            for sx in (-1, 1) for sy in (-1, 1)]
+    clear = unary_union([affinity.translate(pl.circle(P.M3_CLEAR), x, y)
+                         for x, y in ctrs])
+    heads = unary_union([affinity.translate(pl.circle(P.M3_HEAD_D), x, y)
+                         for x, y in ctrs])
+    return pl.banded(outer, z_top, z_top + P.CAP_T,
+                     [(clear, z_top - OVL, z_top + P.CAP_T + OVL),
+                      (heads, z_top + P.CAP_T - P.CAP_CB, z_top + P.CAP_T + OVL)])
 
 
 # ------------------------------------------------------------------- arm ----
