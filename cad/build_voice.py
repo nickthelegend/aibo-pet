@@ -1,5 +1,8 @@
 """build_voice.py — pre-render every line AIBO speaks.
 
+Rendered with Kokoro, an open weights 82M parameter model, not with a
+system voice.
+
 Lisa (lisa.locomotive.ca) does not run text to speech in the browser. Its
 network log is a bank of static files:
 
@@ -31,8 +34,15 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 WEB = os.path.normpath(os.path.join(HERE, "..", "web"))
 OUT = os.path.join(WEB, "voice")
 
-VOICE = "Samantha"     # clearest of the built-in en_US voices
-RATE = 178             # words per minute; the default 175 drags slightly
+# Kokoro (hexgrad/Kokoro-82M) via onnxruntime. The first version shelled out
+# to macOS `say`, which is the same class of robot voice as speechSynthesis --
+# fine as a placeholder, not fine as the thing a visitor hears. Kokoro is an
+# open weights model that actually sounds like a person, and it renders here
+# at roughly 2.5x realtime on CPU, so the whole bank is a few seconds.
+MODEL = os.path.join(HERE, "..", ".models", "kokoro-v1.0.onnx")
+VOICES = os.path.join(HERE, "..", ".models", "voices-v1.0.bin")
+VOICE = "af_heart"     # warm, mid pace; af_nicole and am_echo are the alts
+SPEED = 1.0
 
 # id -> [variants]. Multiple variants are picked between at random, which is
 # what stops a repeated line sounding like a recording on the second hearing.
@@ -89,27 +99,41 @@ def have(cmd):
     return shutil.which(cmd) is not None
 
 
+_kokoro = None
+
+
+def kokoro():
+    global _kokoro
+    if _kokoro is None:
+        from kokoro_onnx import Kokoro
+        if not os.path.exists(MODEL):
+            raise SystemExit(
+                "missing .models/kokoro-v1.0.onnx and voices-v1.0.bin -- fetch "
+                "them from the kokoro-onnx releases page")
+        _kokoro = Kokoro(MODEL, VOICES)
+    return _kokoro
+
+
 def render(text, path):
-    """say -> aiff -> mp3. afconvert ships with macOS; lame and ffmpeg are
-    both common. Whichever exists wins."""
-    aiff = path + ".aiff"
-    subprocess.run(["say", "-v", VOICE, "-r", str(RATE), "-o", aiff, text],
-                   check=True)
+    """Kokoro -> wav -> mp3."""
+    import soundfile as sf
+    samples, sr = kokoro().create(text, voice=VOICE, speed=SPEED, lang="en-us")
+    wav = path + ".wav"
+    sf.write(wav, samples, sr)
     if have("lame"):
-        subprocess.run(["lame", "--quiet", "-V", "5", aiff, path], check=True)
+        subprocess.run(["lame", "--quiet", "-V", "5", wav, path], check=True)
     elif have("ffmpeg"):
-        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", aiff,
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", wav,
                         "-codec:a", "libmp3lame", "-qscale:a", "5", path],
                        check=True)
     else:
         raise SystemExit("need lame or ffmpeg to make mp3")
-    os.remove(aiff)
+    os.remove(wav)
 
 
 def main():
     force = "--force" in sys.argv
-    if not have("say"):
-        raise SystemExit("`say` not found: this build step needs macOS")
+
     os.makedirs(OUT, exist_ok=True)
 
     manifest, made, kept = {}, 0, 0
@@ -120,7 +144,7 @@ def main():
             path = os.path.join(OUT, name)
             # hash the text so an edited line re-renders and an untouched one
             # does not; the whole bank takes a while otherwise
-            sig = hashlib.sha1(f"{VOICE}|{RATE}|{text}".encode()).hexdigest()[:10]
+            sig = hashlib.sha1(f"kokoro|{VOICE}|{SPEED}|{text}".encode()).hexdigest()[:10]
             sig_path = path + ".sig"
             cur = open(sig_path).read().strip() if os.path.exists(sig_path) else ""
             if force or cur != sig or not os.path.exists(path):
@@ -132,7 +156,8 @@ def main():
             manifest[key].append({"src": f"./voice/{name}", "text": text})
 
     with open(os.path.join(OUT, "lines.json"), "w") as f:
-        json.dump({"voice": VOICE, "rate": RATE, "lines": manifest}, f, indent=1)
+        json.dump({"engine": "kokoro-82M", "voice": VOICE, "lines": manifest},
+                  f, indent=1)
 
     total = sum(os.path.getsize(os.path.join(OUT, f))
                 for f in os.listdir(OUT) if f.endswith(".mp3"))

@@ -1,6 +1,6 @@
 {
- "voice": "Samantha",
- "rate": 178,
+ "engine": "kokoro-82M",
+ "voice": "af_heart",
  "lines": {
   "intro": [
    {

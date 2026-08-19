@@ -30,6 +30,20 @@
   background:var(--surface-2);animation:pulse 1.6s var(--ease) infinite}
 @keyframes pulse{0%,100%{opacity:.45}50%{opacity:.9}}
 
+/* the title, over the character. pointer-events off so it never eats a drag
+   on the model behind it. */
+.title{position:absolute;left:0;right:0;top:calc(var(--s-900) + var(--s-300));
+  z-index:2;text-align:center;pointer-events:none;padding:0 var(--s-300)}
+.title h1{font-size:60px;line-height:1;letter-spacing:-0.04em;
+  background:linear-gradient(90deg,#FFFFFF 0%,#9B9B9B 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+@media(min-width:768px){ .title h1{font-size:96px} }
+.title p{margin-top:var(--s-100);font-size:20px;line-height:28px;
+  font-weight:600;color:var(--fg)}
+@media(min-width:768px){ .title p{font-size:24px;line-height:32px} }
+.title .sub{display:block;margin:var(--s-100) auto 0;max-width:420px;
+  font-size:14px;line-height:20px;color:var(--fg-mute)}
+
 /* stacked pill toggle, right edge */
 .sound{position:absolute;right:var(--s-300);top:50%;transform:translateY(-50%);
   z-index:4;display:flex;flex-direction:column;border-radius:9999px;
@@ -172,6 +186,17 @@ footer a:hover{color:var(--fg-dim)}
     <div class="skeleton" id="skel" aria-hidden="true"><span></span></div>
     <canvas id="c" aria-label="Interactive 3D model of the AIBO lamp"></canvas>
 
+    <!-- Title sits OVER the character, not above it. Lisa gets away with no
+         title because Locomotive is the brand and the character is the
+         product; here the character is a lamp nobody has heard of, so it has
+         to say what it is before it starts talking. -->
+    <div class="title">
+      <h1>AIBO</h1>
+      <p>A desk lamp that reacts to you</p>
+      <span class="sub">Four servos, a microphone and a speaker.
+        22 printed parts. Open source.</span>
+    </div>
+
     <div class="sound" role="group" aria-label="Voice">
       <button id="snd-on" type="button" aria-pressed="false" aria-label="Turn the voice on">
         <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
@@ -285,6 +310,6 @@ footer a:hover{color:var(--fg-dim)}
   </span>
 </div></footer>
 
-<script type="module" src="./app.js?v=2ea81adc"></script>
+<script type="module" src="./app.js?v=c18c2752"></script>
 </body>
 </html>

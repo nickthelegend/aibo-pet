@@ -320,7 +320,8 @@ function draw() {
   // against the visible area above it rather than the whole canvas.
   const sheet = document.querySelector(".sheet");
   const lift = sheet ? (sheet.getBoundingClientRect().height / cv.clientHeight) : 0;
-  const ctr = [CTR[0], CTR[1], CTR[2] - lift * 190];
+  // title occupies the top, sheet the bottom: sit the model between them
+  const ctr = [CTR[0], CTR[1], CTR[2] - lift * 190 + 26];
   const eye = [ctr[0] + dist * Math.cos(el) * Math.sin(az),
                ctr[1] + dist * Math.cos(el) * Math.cos(az),
                ctr[2] + dist * Math.sin(el)];
