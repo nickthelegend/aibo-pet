@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PROPRIO — the data layer for physical AI</title>
+<meta name="description" content="Hardware that collects embodied data, a contributor network that owns it, and a settlement layer on Avalanche. Robots and wearables built in house.">
+<link rel="icon" href="./mark.svg" type="image/svg+xml">
+<meta property="og:title" content="PROPRIO — the data layer for physical AI">
+<meta property="og:description" content="Compute scaled. Embodied data did not. We build the instruments that collect it and the network that owns it.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./site.css">
+<style>
+/* PROPRIO shares Hotaru's system so the two read as one house. Same tokens,
+   same curve, same palette. The only thing that changes is the argument. */
+.chero{padding-top:var(--s-900);padding-bottom:var(--s-700)}
+.chero h1{font-size:44px;line-height:1;max-width:680px;letter-spacing:-0.03em;
+  background:linear-gradient(90deg,#FFFFFF 0%,#9B9B9B 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+@media(min-width:768px){ .chero h1{font-size:72px} }
+.chero .lede{margin-top:var(--s-300);max-width:680px}
+.chero .actions{margin-top:var(--s-400);display:flex;gap:var(--s-100);flex-wrap:wrap}
+
+.big{font-size:60px;line-height:1;font-weight:700;letter-spacing:-0.03em}
+@media(min-width:768px){ .big{font-size:96px} }
+.big .dim{color:var(--fg-mute)}
+
+.loop{counter-reset:s}
+.loop .card{position:relative;padding-top:var(--s-500)}
+.loop .card::before{counter-increment:s;content:"0" counter(s);
+  position:absolute;top:var(--s-300);left:var(--s-300);
+  font-size:14px;line-height:20px;font-weight:700;color:var(--blue)}
+
+.prod{display:grid;grid-template-columns:1fr;gap:var(--s-200)}
+@media(min-width:900px){ .prod{grid-template-columns:1fr 1fr} }
+.prod .card{display:flex;flex-direction:column;justify-content:space-between;
+  min-height:260px}
+.tagbar{display:flex;gap:var(--s-75);flex-wrap:wrap;margin-top:var(--s-200)}
+.tg{font-size:12px;line-height:16px;font-weight:600;color:var(--fg-mute);
+  border:1px solid var(--line-2);border-radius:9999px;padding:2px 10px}
+.tg.live{color:var(--fg);border-color:var(--blue);background:rgba(77,23,245,.16)}
+
+.rail{border-left:1px solid var(--line);padding-left:var(--s-300);
+  display:grid;gap:var(--s-400);max-width:760px}
+.rail h3{font-size:20px;line-height:28px}
+.rail p{color:var(--fg-dim);margin-top:var(--s-75)}
+.note{border:1px solid var(--line-2);border-radius:16px;padding:var(--s-300);
+  color:var(--fg-dim);max-width:760px;margin-top:var(--s-500)}
+.note b{color:var(--fg)}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top solid">
+  <a class="brand" href="./company.html" aria-label="PROPRIO home">
+    <!-- The O is a drawn ring rather than a glyph, so it can carry the blue
+         pupil. Sized and placed against the text rather than guessed: 72px
+         Manrope at -2 tracking puts the sixth letter's right edge near 356. -->
+    <svg viewBox="0 0 430 92" aria-hidden="true" style="height:22px">
+      <text x="0" y="70" font-family="Manrope,sans-serif" font-size="72"
+            font-weight="700" letter-spacing="-2" fill="currentColor">PROPRI</text>
+      <circle cx="392" cy="45" r="31" fill="none" stroke="currentColor" stroke-width="16"/>
+      <circle cx="392" cy="45" r="9" fill="#4D17F5"/>
+    </svg>
+  </a>
+  <nav class="topnav" aria-label="Primary">
+    <a href="#thesis">Thesis</a>
+    <a href="#engine">Engine</a>
+    <a href="#hardware">Hardware</a>
+    <a href="#network">Network</a>
+  </nav>
+  <a class="btn primary" href="#network">Read the model</a>
+</header>
+
+<main id="main">
+
+  <section class="wrap chero">
+    <p class="eyebrow">Physical AI infrastructure</p>
+    <h1>Compute scaled.<br>Embodied data<br>did not.</h1>
+    <p class="lede">Language models had the internet to read. Robots have no
+      equivalent, because nobody wrote down what it feels like to open a jar.
+      PROPRIO builds the instruments that record it, the network that supplies
+      it, and the ledger that pays for it.</p>
+    <div class="actions">
+      <a class="btn primary" href="#network">How the network works</a>
+      <a class="btn ghost" href="./index.html">See Hotaru, our first robot</a>
+    </div>
+  </section>
+
+  <section class="wrap" id="thesis">
+    <p class="eyebrow">The bottleneck</p>
+    <p class="big">It is not compute.<br><span class="dim">It never was.</span></p>
+    <div class="grid g3" style="margin-top:var(--s-600)">
+      <article class="card">
+        <h3>The corpus does not exist</h3>
+        <p>You cannot scrape contact forces, grip adjustments or the half second
+          of hesitation before a fragile object. None of it was ever written
+          down, so none of it can be crawled.</p>
+      </article>
+      <article class="card">
+        <h3>Lab data does not generalise</h3>
+        <p>Policies trained on rigs in controlled rooms fall over in real
+          kitchens. The variance that breaks them is exactly the variance a lab
+          removes on purpose.</p>
+      </article>
+      <article class="card">
+        <h3>Collection does not scale on payroll</h3>
+        <p>Teleoperation at 30 dollars an hour puts a hard ceiling on how much
+          experience anyone can buy. The ceiling is economic, not technical.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="wrap" id="engine">
+    <p class="eyebrow">The engine</p>
+    <h2>Instruments, network,<br>settlement</h2>
+    <p class="lede" style="margin-top:var(--s-200);max-width:680px">
+      Three parts that only work together. Hardware alone is a gadget. A network
+      without instruments collects phone video. A token without either is
+      nothing at all.</p>
+    <div class="grid g4 loop" style="margin-top:var(--s-600)">
+      <article class="card"><h3>Instrument</h3>
+        <p>Our own devices, so we control what is sensed. Vision, inertial and
+          contact, time aligned at the source rather than stitched afterwards.</p></article>
+      <article class="card"><h3>Capture</h3>
+        <p>Contributors record real tasks in real places. Consent is captured
+          with the data, not asserted about it later.</p></article>
+      <article class="card"><h3>Settle</h3>
+        <p>Each accepted contribution is recorded on Avalanche with its terms.
+          Provenance and payment are the same record.</p></article>
+      <article class="card"><h3>Train</h3>
+        <p>Buyers license slices by task, environment and sensor. Failures come
+          back as new capture targets.</p></article>
+    </div>
+  </section>
+
+  <section class="wrap" id="hardware">
+    <p class="eyebrow">Hardware</p>
+    <h2>We build the<br>instruments</h2>
+    <p class="lede" style="margin-top:var(--s-200);max-width:680px">
+      Buying someone else's sensor means shipping someone else's blind spots.
+      Everything is designed here, and the CAD is public.</p>
+
+    <div class="prod" style="margin-top:var(--s-600)">
+      <article class="card">
+        <div>
+          <h3>Hotaru</h3>
+          <p style="margin-top:var(--s-100)">A desk robot with four servos, a
+            microphone and a speaker. It leans toward whoever is talking and
+            folds down when the room goes quiet. 22 printed parts, every one on
+            a 180 mm bed, and the CAD is open in pure Python.</p>
+          <p style="margin-top:var(--s-100);color:var(--fg-mute)">It is not a
+            collection device. It is the proof that we take hardware from
+            parameters to a shipped object, which is the thing you want
+            established before you wear anything we make.</p>
+        </div>
+        <div>
+          <div class="tagbar">
+            <span class="tg live">Shipping</span>
+            <span class="tg">Open CAD</span>
+            <span class="tg">22 parts</span>
+          </div>
+          <p style="margin-top:var(--s-200)">
+            <a class="btn" href="./index.html">Meet Hotaru</a></p>
+        </div>
+      </article>
+
+      <article class="card">
+        <div>
+          <h3>Capture wearables</h3>
+          <p style="margin-top:var(--s-100)">Head and wrist units recording
+            egocentric video with synchronised inertial and contact signal. The
+            wrist is the point: a phone in a pocket cannot tell you how hard
+            somebody gripped, and grip is most of the task.</p>
+          <p style="margin-top:var(--s-100);color:var(--fg-mute)">In design.
+            Specification follows the first dataset we sell, not the other way
+            round.</p>
+        </div>
+        <div>
+          <div class="tagbar">
+            <span class="tg">In design</span>
+            <span class="tg">Egocentric</span>
+            <span class="tg">IMU and contact</span>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="wrap" id="network">
+    <p class="eyebrow">The network</p>
+    <h2>Contributors own<br>what they record</h2>
+    <p class="lede" style="margin-top:var(--s-200);max-width:680px">
+      Data collection normally means a company keeps the asset and the person
+      who made it gets an hourly rate. That is why supply caps out. Invert it
+      and supply compounds.</p>
+
+    <div class="rail" style="margin-top:var(--s-600)">
+      <div>
+        <h3>Contribution is a record, not a receipt</h3>
+        <p>Every accepted clip is written to Avalanche with its licence terms,
+          the contributor, and a hash of the payload. Chosen for cheap finality
+          and subsecond settlement, because a network paying out per clip cannot
+          carry mainnet gas.</p>
+      </div>
+      <div>
+        <h3>Payment follows usage, not upload</h3>
+        <p>Contributors earn when a buyer licenses a slice their data sits in.
+          It aligns the incentive with quality: volume alone earns nothing if
+          nobody trains on it.</p>
+      </div>
+      <div>
+        <h3>Buyers get provenance, not promises</h3>
+        <p>Every hour licensed carries a verifiable chain back to the person who
+          recorded it and the terms they agreed. That is the part a legal team
+          actually blocks on, and it is the hardest thing for a competitor to
+          retrofit.</p>
+      </div>
+    </div>
+
+    <div class="note">
+      <b>Where this honestly stands.</b> Hotaru is real and shipping, and its
+      CAD, STLs and audits are public today. The wearables are in design. The
+      network and the settlement layer are the model we are building toward, not
+      something you can use this week. We would rather say that here than have
+      you find out after signing something.
+    </div>
+
+    <p style="margin-top:var(--s-600)">
+      <a class="btn primary" href="./index.html">See what we have actually built</a>
+    </p>
+  </section>
+</main>
+
+<footer><div class="wrap" style="display:flex;gap:var(--s-300);flex-wrap:wrap;
+  justify-content:space-between">
+  <span>PROPRIO — the data layer for physical AI.</span>
+  <span style="display:flex;gap:var(--s-300);flex-wrap:wrap">
+    <a href="./index.html">Hotaru</a>
+    <a href="./parts.html">Parts</a>
+    <a href="https://github.com/nickthelegend/aibo-pet">Source</a>
+  </span>
+</div></footer>
+</body>
+</html>
