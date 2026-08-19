@@ -1,0 +1,372 @@
+{
+ "parts": [
+  {
+   "name": "base",
+   "mm": [
+    160.0,
+    160.0,
+    58.0
+   ],
+   "cm3": 128.7,
+   "fits": true
+  },
+  {
+   "name": "shoulder",
+   "mm": [
+    160.0,
+    160.0,
+    33.4
+   ],
+   "cm3": 50.7,
+   "fits": true
+  },
+  {
+   "name": "lid",
+   "mm": [
+    113.8,
+    113.8,
+    6.4
+   ],
+   "cm3": 41.2,
+   "fits": true
+  },
+  {
+   "name": "base-joint",
+   "mm": [
+    80.0,
+    34.5,
+    51.8
+   ],
+   "cm3": 54.5,
+   "fits": true
+  },
+  {
+   "name": "cap-base",
+   "mm": [
+    49.7,
+    26.5,
+    3.0
+   ],
+   "cm3": 4.2,
+   "fits": true
+  },
+  {
+   "name": "arm-lower",
+   "mm": [
+    59.7,
+    26.5,
+    154.0
+   ],
+   "cm3": 58.1,
+   "fits": true
+  },
+  {
+   "name": "arm-upper",
+   "mm": [
+    59.7,
+    26.5,
+    154.0
+   ],
+   "cm3": 58.1,
+   "fits": true
+  },
+  {
+   "name": "arm-fore",
+   "mm": [
+    59.7,
+    21.2,
+    132.9
+   ],
+   "cm3": 35.1,
+   "fits": true
+  },
+  {
+   "name": "cap-shoulder",
+   "mm": [
+    49.7,
+    26.5,
+    3.0
+   ],
+   "cm3": 4.2,
+   "fits": true
+  },
+  {
+   "name": "cap-elbow",
+   "mm": [
+    49.7,
+    26.5,
+    3.0
+   ],
+   "cm3": 4.2,
+   "fits": true
+  },
+  {
+   "name": "cap-head",
+   "mm": [
+    35.3,
+    18.0,
+    3.0
+   ],
+   "cm3": 1.8,
+   "fits": true
+  },
+  {
+   "name": "shade",
+   "mm": [
+    66.0,
+    66.0,
+    72.0
+   ],
+   "cm3": 29.6,
+   "fits": true
+  },
+  {
+   "name": "horn-mg996r",
+   "mm": [
+    48.0,
+    48.0,
+    7.3
+   ],
+   "cm3": 2.2,
+   "fits": true
+  },
+  {
+   "name": "horn-sg90",
+   "mm": [
+    31.0,
+    31.0,
+    4.9
+   ],
+   "cm3": 0.5,
+   "fits": true
+  },
+  {
+   "name": "horn-adapter",
+   "mm": [
+    48.0,
+    48.0,
+    10.1
+   ],
+   "cm3": 4.9,
+   "fits": true
+  },
+  {
+   "name": "spline-test",
+   "mm": [
+    66.0,
+    26.0,
+    6.0
+   ],
+   "cm3": 9.6,
+   "fits": true
+  },
+  {
+   "name": "spk-clamp",
+   "mm": [
+    10.0,
+    53.8,
+    19.0
+   ],
+   "cm3": 2.1,
+   "fits": true
+  },
+  {
+   "name": "mic-tab",
+   "mm": [
+    21.1,
+    7.0,
+    3.2
+   ],
+   "cm3": 0.3,
+   "fits": true
+  },
+  {
+   "name": "esp-tab",
+   "mm": [
+    16.0,
+    8.0,
+    2.0
+   ],
+   "cm3": 0.2,
+   "fits": true
+  },
+  {
+   "name": "amp-tab",
+   "mm": [
+    15.0,
+    8.0,
+    2.0
+   ],
+   "cm3": 0.2,
+   "fits": true
+  },
+  {
+   "name": "keycap",
+   "mm": [
+    17.9,
+    17.9,
+    9.0
+   ],
+   "cm3": 1.1,
+   "fits": true
+  },
+  {
+   "name": "yoke-screw",
+   "mm": [
+    15.7,
+    15.7,
+    9.5
+   ],
+   "cm3": 0.7,
+   "fits": true
+  }
+ ],
+ "interfaces": [
+  {
+   "a": "base",
+   "b": "shoulder",
+   "dof": "up / off the rim",
+   "held_by": "3x M3 into inserts in the tub rim"
+  },
+  {
+   "a": "shoulder",
+   "b": "lid",
+   "dof": "up / out of the bore",
+   "held_by": "4x M3 into seat lugs + snap bead"
+  },
+  {
+   "a": "lid",
+   "b": "base-joint",
+   "dof": "overturning moment from the arm",
+   "held_by": "4x M3 through the lid into the bulkhead tops"
+  },
+  {
+   "a": "base-joint",
+   "b": "cap-base",
+   "dof": "cap lifting off the cup",
+   "held_by": "4x M3 into inserts in the cup's corner bosses"
+  },
+  {
+   "a": "arm-lower",
+   "b": "cap-shoulder",
+   "dof": "cap lifting off the cup",
+   "held_by": "4x M3 into inserts in the cup's corner bosses"
+  },
+  {
+   "a": "arm-upper",
+   "b": "cap-elbow",
+   "dof": "cap lifting off the cup",
+   "held_by": "4x M3 into inserts in the cup's corner bosses"
+  },
+  {
+   "a": "arm-fore",
+   "b": "cap-head",
+   "dof": "cap lifting off the cup",
+   "held_by": "4x M3 into inserts in the cup's corner bosses"
+  },
+  {
+   "a": "base-joint",
+   "b": "arm-lower",
+   "dof": "segment sliding off the axle",
+   "held_by": "printed yoke-screw through the idler plate into the stub axle"
+  },
+  {
+   "a": "arm-lower",
+   "b": "arm-upper",
+   "dof": "segment sliding off the axle",
+   "held_by": "printed yoke-screw through the idler plate into the stub axle"
+  },
+  {
+   "a": "arm-upper",
+   "b": "arm-fore",
+   "dof": "segment sliding off the axle",
+   "held_by": "printed yoke-screw through the idler plate into the stub axle"
+  },
+  {
+   "a": "arm-fore",
+   "b": "shade",
+   "dof": "segment sliding off the axle",
+   "held_by": "printed yoke-screw through the idler plate into the stub axle"
+  },
+  {
+   "a": "servo horn",
+   "b": "yoke drive plate",
+   "dof": "rotation under torque",
+   "held_by": "cross recess -- form fit, slot walls carry it"
+  },
+  {
+   "a": "base",
+   "b": "spk-clamp",
+   "dof": "clamp lifting",
+   "held_by": "2x M2 self-tapper into the pocket's end rails"
+  },
+  {
+   "a": "base",
+   "b": "mic-tab",
+   "dof": "tab lifting",
+   "held_by": "1x M2 self-tapper"
+  },
+  {
+   "a": "cup",
+   "b": "servo (MG996R / SG90)",
+   "dof": "servo lifting out of its cup",
+   "held_by": "cap clamps the upper mounting tab"
+  },
+  {
+   "a": "servo spline",
+   "b": "horn",
+   "dof": "horn walking off the spline",
+   "held_by": "the servo's own centre screw (bought, ships with it)"
+  },
+  {
+   "a": "base",
+   "b": "speaker",
+   "dof": "driver leaving the pocket",
+   "held_by": "spk-clamp bar + 2 tongues behind the driver"
+  },
+  {
+   "a": "base",
+   "b": "mic",
+   "dof": "board leaving the pocket",
+   "held_by": "mic-tab over the slot mouth + 2 moulded lips"
+  },
+  {
+   "a": "lid",
+   "b": "MX switch",
+   "dof": "switch falling out",
+   "held_by": "switch clips onto a 1.5 mm plate section in the lid"
+  },
+  {
+   "a": "MX stem",
+   "b": "keycap",
+   "dof": "cap pulling off",
+   "held_by": "friction on the MX cross"
+  },
+  {
+   "a": "base",
+   "b": "ESP32-S3",
+   "dof": "board lifting off its rails",
+   "held_by": "fixed lips on -Y (1.0 mm) + esp-tab screwed on +Y"
+  },
+  {
+   "a": "base",
+   "b": "MAX98357A amp",
+   "dof": "board lifting off its frame",
+   "held_by": "fixed lip on -X (1.0 mm) + amp-tab screwed on +X"
+  }
+ ],
+ "stats": {
+  "parts": 22,
+  "interfaces": 22,
+  "joints": 4,
+  "servos": 4,
+  "height_mm": 316,
+  "reach_mm": 345,
+  "plastic_cm3": 492,
+  "plates": 9,
+  "m3": 15,
+  "m2": 5,
+  "printed_screws": 4,
+  "bed_mm": 180
+ }
+}

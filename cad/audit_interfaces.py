@@ -104,7 +104,7 @@ iface("base", "mic", "board leaving the pocket",
       P.MIC_POCKET_D > 0, "pocket + tab")
 
 iface("lid", "MX switch", "switch falling out",
-      "switch clips onto a plate section held at exactly MX_PLATE_T",
+      "switch clips onto a 1.5 mm plate section in the lid",
       abs(P.MX_PLATE_T - 1.5) < 1e-9, f"plate {P.MX_PLATE_T} mm")
 
 iface("MX stem", "keycap", "cap pulling off",

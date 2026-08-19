@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AIBO — a desk lamp with opinions</title>
+<style>
+/* Palette lifted off byooooob.com: electric blue, pink, paper, ink.
+   No green anywhere -- that was explicit. */
+:root{
+  --blue:#4D17F5; --blue-dk:#3A0FC4; --pink:#FA9DCD; --pink-dk:#F27FB8;
+  --paper:#EEEEEC; --white:#fff; --ink:#151515; --ink-soft:#333;
+  --edge:3px solid var(--ink);
+  --disp:"Haettenschweiler","Arial Narrow Bold","Impact","Anton",
+         "Franklin Gothic Bold",sans-serif;
+  --body:"Inter","Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);
+  -webkit-font-smoothing:antialiased;overflow-x:hidden}
+.wrap{max-width:1240px;margin:0 auto;padding:0 24px}
+h1,h2,h3,.disp{font-family:var(--disp);font-weight:400;letter-spacing:.01em;
+  text-transform:uppercase;line-height:.88}
+a{color:inherit}
+
+/* ---------- chrome ---------- */
+nav{position:fixed;top:0;left:0;right:0;z-index:60;display:flex;
+  align-items:center;justify-content:space-between;padding:14px 28px;
+  background:rgba(238,238,236,.82);backdrop-filter:blur(10px);
+  border-bottom:2px solid var(--ink)}
+.logo{font-family:var(--disp);font-size:26px;letter-spacing:.02em}
+.logo b{color:var(--blue)}
+.btn{display:inline-flex;align-items:center;gap:9px;border:var(--edge);
+  background:var(--white);border-radius:999px;padding:11px 22px;
+  font-family:var(--disp);font-size:17px;cursor:pointer;
+  box-shadow:4px 4px 0 var(--ink);text-decoration:none;
+  transition:transform .12s ease, box-shadow .12s ease}
+.btn:hover{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink)}
+.btn.blue{background:var(--blue);color:#fff}
+.btn.pink{background:var(--pink)}
+.tag{background:var(--pink);border:2px solid var(--ink);border-radius:999px;
+  font-size:11px;padding:2px 9px;font-family:var(--disp)}
+
+/* ---------- hero ---------- */
+header{padding:120px 0 0;position:relative;overflow:hidden}
+header .grid-bg{position:absolute;inset:0;
+  background-image:linear-gradient(var(--ink) 1px,transparent 1px),
+                   linear-gradient(90deg,var(--ink) 1px,transparent 1px);
+  background-size:112px 112px;opacity:.07;pointer-events:none}
+.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:26px;align-items:center;
+  position:relative}
+.hero h1{font-size:clamp(52px,8.4vw,124px)}
+.hero h1 .pk{color:var(--blue)}
+.hero p.lede{margin-top:20px;font-size:19px;max-width:44ch;color:var(--ink-soft);
+  line-height:1.5}
+.hero .cta{margin-top:28px;display:flex;gap:12px;flex-wrap:wrap}
+.blob{position:absolute;border-radius:50%;filter:blur(2px);opacity:.9;
+  pointer-events:none}
+
+/* the canvas */
+.stage{position:relative;aspect-ratio:1/1.06;border:var(--edge);
+  border-radius:26px;background:
+    radial-gradient(120% 90% at 50% 0%, #fff 0%, var(--paper) 62%, #dedde0 100%);
+  box-shadow:9px 9px 0 var(--ink);overflow:hidden}
+canvas{display:block;width:100%;height:100%;cursor:grab}
+canvas:active{cursor:grabbing}
+.moodrow{position:absolute;left:12px;right:12px;bottom:12px;display:flex;
+  gap:7px;flex-wrap:wrap;justify-content:center;z-index:3}
+.mood{font-family:var(--disp);font-size:14px;padding:8px 13px;border:2px solid var(--ink);
+  border-radius:999px;background:var(--white);cursor:pointer;
+  box-shadow:3px 3px 0 var(--ink);transition:transform .1s}
+.mood:hover{transform:translate(1px,1px);box-shadow:2px 2px 0 var(--ink)}
+.mood.on{background:var(--blue);color:#fff}
+.loading{position:absolute;inset:0;display:grid;place-items:center;z-index:4;
+  font-family:var(--disp);font-size:19px;background:var(--paper)}
+
+/* ---------- ticker ---------- */
+.ticker{background:var(--blue);border-top:var(--edge);border-bottom:var(--edge);
+  overflow:hidden;padding:15px 0;margin-top:64px}
+.ticker .run{display:flex;gap:44px;width:max-content;animation:slide 26s linear infinite}
+.ticker span{font-family:var(--disp);font-size:27px;color:var(--pink);white-space:nowrap}
+.ticker i{color:#fff;font-style:normal}
+@keyframes slide{to{transform:translateX(-50%)}}
+
+/* ---------- sections ---------- */
+section{padding:90px 0}
+.eyebrow{font-family:var(--disp);font-size:15px;color:var(--blue);letter-spacing:.1em}
+h2{font-size:clamp(38px,5.4vw,74px);margin:8px 0 30px}
+h2 em{font-style:italic;color:var(--blue)}
+.on-blue{background:var(--blue);color:#fff;border-top:var(--edge);border-bottom:var(--edge)}
+.on-blue h2 em{color:var(--pink)}
+.on-blue .eyebrow{color:var(--pink)}
+.on-pink{background:var(--pink);border-top:var(--edge);border-bottom:var(--edge)}
+
+/* stat strip */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:14px}
+.stat{border:var(--edge);border-radius:18px;background:var(--white);padding:20px 16px;
+  box-shadow:5px 5px 0 var(--ink)}
+.on-blue .stat{background:var(--white);color:var(--ink)}
+.stat b{display:block;font-family:var(--disp);font-size:46px;line-height:.9;color:var(--blue)}
+.stat span{font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-soft)}
+
+/* capability cards */
+.caps{display:grid;grid-template-columns:repeat(auto-fit,minmax(238px,1fr));gap:16px}
+/* colour reset matters: these cards sit inside .on-blue, which sets white
+   text. Without this the h3 is white on a white card and vanishes -- the
+   paragraph survived only because it sets its own colour. */
+.cap{border:var(--edge);border-radius:20px;padding:22px;background:var(--white);
+  color:var(--ink);box-shadow:6px 6px 0 var(--ink)}
+.cap .n{font-family:var(--disp);font-size:15px;color:var(--blue)}
+.cap h3{font-size:25px;margin:8px 0 9px}
+.cap p{font-size:14.5px;color:var(--ink-soft);line-height:1.5}
+
+/* parts + interfaces tables */
+.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl th{text-align:left;font-family:var(--disp);font-size:14px;letter-spacing:.05em;
+  padding:9px 10px;border-bottom:2px solid currentColor;opacity:.75}
+.tbl td{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.22)}
+.on-pink .tbl td{border-bottom:1px solid rgba(0,0,0,.16)}
+.tbl td.nm{font-family:var(--disp);font-size:17px}
+.mono{font-variant-numeric:tabular-nums;opacity:.9}
+.pill{display:inline-block;border:1.5px solid currentColor;border-radius:999px;
+  padding:1px 9px;font-size:11px;opacity:.85}
+.scroller{max-height:430px;overflow:auto;border:var(--edge);border-radius:18px;
+  padding:4px 14px;background:rgba(255,255,255,.09)}
+.on-pink .scroller{background:rgba(255,255,255,.4)}
+
+/* waitlist */
+.wait{display:grid;grid-template-columns:1fr 1fr;gap:34px;align-items:center}
+form{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+input[type=email]{flex:1;min-width:230px;border:var(--edge);border-radius:999px;
+  padding:15px 20px;font-size:16px;font-family:var(--body);background:var(--white)}
+input[type=email]:focus{outline:3px solid var(--blue);outline-offset:2px}
+.note{margin-top:12px;font-size:13px;opacity:.8}
+.ok{margin-top:14px;font-family:var(--disp);font-size:20px;color:var(--blue);display:none}
+footer{padding:44px 0 60px;border-top:var(--edge);font-size:13px;color:var(--ink-soft)}
+footer a{color:var(--blue)}
+
+@media(max-width:940px){
+  .hero,.wait{grid-template-columns:1fr}
+  .hero .stage{order:-1}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">AI<b>BO</b>.</div>
+  <div style="display:flex;gap:12px;align-items:center">
+    <span class="tag">OPEN SOURCE</span>
+    <a class="btn blue" href="#waitlist">JOIN THE WAITLIST</a>
+  </div>
+</nav>
+
+<header>
+  <div class="grid-bg"></div>
+  <div class="wrap hero">
+    <div>
+      <h1>A DESK LAMP<br>WITH <span class="pk">OPINIONS</span></h1>
+      <p class="lede">Four servos, a microphone and a speaker in a printed
+        aluminium-free shell. It follows you, it nods, it sulks when you
+        ignore it. 22 parts, nine plates, one weekend.</p>
+      <div class="cta">
+        <a class="btn blue" href="#waitlist">JOIN THE WAITLIST</a>
+        <a class="btn pink" href="#parts">SEE THE PARTS</a>
+      </div>
+    </div>
+    <div class="stage">
+      <div class="loading" id="load">WAKING IT UP…</div>
+      <canvas id="c"></canvas>
+      <div class="moodrow" id="moods"></div>
+    </div>
+  </div>
+</header>
+
+<div class="ticker"><div class="run" id="run"></div></div>
+
+<section class="on-blue"><div class="wrap">
+  <div class="eyebrow">WHAT IT ACTUALLY DOES</div>
+  <h2>NINE THINGS, <em>NO SCREEN</em></h2>
+  <div class="caps" id="caps"></div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="eyebrow">BY THE NUMBERS</div>
+  <h2>ALL OF IT <em>PRINTS</em></h2>
+  <div class="stats" id="stats"></div>
+</div></section>
+
+<section class="on-pink" id="parts"><div class="wrap">
+  <div class="eyebrow">THE BREAKDOWN</div>
+  <h2>EVERY <em>PART</em></h2>
+  <p style="max-width:62ch;margin-bottom:20px">
+    Every one fits a Bambu A1 mini's 180&nbsp;mm bed. Sizes are real bounding
+    boxes straight out of the CAD, not estimates. All but one print with no
+    support at all &mdash; the shade's yoke collar sits at 51&deg;, which most
+    printers bridge and some will not.</p>
+  <div class="scroller"><table class="tbl" id="parts-tbl"></table></div>
+</div></section>
+
+<section class="on-blue"><div class="wrap">
+  <div class="eyebrow">THE CONNECTIONS</div>
+  <h2>WHAT HOLDS <em>WHAT</em></h2>
+  <p style="max-width:64ch;margin-bottom:20px">
+    Every interface in the machine, and the thing that physically stops the
+    two parts separating. Three of these were once described in comments and
+    absent from the geometry, so now a build fails if any row says NONE.</p>
+  <div class="scroller"><table class="tbl" id="iface-tbl"></table></div>
+</div></section>
+
+<section id="waitlist"><div class="wrap wait">
+  <div>
+    <div class="eyebrow">EARLY BATCH</div>
+    <h2>GET THE <em>FILES</em> FIRST</h2>
+    <p style="max-width:46ch;color:var(--ink-soft)">
+      STLs, the firmware and the build guide, sent when the first batch is
+      verified on real hardware. No spam, one email.</p>
+    <form id="wf">
+      <input type="email" id="em" placeholder="you@somewhere.com" required>
+      <button class="btn blue" type="submit">JOIN</button>
+    </form>
+    <div class="ok" id="ok">YOU'RE ON THE LIST ✦</div>
+    <div class="note" id="note">Stored in this browser only — this is a
+      static demo page, nothing is sent anywhere.</div>
+  </div>
+  <div class="stat" style="padding:30px">
+    <b id="wcount">0</b><span>ON THE LIST (THIS BROWSER)</span>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  AIBO — parametric CAD, pure Python. No OpenSCAD, no CadQuery.
+  <a href="https://github.com/nickthelegend/aibo-pet">github.com/nickthelegend/aibo-pet</a>
+</div></footer>
+
+<script type="module" src="./app.js"></script>
+</body>
+</html>
