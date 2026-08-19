@@ -52,6 +52,9 @@
 /* Only the tag row drops to the card floor. space-between on the whole
    card pushed a gap under the heading of the card with no button. */
 .prod .card .tagbar{margin-top:auto;padding-top:var(--s-200)}
+/* Two cards span half the container each, which is wide enough that an
+   uncapped paragraph runs past a comfortable measure. */
+.prod .card p{max-width:52ch}
 
 .rail{border-left:1px solid var(--line);padding-left:var(--s-300);
   display:grid;gap:var(--s-400);max-width:760px}
@@ -120,7 +123,6 @@ td.what{color:var(--fg-dim)}
 
     <div class="stats">
       <div><b>22</b><span>printed parts shipping today, open CAD</span></div>
-      <div><b>3s</b><span>settlement, sub cent, live on Algorand</span></div>
       <div><b>6 axes</b><span>per hand once the band is instrumented</span></div>
       <div><b>0</b><span>public datasets carrying grip force at scale</span></div>
     </div>
@@ -158,11 +160,11 @@ td.what{color:var(--fg-dim)}
 
   <section class="wrap" id="build">
     <p class="eyebrow">What we build</p>
-    <h2>An instrument, a proof,<br>and a rail</h2>
+    <h2>An instrument,<br>and a proof</h2>
     <p class="lede" style="margin-top:var(--s-200);max-width:680px">
-      Three products that only work together. A sensor without a network
-      collects a demo. A network without a rail cannot pay per clip. A rail
-      without hardware has nothing to settle.</p>
+      One is the thing we sell. The other is the reason to believe we can
+      build it, because a wearable sensor is a hardware problem long before
+      it is a data problem.</p>
 
     <div class="grid g3 prod" style="margin-top:var(--s-600)">
       <article class="card">
@@ -197,22 +199,6 @@ td.what{color:var(--fg-dim)}
           <a class="btn sm" href="https://aibo.loompad.tech">Meet Hotaru</a></p>
       </article>
 
-      <article class="card">
-        <h3>Ripar</h3>
-        <p style="margin-top:var(--s-100)">The settlement rail. Per request USDC
-          over x402, settling on Algorand in about three seconds for a fraction
-          of a cent, which is the only reason paying somebody for a single
-          accepted clip is possible at all.</p>
-        <p style="margin-top:var(--s-100);color:var(--fg-mute)">Built and shipped
-          first because it is the hard constraint. Contributor payouts and agent
-          calls are the same problem: the fee has to cost less than the payment.</p>
-        <div class="tagbar">
-          <span class="tg live">Live</span><span class="tg">Algorand</span>
-          <span class="tg">x402</span>
-        </div>
-        <p style="margin-top:var(--s-200)">
-          <a class="btn sm" href="https://ripar.io">Open it</a></p>
-      </article>
     </div>
   </section>
 
@@ -288,8 +274,7 @@ td.what{color:var(--fg-dim)}
       <div>
         <h3>Shipped</h3>
         <p>Hotaru is real hardware with open CAD, printable STLs, and interface
-          audits anyone can run. Ripar is live and settling calls on Algorand
-          today.</p>
+          audits anyone can run.</p>
       </div>
       <div>
         <h3>In design</h3>
@@ -314,7 +299,7 @@ td.what{color:var(--fg-dim)}
 
     <p style="margin-top:var(--s-600);display:flex;gap:var(--s-100);flex-wrap:wrap">
       <a class="btn primary" href="mailto:hello@thenar.io">hello@thenar.io</a>
-      <a class="btn ghost" href="https://ripar.io">Use the part that is live</a>
+      <a class="btn ghost" href="https://aibo.loompad.tech">See what we have shipped</a>
     </p>
   </section>
 </main>
@@ -324,7 +309,6 @@ td.what{color:var(--fg-dim)}
   <span>THENAR — contact data for physical AI.</span>
   <span style="display:flex;gap:var(--s-300);flex-wrap:wrap">
     <a href="https://aibo.loompad.tech">Hotaru</a>
-    <a href="https://ripar.io">Ripar</a>
     <a href="https://github.com/nickthelegend/aibo-pet">Source</a>
   </span>
 </div></footer>
