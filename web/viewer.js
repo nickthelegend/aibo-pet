@@ -8,7 +8,7 @@
  * Download links point at raw.githubusercontent.com on refs/heads/main, so
  * a future rebuild replaces what they serve instead of breaking them.
  */
-import { M4, loadGLB, makeGL } from "./gl.js";
+import { M4, loadGLB, makeGL } from "./gl.js?v=047c5fce";
 
 const $ = s => document.querySelector(s);
 const cv = $("#vc");

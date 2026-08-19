@@ -17,6 +17,7 @@ from __future__ import annotations
 import json
 import math
 import os
+import re
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -244,6 +245,39 @@ def main():
 
     with open(os.path.join(WEB, "spec.json"), "w") as f:
         json.dump(spec, f, indent=1)
+
+    # ---- cache-bust the asset URLs -------------------------------------
+    # Nothing here is content-hashed by a bundler, and a plain filename plus
+    # any positive max-age means a redeploy never reaches a browser that
+    # already has the old copy -- which is exactly what happened: two fixes
+    # shipped and neither was visible. The version is a hash of the asset's
+    # OWN bytes, so it changes when and only when the file does.
+    import hashlib
+    assets = ["site.css", "app.js", "viewer.js", "gl.js", "mark.svg"]
+    vers = {}
+    for a in assets:
+        ap = os.path.join(WEB, a)
+        if os.path.exists(ap):
+            vers[a] = hashlib.sha1(open(ap, "rb").read()).hexdigest()[:8]
+    for page in ("index.html", "viewer.html"):
+        pp = os.path.join(WEB, page)
+        if not os.path.exists(pp):
+            continue
+        html = open(pp).read()
+        html = re.sub(r'(\./(?:' + "|".join(a.replace(".", r"\.") for a in assets)
+                      + r'))(\?v=[0-9a-f]+)?', lambda m: m.group(1)
+                      + ("?v=" + vers[m.group(1)[2:]] if m.group(1)[2:] in vers else ""),
+                      html)
+        open(pp, "w").write(html)
+    # gl.js is imported from JS, so its specifier needs the same treatment
+    for js in ("app.js", "viewer.js"):
+        jp = os.path.join(WEB, js)
+        if os.path.exists(jp) and "gl.js" in vers:
+            src = open(jp).read()
+            src = re.sub(r'from "\./gl\.js(\?v=[0-9a-f]+)?"',
+                         'from "./gl.js?v=%s"' % vers["gl.js"], src)
+            open(jp, "w").write(src)
+    print("asset versions: " + ", ".join(f"{k}={v}" for k, v in vers.items()))
 
     tris = sum(len(f) for _n, _v, f, _c in packed)
     vts = sum(len(v) for _n, v, _f, _c in packed)
