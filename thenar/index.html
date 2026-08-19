@@ -22,15 +22,15 @@
    heading underneath it. */
 section[id]{scroll-margin-top:84px}
 .chero{padding-top:var(--s-900);padding-bottom:var(--s-700)}
-.chero h1{font-size:44px;line-height:1;max-width:760px;letter-spacing:-0.03em;
-  background:linear-gradient(90deg,#FFFFFF 0%,#9B9B9B 100%);
+/* The hero heading now runs on the .fh1 scale (64px / 1.03 / -2px at weight
+   500). Only the gradient stays, which is the one background gradient the
+   design system permits. */
+.fh1{background:linear-gradient(90deg,#FFFFFF 0%,#9B9B9B 100%);
   -webkit-background-clip:text;background-clip:text;color:transparent}
-@media(min-width:768px){ .chero h1{font-size:76px} }
-.chero .lede{margin-top:var(--s-300);max-width:680px}
-.chero .actions{margin-top:var(--s-400);display:flex;gap:var(--s-100);flex-wrap:wrap}
 
-.big{font-size:56px;line-height:1;font-weight:700;letter-spacing:-0.03em}
-@media(min-width:768px){ .big{font-size:88px} }
+.big{font-size:52px;line-height:.95;font-weight:500;letter-spacing:-1px;
+  text-align:center;text-wrap:balance}
+@media(min-width:768px){ .big{font-size:99px;line-height:.93} }
 .big .dim{color:var(--fg-mute)}
 
 /* stat strip: only numbers we can actually stand behind */
@@ -139,9 +139,9 @@ td.what{color:var(--fg-dim)}
     </svg>
   </a>
   <nav class="topnav" aria-label="Primary">
-    <a href="#gap">The gap</a>
-    <a href="#build">What we build</a>
-    <a href="#engine">The engine</a>
+    <a href="#demo">The gap</a>
+    <a href="#band">The Band</a>
+    <a href="#proof">The proof</a>
     <a href="#stands">Where we stand</a>
   </nav>
   <a class="btn primary" href="mailto:hello@thenar.io">Talk to us</a>
@@ -149,31 +149,38 @@ td.what{color:var(--fg-dim)}
 
 <main id="main">
 
-  <section class="wrap chero">
-    <p class="eyebrow">Contact data for physical AI</p>
-    <h1>Robots can see.<br>They still<br>cannot feel.</h1>
-    <p class="lede">Manipulation models train on pixels and joint angles.
-      Neither one records the signal that decides whether the glass lifts or
-      shatters: how hard the hand squeezed, and how fast it corrected when the
-      object began to slip. Thenar instruments the human hand and sells that
-      signal.</p>
-    <div class="actions">
-      <a class="btn primary" href="#engine">How the engine works</a>
-      <a class="btn ghost" href="https://aibo.loompad.tech">See the hardware we ship</a>
+  <section class="fwrap chero" style="padding-bottom:var(--s-600)">
+    <p class="feyebrow">Contact data for physical AI</p>
+    <h1 class="fh1">Robots can see.<br>They still cannot feel.</h1>
+    <p class="flede" style="margin-top:var(--s-300)">
+      Manipulation models train on pixels and joint angles. Neither records the
+      signal that decides whether the glass lifts or shatters: how hard the hand
+      squeezed, and how fast it corrected when the object began to slip. We
+      build the instrument that records it.</p>
+    <div class="actions" style="justify-content:center;display:flex;
+      gap:var(--s-100);flex-wrap:wrap;margin-top:var(--s-400)">
+      <a class="btn primary" href="#band">See the Band</a>
+      <a class="btn ghost" href="#demo">Why force matters</a>
     </div>
 
-    <div class="stats">
-      <div><b>22</b><span>printed parts shipping today, open CAD</span></div>
-      <div><b>6 axes</b><span>per hand once the band is instrumented</span></div>
-      <div><b>0</b><span>public datasets carrying grip force at scale</span></div>
+    <div class="stage3d" id="stage">
+      <canvas id="bandc3d"></canvas>
+      <span class="hint3d">DRAG TO ROTATE</span>
+      <span class="state" id="state3d">ASSEMBLED</span>
+    </div>
+
+    <div class="creds">
+      <span>Open CAD in pure Python</span>
+      <span>Watertight, audited geometry</span>
+      <span>Every part on a 180 mm bed</span>
+      <span>Printable STLs published</span>
     </div>
   </section>
 
-
-  <section class="wrap" id="demo" style="padding-top:var(--s-700)">
-    <p class="eyebrow">The whole argument, in 2.4 seconds</p>
-    <h2>One grasp.<br>Two recordings.</h2>
-    <p class="lede" style="margin-top:var(--s-200);max-width:680px">
+  <section class="fwrap" id="demo" style="padding-top:var(--s-700)">
+    <p class="feyebrow">The whole argument, in 2.4 seconds</p>
+    <h2 class="fh2">One grasp.<br>Two recordings.</h2>
+    <p class="flede" style="margin-top:var(--s-300)">
       Somebody picks up a glass and it starts to slide. Watch what each sensor
       has to say about the moment it happens. Drag the trace to scrub.</p>
 
@@ -231,8 +238,8 @@ td.what{color:var(--fg-dim)}
     </div>
   </section>
 
-  <section class="wrap" id="gap">
-    <p class="eyebrow">The bottleneck</p>
+  <section class="fwrap" id="gap">
+    <p class="feyebrow">The bottleneck</p>
     <p class="big tagline" id="bigline">Everyone is recording video. <span class="dim">Nobody records force.</span></p>
     <div class="grid g3" style="margin-top:var(--s-600)">
       <article class="card">
@@ -260,49 +267,122 @@ td.what{color:var(--fg-dim)}
     </div>
   </section>
 
-  <section class="wrap" id="build">
-    <p class="eyebrow">What we build</p>
-    <h2>An instrument,<br>and a proof</h2>
-    <p class="lede" style="margin-top:var(--s-200);max-width:680px">
-      One is the thing we sell. The other is the reason to believe we can
-      build it, because a wearable sensor is a hardware problem long before
-      it is a data problem.</p>
+  <section class="fwrap" id="band">
+    <p class="feyebrow">The instrument</p>
+    <h2 class="fh2">The Thenar Band</h2>
+    <p class="flede" style="margin-top:var(--s-300)">
+      A wrist unit worn while you do ordinary work. Four printed parts, a
+      removable bay cap, and a camera that comes off with a quarter turn.</p>
 
-    <div class="grid g3 prod" style="margin-top:var(--s-600)">
-      <article class="card">
-        <div class="viz band"><canvas id="bandc"></canvas></div>
-        <h3>Thenar Band</h3>
-        <p style="margin-top:var(--s-100)">A wrist and palm unit worn while you
-          do ordinary work. Egocentric camera, inertial measurement, and
-          pressure across the thenar eminence and the fingertips, time aligned
-          at the source rather than stitched together afterwards.</p>
-        <p style="margin-top:var(--s-100);color:var(--fg-mute)">The wrist is the
-          point. A phone in a pocket cannot tell you how hard somebody gripped,
-          and grip is most of the task.</p>
-        <div class="tagbar">
-          <span class="tg">In design</span><span class="tg">Egocentric</span>
-          <span class="tg">Force</span>
+    <div class="bandgrid">
+      <div class="bandstick">
+        <div class="stage3d tall" id="stage2">
+          <canvas id="bandc3d2"></canvas>
+          <span class="hint3d">DRAG TO ROTATE</span>
+          <span class="state" id="state3d2">EXPLODED</span>
+        </div>
+      </div>
+      <div class="bandlist" id="bandlist">
+        <article class="tile" data-part="band-cuff">
+          <h3><span class="dot" style="background:#2B2B31;outline:1px solid var(--line-2)"></span>Wrist chassis</h3>
+          <p>An open C that springs over the wrist, so there is no buckle to
+            thread one handed. The bore is an ellipse because a wrist is: model
+            it round and it rocks, digs in at the styloid, and reads its sensors
+            through a moving air gap.</p>
+          <div class="spec">
+            <div>BORE<b>58 &times; 46 mm</b></div>
+            <div>WALL<b>3.4 mm</b></div>
+            <div>VOLUME<b>25.9 cm&sup3;</b></div>
+          </div>
+        </article>
+
+        <article class="tile" data-part="band-cap">
+          <h3><span class="dot" style="background:#4D17F5"></span>Removable bay cap</h3>
+          <p>A lip drops into the bay mouth on a 0.25 mm printed snap fit, and a
+            thumb notch on the proximal edge gives you somewhere to lever it off
+            without taking a glove off first. Vented, because the bay holds a
+            radio and a battery.</p>
+          <div class="spec">
+            <div>FIT<b>0.25 mm/side</b></div>
+            <div>PLATE<b>4.6 mm</b></div>
+            <div>VENTS<b>3</b></div>
+          </div>
+        </article>
+
+        <article class="tile" data-part="band-cam">
+          <h3><span class="dot" style="background:#3A3A42;outline:1px solid var(--line-2)"></span>Detachable camera</h3>
+          <p>Three lugs, drop in and twist 60 degrees to a hard stop. A bayonet
+            rather than a thread because it is one handed, tool free, and cannot
+            back itself out under vibration, which matters when the entire point
+            is that somebody wears it while actually working. It looks down the
+            hand, tilted 20 degrees palmar, so the fingers and whatever they
+            hold are in frame.</p>
+          <div class="spec">
+            <div>LUGS<b>3 &times; 34&deg;</b></div>
+            <div>TWIST<b>60&deg;</b></div>
+            <div>TILT<b>20&deg; palmar</b></div>
+          </div>
+        </article>
+
+        <article class="tile" data-part="band-pad">
+          <h3><span class="dot" style="background:#FA9DCD"></span>Thenar pressure pad</h3>
+          <p>Reaches round to the mound at the base of the thumb on a
+            deliberately thin arm. The arm has to flex, because the mound
+            changes shape as the thumb opposes, and a rigid one would lift the
+            pad off at exactly the moment the grip it is measuring begins.</p>
+          <div class="spec">
+            <div>PAD<b>32 &times; 24 mm</b></div>
+            <div>ARM<b>3.0 mm</b></div>
+            <div>CHANNELS<b>6</b></div>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <div class="clockbox">
+      <div>
+        <h3>Three sensors, one clock</h3>
+        <p>Vision, inertial and contact are sampled against a shared timebase
+          in the device, not aligned in software afterwards. A correction that
+          lands seventy milliseconds after a slip is only legible if the two
+          streams agree on when now was.</p>
+      </div>
+      <div class="viz band" style="margin:0"><canvas id="bandc"></canvas></div>
+    </div>
+
+    <p class="flede" style="margin-top:var(--s-600);color:var(--fg-mute);font-size:14px">
+      Geometry is watertight and audited: every bayonet check is proven to fail
+      on a build that is not twisted home, or it does not count as a check.
+      The Band is in design and not yet a product you can buy.</p>
+  </section>
+
+  <section class="fwrap" id="proof">
+    <p class="feyebrow">The proof</p>
+    <h2 class="fh2">We ship hardware</h2>
+    <p class="flede" style="margin-top:var(--s-300)">
+      A wearable sensor is a hardware problem long before it is a data problem.
+      Hotaru is the evidence we take a device from parameters to a shipped
+      object, in public.</p>
+    <div class="bento" style="margin-top:var(--s-600)">
+      <article class="tile" style="padding:0;overflow:hidden">
+        <div class="viz" style="margin:0;border-radius:0;aspect-ratio:16/10">
+          <canvas id="hot"></canvas>
         </div>
       </article>
-
-      <article class="card">
-        <div class="viz"><canvas id="hot"></canvas></div>
+      <article class="tile">
         <h3>Hotaru</h3>
-        <p style="margin-top:var(--s-100)">A desk robot with four servos, a
-          microphone and a speaker. It leans toward whoever is talking and folds
-          down when the room goes quiet. Twenty two printed parts, every one on a
-          180 mm bed, CAD open in pure Python with public audits.</p>
-        <p style="margin-top:var(--s-100);color:var(--fg-mute)">Not a collection
-          device. It is the proof we take hardware from parameters to a shipped
-          object, which is what you want established before wearing anything we
-          make.</p>
-        <div class="tagbar">
-          <span class="tg live">Shipping</span><span class="tg">Open CAD</span>
+        <p>A desk robot with four servos, a microphone and a speaker. It leans
+          toward whoever is talking and folds down when the room goes quiet.
+          Twenty two printed parts, every one on a 180 mm bed, CAD open in pure
+          Python with public interface audits.</p>
+        <div class="spec">
+          <div>PARTS<b>22</b></div>
+          <div>SERVOS<b>4</b></div>
+          <div>STATUS<b>Shipping</b></div>
         </div>
-        <p style="margin-top:var(--s-200)">
+        <p style="margin-top:var(--s-300)">
           <a class="btn sm" href="https://aibo.loompad.tech">Meet Hotaru</a></p>
       </article>
-
     </div>
   </section>
 
@@ -421,6 +501,7 @@ td.what{color:var(--fg-dim)}
 import { makeGrasp } from "./grasp.js";
 import { mountHotaru } from "./hotaru.js";
 import { mountBand } from "./band.js";
+import { mountBandView } from "./bandview.js";
 
 /* Reveal is added by script, never in the markup, so a JS failure leaves the
    page fully readable instead of blank. */
@@ -502,6 +583,61 @@ if ("IntersectionObserver" in window) {
 
 mountHotaru(document.querySelector("#hot"));
 mountBand(document.querySelector("#bandc"));
+
+/* Two views of the same 100 kB file. The hero is the product shot and comes
+   apart as you scroll past it; the band section pins an exploded copy that
+   the parts list drives. The browser fetches band.glb once. */
+(async function () {
+  const stage = document.querySelector("#stage");
+  const badge = document.querySelector("#state3d");
+  try {
+    const hero = await mountBandView(document.querySelector("#bandc3d"));
+    let queued = false;
+    const onScroll = () => {
+      queued = false;
+      const r = stage.getBoundingClientRect();
+      const p = Math.max(0, Math.min(1,
+        (innerHeight * 0.62 - r.top) / Math.max(r.height * 0.85, 1)));
+      hero.explode(p);
+      badge.textContent = p > 0.55 ? "EXPLODED" : p > 0.08 ? "OPENING" : "ASSEMBLED";
+    };
+    addEventListener("scroll", () => {
+      if (!queued) { queued = true; requestAnimationFrame(onScroll); }
+    }, { passive: true });
+    onScroll();
+  } catch (e) {
+    // A dead canvas looks broken; drop the block and let the copy carry it.
+    console.error("band hero:", e);
+    stage?.remove();
+  }
+
+  const list = document.querySelector("#bandlist");
+  const badge2 = document.querySelector("#state3d2");
+  try {
+    const bv = await mountBandView(document.querySelector("#bandc3d2"));
+    bv.explode(1);
+    const tiles = [...list.querySelectorAll(".tile")];
+    const pick = t => {
+      tiles.forEach(x => x.classList.toggle("on", x === t));
+      bv.highlight(t.dataset.part);
+      badge2.textContent = t.dataset.part.replace("band-", "").toUpperCase();
+    };
+    const clear = () => {
+      tiles.forEach(x => x.classList.remove("on"));
+      bv.highlight(null);
+      badge2.textContent = "EXPLODED";
+    };
+    tiles.forEach(t => {
+      t.addEventListener("pointerenter", () => pick(t));
+      t.addEventListener("focusin", () => pick(t));
+      t.tabIndex = 0;
+    });
+    list.addEventListener("pointerleave", clear);
+  } catch (e) {
+    console.error("band list:", e);
+    document.querySelector("#stage2")?.remove();
+  }
+})();
 </script>
 </body>
 </html>

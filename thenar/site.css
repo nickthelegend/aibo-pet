@@ -148,3 +148,92 @@ footer{border-top:1px solid var(--line);padding:var(--s-500) 0;
   color:var(--fg-mute);font-size:14px;line-height:20px}
 footer a{color:var(--fg-dim);transition:color var(--t-ui) var(--ease)}
 footer a:hover{color:var(--fg)}
+
+/* ================= Fauna-derived layout scale =================
+   Structure copied from faunarobotics.com, palette deliberately not.
+   Measured off their live DOM: headings 64px / 1.03 / -2px at weight 500,
+   statement headings 99px / 0.93 / -1px, container 1233px, bento grid two
+   columns at a 16px gap, feature row three columns at 78px. The single
+   biggest difference from a default template is WEIGHT 500, not 700, which
+   is what stops big type reading as shouting. */
+.fwrap{max-width:1233px;margin:0 auto;padding-left:var(--s-300);
+  padding-right:var(--s-300)}
+.ctr{text-align:center}
+.fh1,.fh2{font-weight:500;letter-spacing:-2px;text-align:center;
+  font-size:40px;line-height:1.03;text-wrap:balance}
+@media(min-width:768px){ .fh1,.fh2{font-size:64px} }
+.fbig{font-weight:500;letter-spacing:-1px;text-align:center;
+  font-size:52px;line-height:.95;text-wrap:balance}
+@media(min-width:768px){ .fbig{font-size:99px;line-height:.93} }
+.flede{color:var(--fg-dim);font-size:18px;line-height:28px;max-width:620px;
+  margin-left:auto;margin-right:auto;text-align:center}
+.feyebrow{text-align:center;font-size:13px;line-height:20px;font-weight:600;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--blue);
+  margin-bottom:var(--s-200)}
+
+.bento{display:grid;grid-template-columns:1fr;gap:16px}
+@media(min-width:900px){ .bento{grid-template-columns:1fr 1fr} }
+.tri{display:grid;grid-template-columns:1fr;gap:var(--s-500)}
+@media(min-width:900px){ .tri{grid-template-columns:repeat(3,1fr);gap:78px} }
+.quad{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(min-width:900px){ .quad{grid-template-columns:repeat(4,1fr)} }
+
+/* the hero media block: full container width, heavy radius, our surface */
+.stage3d{position:relative;border-radius:24px;overflow:hidden;
+  background:var(--surface);border:1px solid var(--line);
+  aspect-ratio:16/9;margin-top:var(--s-600)}
+.stage3d canvas{width:100%;height:100%;display:block;cursor:grab;
+  opacity:0;transition:opacity 900ms var(--ease)}
+.stage3d.ready canvas{opacity:1}
+.stage3d canvas:active{cursor:grabbing}
+.stage3d .hint3d{position:absolute;left:var(--s-300);bottom:var(--s-300);
+  font-size:11px;font-weight:600;letter-spacing:.08em;color:var(--fg-mute);
+  pointer-events:none}
+.stage3d .state{position:absolute;right:var(--s-300);bottom:var(--s-300);
+  font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--blue);
+  pointer-events:none}
+
+/* credential strip, Fauna's "trusted by" slot */
+.creds{display:flex;flex-wrap:wrap;gap:var(--s-300) var(--s-600);
+  justify-content:center;align-items:center;margin-top:var(--s-600);
+  padding-top:var(--s-500);border-top:1px solid var(--line)}
+.creds span{font-size:13px;font-weight:600;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--fg-mute)}
+
+/* bento tiles, hoverable and linked to the 3D */
+.tile{background:var(--surface);border:1px solid var(--line);
+  border-radius:20px;padding:var(--s-400);cursor:default;
+  transition:border-color var(--t-ui) var(--ease),
+             background var(--t-ui) var(--ease)}
+.tile:hover{border-color:var(--blue);background:var(--surface-2)}
+.tile h3{font-size:24px;line-height:30px;font-weight:500;letter-spacing:-.5px}
+.tile p{color:var(--fg-dim);font-size:15px;line-height:24px;
+  margin-top:var(--s-100)}
+.tile .spec{display:flex;gap:var(--s-300);flex-wrap:wrap;margin-top:var(--s-300);
+  padding-top:var(--s-200);border-top:1px solid var(--line)}
+.tile .spec div{font-size:12px;line-height:18px;color:var(--fg-mute)}
+.tile .spec b{display:block;color:var(--fg);font-size:15px;font-weight:600}
+.tile .dot{width:9px;height:9px;border-radius:9999px;display:inline-block;
+  margin-right:8px;vertical-align:1px}
+
+/* band section: the model pins while the parts list scrolls past it */
+.bandgrid{display:grid;grid-template-columns:1fr;gap:16px;
+  margin-top:var(--s-600)}
+@media(min-width:960px){ .bandgrid{grid-template-columns:1.05fr 1fr;gap:24px} }
+.bandstick{position:relative}
+@media(min-width:960px){
+  .bandstick{position:sticky;top:96px;height:min(74vh,620px)}
+  .stage3d.tall{aspect-ratio:auto;height:100%;margin-top:0}
+}
+.stage3d.tall{margin-top:0}
+.bandlist{display:grid;gap:16px}
+.tile.on{border-color:var(--blue);background:var(--surface-2)}
+
+.clockbox{display:grid;grid-template-columns:1fr;gap:var(--s-400);
+  align-items:center;margin-top:var(--s-700);padding:var(--s-400);
+  border:1px solid var(--line);border-radius:20px;background:var(--surface)}
+@media(min-width:900px){ .clockbox{grid-template-columns:1fr 1.15fr} }
+.clockbox h3{font-size:28px;line-height:34px;font-weight:500;letter-spacing:-.5px}
+.clockbox p{color:var(--fg-dim);margin-top:var(--s-200);font-size:15px;
+  line-height:24px}
+.clockbox .viz{aspect-ratio:16/9}
