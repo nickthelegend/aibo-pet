@@ -318,25 +318,38 @@ def loft_solid(poly_a, z0, poly_b, z1):
 # profile wrapped into polar form. That makes a thread expressible as a
 # revolve() profile_fn and needs no new machinery.
 #
-# The form is a symmetric trapezoid, not a sharp V: 30% crest, 30% root, 20%
-# each flank, which puts the flanks near 45 degrees. That is deliberate --
-# it is the shallowest form that still keys, and 45 is what an FDM printer
-# can bridge unsupported when the thread axis ends up horizontal.
+# Symmetric trapezoid, not a sharp V: 20% crest, 30% flank, 20% root, 30%
+# flank. The DEPTH is tied to the flank width, because that ratio IS the
+# flank angle -- a flank that drops `depth` of radius over `RAMP * pitch` of
+# axial run sits at atan(depth / (RAMP*pitch)) off vertical, and past 45 the
+# printer is laying it on air.
+#
+# Getting this wrong is easy and silent: the first version here used the
+# textbook depth of 0.54 * pitch with a 20% flank, which is 69.7 degrees.
+# It printed on paper and the overhang audit caught it. depth defaults to
+# RAMP * pitch now, i.e. exactly 45, and a caller asking for more gets a
+# shallower angle only by widening the flank.
+THREAD_RAMP = 0.30          # flank width as a fraction of one revolution
+
 
 def thread_profile_fn(major_d, pitch, depth, seg=64, clearance=0.0, phase=0.0):
     """profile_fn(z) for revolve(): one single-start trapezoidal thread."""
     r_maj = major_d / 2.0 + clearance
     r_min = r_maj - depth
+    R = THREAD_RAMP
+    c0 = 0.5 - R / 2.0                 # crest ends
+    c1 = c0 + R                        # falling flank ends
+    c2 = 1.0 - R                       # root ends
 
     def r_at(u):
         u = u % 1.0
-        if u < 0.30:                       # crest
+        if u < c0:                         # crest
             return r_maj
-        if u < 0.50:                       # falling flank
-            return r_maj - depth * (u - 0.30) / 0.20
-        if u < 0.80:                       # root
+        if u < c1:                         # falling flank
+            return r_maj - depth * (u - c0) / R
+        if u < c2:                         # root
             return r_min
-        return r_min + depth * (u - 0.80) / 0.20   # rising flank
+        return r_min + depth * (u - c2) / R    # rising flank
 
     def fn(z):
         pts = []
@@ -353,7 +366,7 @@ def thread(major_d, pitch, z0, z1, depth=None, seg=64, per_turn=24,
            clearance=0.0):
     """Solid external thread between z0 and z1. Use `clearance` NEGATIVE on a
     screw (or positive on the matching bore) to set the running fit."""
-    depth = 0.54 * pitch if depth is None else depth
+    depth = THREAD_RAMP * pitch if depth is None else depth   # 45 deg flank
     steps = max(8, int(per_turn * (z1 - z0) / pitch))
     return revolve(thread_profile_fn(major_d, pitch, depth, seg, clearance),
                    z0, z1, steps, seg=seg)
@@ -369,7 +382,7 @@ def threaded_bore(outer_d, major_d, pitch, z0, z1, depth=None, seg=64,
     each generated directly and stitched. The inner ring is wound backwards
     so its normals face into the bore.
     """
-    depth = 0.54 * pitch if depth is None else depth
+    depth = THREAD_RAMP * pitch if depth is None else depth   # 45 deg flank
     steps = max(8, int(per_turn * (z1 - z0) / pitch))
     fn = thread_profile_fn(major_d, pitch, depth, seg, clearance)
     zs = np.linspace(z0, z1, steps + 1)

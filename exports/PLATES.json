@@ -44,17 +44,41 @@
       "fits_bed": true
     },
     {
-      "plate": "plate-3-arms",
-      "why": "the three segments, standing on their yokes",
+      "plate": "plate-3a-arm-lower",
+      "why": "arm segment 1 of 3 -- standing on its yoke",
       "parts": [
-        "arm-lower",
-        "arm-upper",
+        "arm-lower"
+      ],
+      "used_mm": [
+        59.7,
+        26.5,
+        154.0
+      ],
+      "fits_bed": true
+    },
+    {
+      "plate": "plate-3b-arm-upper",
+      "why": "arm segment 2 of 3 -- standing on its yoke",
+      "parts": [
+        "arm-upper"
+      ],
+      "used_mm": [
+        59.7,
+        26.5,
+        154.0
+      ],
+      "fits_bed": true
+    },
+    {
+      "plate": "plate-3c-arm-fore",
+      "why": "arm segment 3 of 3 -- standing on its yoke",
+      "parts": [
         "arm-fore"
       ],
       "used_mm": [
-        127.1,
-        55.4,
-        154.0
+        59.7,
+        21.2,
+        132.9
       ],
       "fits_bed": true
     },

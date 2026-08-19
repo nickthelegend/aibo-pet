@@ -10,7 +10,7 @@ to run:
 
   plate-1-test      print this first: spline test + one horn. 15 minutes.
   plate-2-base      the big round base, alone (it owns most of the bed)
-  plate-3-arms      the three segments, standing
+  plate-3a/b/c      one arm segment each, standing
   plate-4-head      cone + lid
   plate-5-small     caps, horns, joint
 
@@ -49,8 +49,16 @@ BATCHES = [
     ("2-base", "the round tub; it owns the bed on its own", ["base"]),
     ("2b-shoulder", "the shoulder ring -- goes on AFTER the electronics",
      ["shoulder"]),
-    ("3-arms", "the three segments, standing on their yokes",
-     ["arm-lower", "arm-upper", "arm-fore"]),
+    # One segment per plate, on purpose. They fit together comfortably, but
+    # these are 154 mm towers on a bedslinger: three of them are three
+    # chances for a knock-over to take the whole 8-hour run with it, and you
+    # cannot restart one without restarting all three.
+    ("3a-arm-lower", "arm segment 1 of 3 -- standing on its yoke",
+     ["arm-lower"]),
+    ("3b-arm-upper", "arm segment 2 of 3 -- standing on its yoke",
+     ["arm-upper"]),
+    ("3c-arm-fore", "arm segment 3 of 3 -- standing on its yoke",
+     ["arm-fore"]),
     ("4-head", "cone (mouth down) + lid (top face down)", ["shade", "lid"]),
     ("5-small", "everything that is quick", ["base-joint", "cap-base", "cap-shoulder",
                                              "cap-elbow", "cap-head", "horn-sg90",

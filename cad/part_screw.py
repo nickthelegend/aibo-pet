@@ -56,7 +56,7 @@ def build():
     m += pl.prism(_head(), 0.0, P.SCREW_HEAD_T)
     # a plain collar under the thread: the first turn of any printed thread is
     # ragged, and this keeps that off the bearing face
-    m += pl.prism(pl.circle(P.SCREW_MAJOR - 2 * 0.54 * P.SCREW_PITCH, 48),
+    m += pl.prism(pl.circle(P.SCREW_MAJOR - 2 * pl.THREAD_RAMP * P.SCREW_PITCH, 48),
                   P.SCREW_HEAD_T - OVL, P.SCREW_HEAD_T + 1.0)
     # thread, nominal
     m += pl.thread(P.SCREW_MAJOR, P.SCREW_PITCH,
