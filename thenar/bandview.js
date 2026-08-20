@@ -13,10 +13,15 @@
 import { M4, loadGLB, makeGL } from "./gl.js";
 
 export async function mountBandView(cv, opts = {}) {
+  // Same viewer drives the Band and the Quest capture rig: both exports use
+  // the indexed normal-free GLB plus a sidecar carrying per-part explode
+  // vectors, so nothing here needs to know which one it is looking at.
+  const glb = opts.glb || "./band.glb";
+  const json = opts.json || "./band.json";
   const { gl, prog, U } = makeGL(cv);
   const [nodes, meta] = await Promise.all([
-    loadGLB("./band.glb"),
-    fetch("./band.json").then(r => r.json()),
+    loadGLB(glb),
+    fetch(json).then(r => r.json()),
   ]);
 
   const info = new Map(meta.parts.map(p => [p.name, p]));
@@ -90,7 +95,8 @@ export async function mountBandView(cv, opts = {}) {
   }
 
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const st = { explode: 0, target: 0, az: -0.7, spin: true };
+  const st = { explode: opts.explode || 0, target: opts.explode || 0,
+               az: opts.az ?? -0.7, spin: opts.spin !== false };
   const mix = (a, b, t) => a + (b - a) * t;
 
   function frame(now) {

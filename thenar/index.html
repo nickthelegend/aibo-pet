@@ -96,9 +96,7 @@ td.what{color:var(--fg-dim)}
   align-items:center}
 @media(min-width:900px){ .demo .stage{grid-template-columns:250px 1fr} }
 .hand{width:100%;max-width:250px;margin:0 auto;display:block}
-.hand .bone{fill:none;stroke:var(--line-2);stroke-width:22;stroke-linecap:round}
-.hand .thumb{stroke-width:26}
-.hand .palm{fill:var(--line-2);stroke:none}
+.hand .skin{fill:#313131}
 .hand .emin{fill:rgba(77,23,245,.22);stroke:var(--blue);stroke-width:1.5;
   stroke-dasharray:3 3}
 .hand .lbl{fill:var(--fg-mute);font-size:9px;font-weight:600;
@@ -140,6 +138,7 @@ td.what{color:var(--fg-dim)}
   </a>
   <nav class="topnav" aria-label="Primary">
     <a href="#demo">The gap</a>
+    <a href="#capture">Capture</a>
     <a href="#band">The Band</a>
     <a href="#proof">The proof</a>
     <a href="#stands">Where we stand</a>
@@ -186,16 +185,8 @@ td.what{color:var(--fg-dim)}
 
     <div class="demo">
       <div class="stage">
-        <svg class="hand" viewBox="0 0 200 264" role="img"
-             aria-label="Right hand, palm view, with pressure at the thenar eminence and fingertips">
-          <rect class="palm" x="56" y="96" width="100" height="100" rx="26"/>
-          <path class="bone" d="M70 116 L70 48"/>
-          <path class="bone" d="M96 116 L96 36"/>
-          <path class="bone" d="M122 116 L122 46"/>
-          <path class="bone" d="M146 116 L146 70"/>
-          <path class="bone thumb" d="M66 168 L30 208"/>
-          <ellipse class="emin" cx="80" cy="158" rx="19" ry="24"
-                   transform="rotate(-16 80 158)"/>
+        <svg class="hand" viewBox="3 22 196 302" role="img"
+             aria-label="Right hand, palm view, with pressure at the thenar eminence and the fingertips">
           <defs>
             <radialGradient id="pg">
               <stop offset="0%"   stop-color="#FA9DCD" stop-opacity=".95"/>
@@ -203,15 +194,18 @@ td.what{color:var(--fg-dim)}
               <stop offset="100%" stop-color="#FA9DCD" stop-opacity="0"/>
             </radialGradient>
           </defs>
+          <path class="skin" d="M 10.6 147.2 L 21.5 191.9 L 24.0 198.6 L 43.8 239.4 L 69.3 273.0 L 82.0 300.0 L 110.0 316.0 L 150.0 312.0 L 176.0 284.0 L 185.0 240.2 L 179.6 186.0 L 186.3 141.9 L 191.0 90.1 L 190.6 87.6 L 189.2 85.0 L 187.3 83.3 L 184.7 82.2 L 182.1 82.1 L 179.3 82.9 L 177.3 84.4 L 175.7 86.8 L 167.9 137.5 L 163.5 158.7 L 162.6 160.9 L 161.1 162.5 L 159.0 163.1 L 156.9 162.7 L 154.7 160.5 L 154.2 157.4 L 158.2 52.1 L 157.5 48.6 L 156.0 46.1 L 151.8 43.2 L 147.1 43.0 L 142.6 45.4 L 140.2 49.2 L 132.2 132.6 L 130.5 136.6 L 128.6 137.7 L 126.5 137.7 L 123.7 135.8 L 122.7 132.2 L 118.6 38.0 L 115.8 33.0 L 110.8 30.4 L 105.1 31.0 L 100.8 34.7 L 99.2 39.9 L 98.0 137.5 L 97.3 142.3 L 95.8 143.9 L 93.8 144.7 L 90.1 143.4 L 88.7 140.0 L 80.0 55.2 L 76.9 50.7 L 72.0 48.7 L 66.7 49.7 L 63.1 52.9 L 61.6 58.1 L 63.8 121.2 L 67.2 177.8 L 66.3 180.3 L 64.0 182.0 L 62.6 190.5 L 60.9 193.0 L 58.5 193.9 L 55.6 193.0 L 49.2 183.6 L 32.6 141.5 L 29.4 137.2 L 26.3 135.3 L 22.1 134.5 L 18.6 135.0 L 14.8 137.0 L 12.4 139.7 L 10.7 143.6 Z"/>
+          <ellipse class="emin" cx="90" cy="252" rx="26" ry="33"
+                   transform="rotate(-20 90 252)"/>
           <g id="pads">
-            <circle class="pp" data-w="1"   cx="80"  cy="158" r="0" fill="url(#pg)"/>
-            <circle class="pp" data-w=".62" cx="34"  cy="204" r="0" fill="url(#pg)"/>
-            <circle class="pp" data-w=".52" cx="70"  cy="52"  r="0" fill="url(#pg)"/>
-            <circle class="pp" data-w=".52" cx="96"  cy="40"  r="0" fill="url(#pg)"/>
-            <circle class="pp" data-w=".44" cx="122" cy="50"  r="0" fill="url(#pg)"/>
-            <circle class="pp" data-w=".34" cx="146" cy="74"  r="0" fill="url(#pg)"/>
+            <circle class="pp" data-w="1"   cx="90"  cy="252" r="0" fill="url(#pg)"/>
+            <circle class="pp" data-w=".62" cx="26"  cy="153" r="0" fill="url(#pg)"/>
+            <circle class="pp" data-w=".52" cx="72"  cy="64"  r="0" fill="url(#pg)"/>
+            <circle class="pp" data-w=".52" cx="109" cy="47"  r="0" fill="url(#pg)"/>
+            <circle class="pp" data-w=".44" cx="148" cy="58"  r="0" fill="url(#pg)"/>
+            <circle class="pp" data-w=".34" cx="182" cy="96"  r="0" fill="url(#pg)"/>
           </g>
-          <text class="lbl" x="100" y="248" text-anchor="middle">THENAR EMINENCE</text>
+          <text class="lbl" x="100" y="316" text-anchor="middle">THENAR EMINENCE</text>
         </svg>
 
         <div>
@@ -265,6 +259,54 @@ td.what{color:var(--fg-dim)}
           kitchen.</p>
       </article>
     </div>
+  </section>
+
+  <section class="fwrap" id="capture">
+    <p class="feyebrow">What we run today</p>
+    <h2 class="fh2">We are already<br>collecting</h2>
+    <p class="flede" style="margin-top:var(--s-300)">
+      Teleoperation on a Quest 3S, today, on hardware anybody can buy. It is
+      how we get task structure and intent at volume while the Band is still
+      in design, and it is the honest half of the answer to what we have
+      before our own instrument ships.</p>
+
+    <div class="stage3d" id="stage3" style="aspect-ratio:16/8">
+      <canvas id="questc"></canvas>
+      <span class="hint3d">DRAG TO ROTATE</span>
+      <span class="state" id="state3d3">QUEST 3S · TOUCH PLUS</span>
+    </div>
+
+    <div class="bento" style="margin-top:16px">
+      <article class="tile">
+        <h3>What the headset gives us</h3>
+        <p>Six degrees of freedom on both hands at 90 Hz, head pose, and the
+          operator's own segmentation of the task, because a person doing
+          teleoperation naturally breaks work into attempts. Cheap, scalable,
+          and it works in any room.</p>
+        <div class="spec">
+          <div>TRACKING<b>6DoF, both hands</b></div>
+          <div>CONTROLLERS<b>Touch Plus, ringless</b></div>
+          <div>COST<b>Off the shelf</b></div>
+        </div>
+      </article>
+      <article class="tile" style="border-color:var(--blue)">
+        <h3>What it cannot give us</h3>
+        <p>Force. A Touch Plus reports a trigger axis and a capacitive touch
+          flag, not newtons at a fingertip. Squeeze a real glass hard enough to
+          break it and the controller sends exactly the same number as holding
+          it gently. That missing channel is the entire reason the Band
+          exists.</p>
+        <div class="spec">
+          <div>GRIP FORCE<b>None</b></div>
+          <div>SLIP EVENTS<b>Invisible</b></div>
+          <div>CONTACT AREA<b>None</b></div>
+        </div>
+      </article>
+    </div>
+
+    <p class="flede" style="margin-top:var(--s-500);color:var(--fg-mute);font-size:14px">
+      Our own likeness of hardware we use, modelled for this page. No Meta
+      marks, dimensions approximate. Thenar is not affiliated with Meta.</p>
   </section>
 
   <section class="fwrap" id="band">
@@ -609,6 +651,26 @@ mountBand(document.querySelector("#bandc"));
     // A dead canvas looks broken; drop the block and let the copy carry it.
     console.error("band hero:", e);
     stage?.remove();
+  }
+
+  try {
+    const q = await mountBandView(document.querySelector("#questc"),
+      { glb: "./quest.glb", json: "./quest.json", az: -0.55 });
+    const st3 = document.querySelector("#stage3");
+    let qq = false;
+    const onQ = () => {
+      qq = false;
+      const r = st3.getBoundingClientRect();
+      q.explode(Math.max(0, Math.min(1,
+        (innerHeight * 0.55 - r.top) / Math.max(r.height * 0.9, 1))));
+    };
+    addEventListener("scroll", () => {
+      if (!qq) { qq = true; requestAnimationFrame(onQ); }
+    }, { passive: true });
+    onQ();
+  } catch (e) {
+    console.error("quest:", e);
+    document.querySelector("#stage3")?.remove();
   }
 
   const list = document.querySelector("#bandlist");
