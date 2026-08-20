@@ -243,6 +243,70 @@ def main():
                    if f.endswith(".stl") and f.startswith("plate-")},
     }
 
+    # ---- plate detail, so the site can offer a plate at a time ----------
+    # A plate is what somebody actually sends to the printer, so the page needs
+    # more than a URL: what is on it, how much bed it eats, and whether the
+    # slicer needs supports switched on. The supports flag comes from
+    # audit_printable's own overhang measurement rather than a second copy of
+    # the rule, because two copies drift and only one of them gets fixed.
+    import io as _io, contextlib as _ctx
+    sys.path.insert(0, HERE)
+    import audit_printable as _ap
+    with _ctx.redirect_stdout(_io.StringIO()):
+        needs_support = set(_ap._overhangs())
+
+    with open(os.path.join(exp, "PLATES.json")) as f:
+        pj = json.load(f)
+    plates_detail = []
+    for pl_ in pj["plates"]:
+        name = pl_["plate"]
+        stl = os.path.join(exp, name + ".stl")
+        sup = sorted(set(pl_["parts"]) & needs_support)
+        plates_detail.append({
+            "plate": name,
+            "why": pl_["why"],
+            "parts": pl_["parts"],
+            "used_mm": pl_["used_mm"],
+            "fits_bed": pl_["fits_bed"],
+            "supports": sup,
+            "mb": round(os.path.getsize(stl) / 1e6, 2) if os.path.exists(stl) else None,
+            "url": RAW + name + ".stl",
+        })
+    # ---- the printable zip: nine plates, not twenty two loose parts ------
+    # all-stls.zip is for someone who wants one specific part. Somebody who is
+    # actually going to print gets the PLATES, in order, with a README that
+    # says which ones need supports switched on -- because that instruction
+    # lives in an audit and would otherwise never reach the person at the
+    # printer.
+    pz = os.path.join(exp, "plates.zip")
+    readme = ["HOTARU -- printable plates", "=" * 30, "",
+              f"Bed: {pj['bed_mm']:.0f} x {pj['bed_mm']:.0f} mm (Bambu A1 mini).",
+              "Print in this order. Plate 1 is a 15 minute coupon that checks the",
+              "printed spline fits your servo BEFORE you commit to an 8 hour tub.",
+              ""]
+    for i, d in enumerate(plates_detail, 1):
+        x, y, z = d["used_mm"]
+        readme.append(f"{i}. {d['plate']}.stl")
+        readme.append(f"   {d['why']}")
+        readme.append(f"   {len(d['parts'])} part(s), {x:.0f} x {y:.0f} x {z:.0f} mm")
+        readme.append("   SUPPORTS: ON  (" + ", ".join(d["supports"]) + ")"
+                      if d["supports"] else "   supports: not needed")
+        readme.append("")
+    readme += ["Supports are needed only where listed. Everything else prints",
+               "as modelled; measured by cad/audit_printable.py, not asserted.",
+               "", "CAD, STLs and audits: github.com/nickthelegend/aibo-pet"]
+    with zipfile.ZipFile(pz, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as z:
+        z.writestr("README.txt", "\n".join(readme))
+        for d in plates_detail:
+            f = d["plate"] + ".stl"
+            src = os.path.join(exp, f)
+            if os.path.exists(src):
+                z.write(src, f)
+
+    spec["downloads"]["plates_zip"] = RAW + "plates.zip"
+    spec["downloads"]["plates_zip_mb"] = round(os.path.getsize(pz) / 1e6, 1)
+    spec["plates"] = {"bed_mm": pj["bed_mm"], "list": plates_detail}
+
     with open(os.path.join(WEB, "spec.json"), "w") as f:
         json.dump(spec, f, indent=1)
 

@@ -407,6 +407,183 @@
    "plate-4-head-2": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plate-4-head-2.stl",
    "plate-4-head": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plate-4-head.stl",
    "plate-5-small": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plate-5-small.stl"
-  }
+  },
+  "plates_zip": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plates.zip",
+  "plates_zip_mb": 2.5
+ },
+ "plates": {
+  "bed_mm": 180.0,
+  "list": [
+   {
+    "plate": "plate-1-test",
+    "why": "print FIRST -- verifies the printed spline before you commit",
+    "parts": [
+     "horn-mg996r",
+     "spline-test"
+    ],
+    "used_mm": [
+     118.0,
+     48.0,
+     7.3
+    ],
+    "fits_bed": true,
+    "supports": [],
+    "mb": 0.23,
+    "url": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plate-1-test.stl"
+   },
+   {
+    "plate": "plate-2-base",
+    "why": "the round tub; it owns the bed on its own",
+    "parts": [
+     "base"
+    ],
+    "used_mm": [
+     160.0,
+     160.0,
+     58.0
+    ],
+    "fits_bed": true,
+    "supports": [],
+    "mb": 0.8,
+    "url": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plate-2-base.stl"
+   },
+   {
+    "plate": "plate-2b-shoulder",
+    "why": "the shoulder ring -- goes on AFTER the electronics",
+    "parts": [
+     "shoulder"
+    ],
+    "used_mm": [
+     160.0,
+     160.0,
+     33.4
+    ],
+    "fits_bed": true,
+    "supports": [],
+    "mb": 1.22,
+    "url": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plate-2b-shoulder.stl"
+   },
+   {
+    "plate": "plate-3a-arm-lower",
+    "why": "arm segment 1 of 3 -- standing on its yoke",
+    "parts": [
+     "arm-lower"
+    ],
+    "used_mm": [
+     59.7,
+     26.5,
+     154.0
+    ],
+    "fits_bed": true,
+    "supports": [
+     "arm-lower"
+    ],
+    "mb": 1.01,
+    "url": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plate-3a-arm-lower.stl"
+   },
+   {
+    "plate": "plate-3b-arm-upper",
+    "why": "arm segment 2 of 3 -- standing on its yoke",
+    "parts": [
+     "arm-upper"
+    ],
+    "used_mm": [
+     59.7,
+     26.5,
+     154.0
+    ],
+    "fits_bed": true,
+    "supports": [
+     "arm-upper"
+    ],
+    "mb": 1.01,
+    "url": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plate-3b-arm-upper.stl"
+   },
+   {
+    "plate": "plate-3c-arm-fore",
+    "why": "arm segment 3 of 3 -- standing on its yoke",
+    "parts": [
+     "arm-fore"
+    ],
+    "used_mm": [
+     59.7,
+     21.2,
+     132.9
+    ],
+    "fits_bed": true,
+    "supports": [
+     "arm-fore"
+    ],
+    "mb": 1.0,
+    "url": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plate-3c-arm-fore.stl"
+   },
+   {
+    "plate": "plate-4-head",
+    "why": "cone (mouth down) + lid (top face down)",
+    "parts": [
+     "lid"
+    ],
+    "used_mm": [
+     113.8,
+     113.8,
+     6.4
+    ],
+    "fits_bed": true,
+    "supports": [],
+    "mb": 0.52,
+    "url": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plate-4-head.stl"
+   },
+   {
+    "plate": "plate-4-head-2",
+    "why": "cone (mouth down) + lid (top face down)",
+    "parts": [
+     "shade"
+    ],
+    "used_mm": [
+     66.0,
+     66.0,
+     72.0
+    ],
+    "fits_bed": true,
+    "supports": [
+     "shade"
+    ],
+    "mb": 0.74,
+    "url": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plate-4-head-2.stl"
+   },
+   {
+    "plate": "plate-5-small",
+    "why": "everything that is quick",
+    "parts": [
+     "spk-clamp",
+     "horn-adapter",
+     "base-joint",
+     "horn-sg90",
+     "cap-base",
+     "cap-shoulder",
+     "cap-elbow",
+     "cap-head",
+     "keycap",
+     "yoke-screw",
+     "yoke-screw",
+     "yoke-screw",
+     "yoke-screw",
+     "esp-tab",
+     "amp-tab",
+     "mic-tab"
+    ],
+    "used_mm": [
+     150.2,
+     139.0,
+     51.8
+    ],
+    "fits_bed": true,
+    "supports": [
+     "base-joint"
+    ],
+    "mb": 3.72,
+    "url": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plate-5-small.stl"
+   }
+  ]
  }
 }

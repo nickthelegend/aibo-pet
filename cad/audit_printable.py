@@ -181,6 +181,10 @@ def _overhangs(limit_deg=45.0):
     print("'bridge' is exposed near-horizontal ceiling: spans a gap, normally "
           "prints.\n'overhang' is exposed sloping face past "
           f"{limit_deg:.0f} deg off vertical.")
+    # Returned so export_web can put the supports flag on each plate rather
+    # than a second implementation drifting away from this one. main() ignores
+    # it, which is why adding a return here is safe.
+    return flagged
 
 
 def _inside(pts, A, B, Cv):

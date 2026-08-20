@@ -97,6 +97,8 @@ function buildList() {
       </div>`;
     }
   }
+  html = `<div class="grp">EVERY PART &middot; <a class="dl" style="opacity:1;transform:none"
+      href="${dl.zip}" download>ZIP ${SPEC.downloads.zip_mb} MB</a></div>` + html;
   $("#list").innerHTML = html;
   $("#list").querySelectorAll(".row").forEach(r => {
     r.addEventListener("click", e => {
@@ -104,6 +106,49 @@ function buildList() {
       const p = PARTS.find(x => x.name === r.dataset.n);
       p.on = !p.on;
       r.classList.toggle("off", !p.on);
+    });
+  });
+}
+
+/* Plates. A plate is the unit somebody actually prints, so each row says what
+   is on it, how tall it stands, and whether supports are needed. The supports
+   flag is measured by cad/audit_printable.py and carried through spec.json --
+   this page never decides it, because a second opinion about overhangs is a
+   second thing to keep in sync. */
+function buildPlates() {
+  const P = SPEC.plates;
+  if (!P || !P.list) { $("#plates").innerHTML = "<div class='grp'>NO PLATE DATA</div>"; return; }
+  const bed = P.bed_mm;
+  let html = `<div class="grp">${P.list.length} PLATES &middot; ${bed}MM BED</div>`;
+  for (const p of P.list) {
+    const [x, y, z] = p.used_mm;
+    const label = p.plate.replace(/^plate-/, "").replace(/-/g, " ").toUpperCase();
+    const chips = [`<span class="chip">${p.parts.length} PART${p.parts.length > 1 ? "S" : ""}</span>`,
+                   `<span class="chip">${x}&times;${y}&times;${z}MM</span>`];
+    if (z > bed * 0.75) chips.push(`<span class="chip tall">TALL</span>`);
+    if (p.supports.length) chips.push(`<span class="chip sup">SUPPORTS</span>`);
+    html += `<div class="plate" data-p="${p.plate}">
+      <div class="t"><span class="n">${label}</span><span class="mb">${p.mb} MB</span></div>
+      <div class="why">${p.why}</div>
+      <div class="meta">${chips.join("")}
+        <a class="go" href="${p.url}" download>STL</a></div>
+    </div>`;
+  }
+  $("#plates").innerHTML = html;
+
+  // Clicking a plate isolates exactly what is on it, so "what am I printing"
+  // is answered in the viewport rather than by reading a filename.
+  const byName = new Map(SPEC.plates.list.map(p => [p.plate, p.parts]));
+  $("#plates").querySelectorAll(".plate").forEach(row => {
+    row.addEventListener("click", e => {
+      if (e.target.closest(".go")) return;          // let the download through
+      const on = row.classList.contains("on");
+      $("#plates").querySelectorAll(".plate").forEach(r => r.classList.remove("on"));
+      const keep = on ? null : new Set(byName.get(row.dataset.p));
+      if (!on) row.classList.add("on");
+      for (const part of PARTS) part.on = keep ? keep.has(part.name) : true;
+      $("#list").querySelectorAll(".row").forEach(r =>
+        r.classList.toggle("off", keep ? !keep.has(r.dataset.n) : false));
     });
   });
 }
@@ -129,6 +174,15 @@ $("#modes").addEventListener("click", e => {
   $("#modes").querySelectorAll("button").forEach(x =>
     x.classList.toggle("on", x === b));
   explodeTarget = b.dataset.m === "exploded" ? 1 : 0;
+});
+
+$("#tabs").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  $("#tabs").querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b));
+  const plates = b.dataset.t === "plates";
+  $("#plates").hidden = !plates;
+  $("#list").hidden = plates;
+  $("#toggleall").hidden = plates;
 });
 
 $("#toggleall").addEventListener("click", () => {
@@ -195,8 +249,12 @@ function frame() {
     dist = Math.max(...[0, 1, 2].map(i => b.hi[i] - b.lo[i])) * 1.9;
 
     buildList();
-    $("#zip").href = spec.downloads.zip;
-    $("#zip").textContent = `DOWNLOAD ALL STLs · ${spec.downloads.zip_mb} MB`;
+    buildPlates();
+    const dz = spec.downloads;
+    $("#zip").href = dz.plates_zip || dz.zip;
+    $("#zip").textContent = dz.plates_zip
+      ? `DOWNLOAD PLATES · ${dz.plates_zip_mb} MB`
+      : `DOWNLOAD ALL STLs · ${dz.zip_mb} MB`;
     $("#vload").style.opacity = "0";
     setTimeout(() => $("#vload").style.display = "none", 260);
     requestAnimationFrame(frame);
