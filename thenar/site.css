@@ -161,7 +161,9 @@ footer a:hover{color:var(--fg)}
 .ctr{text-align:center}
 .fh1,.fh2{font-weight:500;letter-spacing:-2px;text-align:center;
   font-size:36px;line-height:40px;text-wrap:balance}
-@media(min-width:768px){ .fh1,.fh2{font-size:60px} }
+/* line-height travels WITH the size: bumping to 60px and leaving the 36px
+   leading behind is what had the two heading lines overlapping. */
+@media(min-width:768px){ .fh1,.fh2{font-size:60px;line-height:1} }
 .fbig{font-weight:500;letter-spacing:-1px;text-align:center;
   font-size:48px;line-height:1;text-wrap:balance}
 @media(min-width:768px){ .fbig{font-size:96px;line-height:1} }
@@ -290,3 +292,34 @@ footer a:hover{color:var(--fg)}
 .fnote a{color:var(--fg-dim);text-decoration:underline;
   text-underline-offset:2px}
 .fnote a:hover{color:var(--fg)}
+
+/* footer: four columns of real destinations, not one row of orphan links */
+footer{border-top:1px solid var(--line);padding:var(--s-700) 0 var(--s-500)}
+.fcols{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-500) var(--s-300)}
+@media(min-width:768px){ .fcols{grid-template-columns:repeat(4,1fr)} }
+.fcols h4{font-size:12px;line-height:16px;font-weight:600;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--fg-mute);margin-bottom:var(--s-200)}
+.fcols a{display:block;font-size:14px;line-height:20px;color:var(--fg-dim);
+  padding:var(--s-50) 0;transition:color var(--t-ui) var(--ease)}
+.fcols a:hover{color:var(--fg)}
+.fcols a:focus-visible{outline:2px solid var(--blue);outline-offset:2px;
+  border-radius:4px}
+.fbase{display:flex;gap:var(--s-300);flex-wrap:wrap;justify-content:space-between;
+  margin-top:var(--s-700);padding-top:var(--s-300);border-top:1px solid var(--line);
+  font-size:12px;line-height:16px;color:var(--fg-mute)}
+.fbase span{max-width:56ch}
+
+/* the twelve week plan */
+.weeks{margin-top:var(--s-600)}
+.weeks ol{list-style:none;display:grid;gap:var(--s-100);counter-reset:none;
+  max-width:900px;margin:0 auto}
+.weeks li{display:grid;grid-template-columns:48px 1fr;gap:var(--s-300);
+  align-items:start;padding:var(--s-200) var(--s-300);border-radius:12px;
+  background:var(--surface);border:1px solid var(--line);text-align:left}
+.weeks li b{font-size:20px;line-height:28px;font-weight:700;color:var(--fg-mute)}
+.weeks li span{font-size:14px;line-height:20px;color:var(--fg-dim)}
+.weeks li.demo{border-color:var(--blue);background:rgba(77,23,245,.10)}
+.weeks li.demo b{color:var(--blue)}
+.weeks li.demo span{color:var(--fg)}
+.weeks li.buf{border-style:dashed;background:transparent}
+.weeks li.buf b,.weeks li.buf span{color:var(--fg-mute)}
