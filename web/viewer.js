@@ -17,6 +17,10 @@ const { gl, prog, U } = makeGL(cv);
 let PARTS = [], RIG = null, SPEC = null;
 let az = -0.62, el = 0.14, dist = 700, drag = null;
 let explode = 0, explodeTarget = 0;        // 0 = assembled, 1 = exploded
+// When a plate is selected we show its parts THE WAY THEY SLICE, not the way
+// they sit in the robot. The shoulder is the reason: its fix was a 180 degree
+// print flip, and in assembly pose that fix is completely invisible.
+let printMode = null;                      // null = assembled, else Set of names
 const CTR = [0, 0, 170];
 
 /* Subsystem grouping, same rules the model viewer uses. First match wins and
@@ -68,6 +72,15 @@ function poseParts() {
   const sh = PARTS.find(x => x.name === RIG.shade);
   if (sh) sh.base = M4.mul(M4.trans(p[0], p[1], p[2]), M4.rotX(cum + 180));
 
+  if (printMode) {
+    // print pose: rotate about X by `flip`, then drop the part onto Z = 0,
+    // which is exactly the transform cad/assembly.print_items() records
+    for (const part of PARTS) {
+      const pp = (SPEC.print_pose || {})[part.name] || { flip: 0, dz: 0 };
+      part.model = M4.mul(M4.trans(0, 0, pp.dz), M4.rotX(pp.flip));
+    }
+    return;
+  }
   for (const part of PARTS) {
     const o = explodeOffset(part.name);
     part.model = M4.mul(M4.trans(o[0] * explode, o[1] * explode, o[2] * explode),
@@ -147,6 +160,12 @@ function buildPlates() {
       const keep = on ? null : new Set(byName.get(row.dataset.p));
       if (!on) row.classList.add("on");
       for (const part of PARTS) part.on = keep ? keep.has(part.name) : true;
+      printMode = keep;
+      $("#modes").style.opacity = keep ? ".35" : "1";
+      $("#modes").style.pointerEvents = keep ? "none" : "auto";
+      $("#printbadge").hidden = !keep;
+      poseParts();
+      frameVisible();
       $("#list").querySelectorAll(".row").forEach(r =>
         r.classList.toggle("off", keep ? !keep.has(r.dataset.n) : false));
     });
@@ -183,6 +202,16 @@ $("#tabs").addEventListener("click", e => {
   $("#plates").hidden = !plates;
   $("#list").hidden = plates;
   $("#toggleall").hidden = plates;
+  if (!plates) {                       // back to PARTS: drop out of print pose
+    printMode = null;
+    $("#plates").querySelectorAll(".plate").forEach(r => r.classList.remove("on"));
+    $("#printbadge").hidden = true;
+    $("#modes").style.opacity = "1";
+    $("#modes").style.pointerEvents = "auto";
+    for (const p of PARTS) p.on = true;
+    $("#list").querySelectorAll(".row").forEach(r => r.classList.remove("off"));
+    poseParts(); frameVisible();
+  }
 });
 
 $("#toggleall").addEventListener("click", () => {
@@ -191,6 +220,28 @@ $("#toggleall").addEventListener("click", () => {
   $("#list").querySelectorAll(".row").forEach(r => r.classList.toggle("off", anyOn));
   $("#toggleall").textContent = anyOn ? "SHOW ALL" : "HIDE ALL";
 });
+
+/* Refit the camera to whatever is currently visible. Selecting one plate out
+   of 66 parts otherwise leaves the model a speck in the middle of the view. */
+function frameVisible() {
+  const vis = PARTS.filter(p => p.on);
+  if (!vis.length) return;
+  const lo = [1e9, 1e9, 1e9], hi = [-1e9, -1e9, -1e9];
+  for (const p of vis) {
+    const m = p.model;
+    for (let c = 0; c < 8; c++) {
+      const v = [c & 1 ? p.hi[0] : p.lo[0], c & 2 ? p.hi[1] : p.lo[1],
+                 c & 4 ? p.hi[2] : p.lo[2]];
+      for (let k = 0; k < 3; k++) {
+        const w = m[k]*v[0] + m[4+k]*v[1] + m[8+k]*v[2] + m[12+k];
+        if (w < lo[k]) lo[k] = w;
+        if (w > hi[k]) hi[k] = w;
+      }
+    }
+  }
+  CTR[0] = (lo[0]+hi[0])/2; CTR[1] = (lo[1]+hi[1])/2; CTR[2] = (lo[2]+hi[2])/2;
+  dist = Math.max(hi[0]-lo[0], hi[1]-lo[1], hi[2]-lo[2]) * 2.1 + 40;
+}
 
 /* ------------------------------------------------------------- loop ---- */
 const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;

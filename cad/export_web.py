@@ -318,6 +318,14 @@ def main():
 
     spec["downloads"]["plates_zip"] = RAW + "plates.zip"
     spec["downloads"]["plates_zip_mb"] = round(os.path.getsize(pz) / 1e6, 1)
+    # The exact transform that takes each part from the assembled pose the
+    # GLB carries into the pose it is SLICED in. Without it the parts page
+    # shows a plate selection in assembly orientation, which is how somebody
+    # looks at a fixed shoulder, sees its lugs pointing inward exactly as they
+    # did on the failed print, and reasonably concludes nothing was fixed.
+    _asm.print_items()                      # populates PRINT_SHIFT
+    spec["print_pose"] = {n: {"flip": f, "dz": round(dz, 4)}
+                          for n, (f, dz) in _asm.PRINT_SHIFT.items()}
     spec["plates"] = {"bed_mm": pj["bed_mm"], "list": plates_detail}
 
     with open(os.path.join(WEB, "spec.json"), "w") as f:

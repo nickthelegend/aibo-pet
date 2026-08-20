@@ -411,6 +411,96 @@
   "plates_zip": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plates.zip",
   "plates_zip_mb": 2.5
  },
+ "print_pose": {
+  "base": {
+   "flip": 0.0,
+   "dz": -0.0
+  },
+  "shoulder": {
+   "flip": 180.0,
+   "dz": 61.4
+  },
+  "lid": {
+   "flip": 180.0,
+   "dz": 61.4
+  },
+  "base-joint": {
+   "flip": 0.0,
+   "dz": -6.2
+  },
+  "cap-base": {
+   "flip": 0.0,
+   "dz": -58.0
+  },
+  "arm-lower": {
+   "flip": 0.0,
+   "dz": -0.0
+  },
+  "arm-upper": {
+   "flip": 0.0,
+   "dz": -0.0
+  },
+  "arm-fore": {
+   "flip": 0.0,
+   "dz": -0.0
+  },
+  "cap-shoulder": {
+   "flip": 0.0,
+   "dz": -154.0
+  },
+  "cap-elbow": {
+   "flip": 0.0,
+   "dz": -154.0
+  },
+  "cap-head": {
+   "flip": 0.0,
+   "dz": -132.9
+  },
+  "shade": {
+   "flip": 0.0,
+   "dz": -0.0
+  },
+  "horn-mg996r": {
+   "flip": 0.0,
+   "dz": -0.0
+  },
+  "horn-sg90": {
+   "flip": 0.0,
+   "dz": -0.0
+  },
+  "horn-adapter": {
+   "flip": 0.0,
+   "dz": -0.0
+  },
+  "spline-test": {
+   "flip": 0.0,
+   "dz": -0.0
+  },
+  "spk-clamp": {
+   "flip": 0.0,
+   "dz": -0.0
+  },
+  "mic-tab": {
+   "flip": 0.0,
+   "dz": -0.0
+  },
+  "esp-tab": {
+   "flip": 0.0,
+   "dz": -0.0
+  },
+  "amp-tab": {
+   "flip": 0.0,
+   "dz": -0.0
+  },
+  "keycap": {
+   "flip": 180.0,
+   "dz": 9.0
+  },
+  "yoke-screw": {
+   "flip": 0.0,
+   "dz": -0.0
+  }
+ },
  "plates": {
   "bed_mm": 180.0,
   "list": [
