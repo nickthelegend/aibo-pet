@@ -10,7 +10,13 @@
 <meta property="og:description" content="Manipulation models train on pixels and joint angles. Neither records how hard the hand squeezed. We do.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://thenar.io/">
+<meta property="og:image" content="https://thenar.io/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="THENAR, contact data for physical AI">
+<meta property="og:site_name" content="THENAR">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://thenar.io/og.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -20,7 +26,7 @@
    one house. Same tokens, same curve, same palette. Only the argument changes. */
 /* The header is fixed, so an anchor jump would otherwise park the section
    heading underneath it. */
-section[id]{scroll-margin-top:84px}
+section[id]{scroll-margin-top:80px}
 .chero{padding-top:var(--s-900);padding-bottom:var(--s-700)}
 /* The hero heading now runs on the .fh1 scale (64px / 1.03 / -2px at weight
    500). Only the gradient stays, which is the one background gradient the
@@ -28,9 +34,9 @@ section[id]{scroll-margin-top:84px}
 .fh1{background:linear-gradient(90deg,#FFFFFF 0%,#9B9B9B 100%);
   -webkit-background-clip:text;background-clip:text;color:transparent}
 
-.big{font-size:52px;line-height:.95;font-weight:500;letter-spacing:-1px;
+.big{font-size:48px;line-height:1;font-weight:500;letter-spacing:-1px;
   text-align:center;text-wrap:balance}
-@media(min-width:768px){ .big{font-size:99px;line-height:.93} }
+@media(min-width:768px){ .big{font-size:96px;line-height:1} }
 .big .dim{color:var(--fg-mute)}
 
 /* stat strip: only numbers we can actually stand behind */
@@ -49,7 +55,7 @@ section[id]{scroll-margin-top:84px}
 
 .tagbar{display:flex;gap:var(--s-75);flex-wrap:wrap;margin-top:var(--s-200)}
 .tg{font-size:12px;line-height:16px;font-weight:600;color:var(--fg-mute);
-  border:1px solid var(--line-2);border-radius:9999px;padding:2px 10px}
+  border:1px solid var(--line-2);border-radius:9999px;padding:2px 12px}
 .tg.live{color:var(--fg);border-color:var(--blue);background:rgba(77,23,245,.16)}
 .prod .card{display:flex;flex-direction:column}
 /* Only the tag row drops to the card floor. space-between on the whole
@@ -99,7 +105,7 @@ td.what{color:var(--fg-dim)}
 .hand .skin{fill:#313131}
 .hand .emin{fill:rgba(77,23,245,.22);stroke:var(--blue);stroke-width:1.5;
   stroke-dasharray:3 3}
-.hand .lbl{fill:var(--fg-mute);font-size:9px;font-weight:600;
+.hand .lbl{fill:var(--fg-mute);font-size:12px;font-weight:600;
   font-family:Manrope,sans-serif;letter-spacing:.06em}
 #trace{width:100%;height:300px;display:block;cursor:ew-resize;touch-action:none}
 @media(min-width:900px){ #trace{height:330px} }
@@ -107,10 +113,10 @@ td.what{color:var(--fg-dim)}
   justify-content:space-between;margin-top:var(--s-300);
   padding-top:var(--s-300);border-top:1px solid var(--line)}
 .tagline .dim w.lit{color:var(--fg-mute)}
-.demo .foot p{color:var(--fg-mute);font-size:13px;line-height:20px;max-width:64ch}
+.demo .foot p{color:var(--fg-mute);font-size:12px;line-height:16px;max-width:64ch}
 .demo .ctrl{display:flex;gap:var(--s-75);flex:none}
 .readout{display:flex;gap:var(--s-300);flex-wrap:wrap;margin-top:var(--s-200)}
-.readout div{font-size:13px;line-height:20px;color:var(--fg-mute)}
+.readout div{font-size:12px;line-height:16px;color:var(--fg-mute)}
 .readout b{color:var(--fg);font-weight:700}
 
 /* ---- the shipped robot, in the proof card ---- */
@@ -122,7 +128,7 @@ td.what{color:var(--fg-dim)}
 .viz.band::after{content:"ONE CLOCK \00b7 RATES ARE A DESIGN TARGET"}
 .viz.band canvas{opacity:1}
 .viz::after{content:"LIVE MODEL, NOT A RENDER";position:absolute;left:10px;
-  bottom:8px;font-size:9px;font-weight:700;letter-spacing:.08em;
+  bottom:8px;font-size:12px;font-weight:700;letter-spacing:.08em;
   color:var(--fg-mute)}
 </style>
 </head>
@@ -141,9 +147,11 @@ td.what{color:var(--fg-dim)}
     <a href="#capture">Capture</a>
     <a href="#band">The Band</a>
     <a href="#proof">The proof</a>
+    <a href="#chain">Settlement</a>
+    <a href="#faq">FAQ</a>
     <a href="#stands">Where we stand</a>
   </nav>
-  <a class="btn primary" href="mailto:hello@thenar.io">Talk to us</a>
+  <a class="btn primary" href="#contact">Talk to us</a>
 </header>
 
 <main id="main">
@@ -493,6 +501,112 @@ td.what{color:var(--fg-dim)}
     </div>
   </section>
 
+  <section class="fwrap" id="chain">
+    <p class="feyebrow">Physical AI and settlement</p>
+    <h2 class="fh2">Provenance you can check<br>without trusting us</h2>
+    <p class="flede" style="margin-top:var(--s-300)">
+      Contact data is only worth licensing if a buyer's legal team can trace
+      where it came from and on what terms. This is the mechanism, including
+      the part a ledger does not solve.</p>
+
+    <div class="stage3d" id="chainbox" style="aspect-ratio:auto;height:236px">
+      <canvas id="chainc"></canvas>
+    </div>
+
+    <div class="bento" style="margin-top:16px">
+      <article class="tile">
+        <h3>Only hashes go on chain</h3>
+        <p>The recording and the contributor's identity never touch it. What
+          gets written is a hash of the payload and the licence terms agreed at
+          capture. That is what keeps erasure possible: delete the payload and
+          the record still proves what the terms were, while holding nothing
+          personal. An immutable public log of who recorded what in their own
+          kitchen would be the opposite of handling consent well.</p>
+      </article>
+      <article class="tile">
+        <h3>Payment and provenance, one entry</h3>
+        <p>Each accepted clip settles against the same record that carries its
+          terms. Not because paying people needs a chain, because it does not:
+          Wise and Stripe Connect pay large populations small amounts every day
+          and would not ask a contributor to hold a wallet. The reason is that
+          it collapses the receipt and the provenance into a single auditable
+          thing instead of two systems somebody has to reconcile.</p>
+      </article>
+      <article class="tile" style="border-color:var(--blue)">
+        <h3>What a ledger does not do</h3>
+        <p>It attests record integrity after submission, not authenticity at
+          capture. Nothing written on chain proves a stream came off a real
+          hand rather than a replay, and a device key can be extracted. Solving
+          that needs attestation in the hardware, which is a secure element and
+          a remote attestation path we have not built. We would rather say so
+          here than be asked in diligence.</p>
+      </article>
+      <article class="tile">
+        <h3>If a plainer rail does it, we use it</h3>
+        <p>Signed capture manifests in a public append only log give an auditor
+          the same tamper evidence, with tooling they already know from
+          certificate transparency. We are not attached to the word. We are
+          attached to a buyer being able to verify a slice without taking our
+          internal records on faith, and to a contributor being able to check
+          their own terms without asking us.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="fwrap" id="faq">
+    <p class="feyebrow">Objections</p>
+    <h2 class="fh2">The questions<br>we get asked</h2>
+    <p class="flede" style="margin-top:var(--s-300)">
+      Including the hostile ones. If an answer here is weaker than you expected,
+      that is deliberate.</p>
+    <div class="qalist">
+        <details class="qa">
+          <summary>What do you actually have today?</summary>
+          <p>Three things, and no more than three. Hotaru is shipping open source hardware: a desk robot of 22 printed parts with public CAD in Python and interface audits anyone can run. Teleoperation capture on a Quest 3S is running now, which gives 6DoF on both hands at 90 Hz and no force at all. The Thenar Band exists as watertight CAD and printable STLs; nobody has worn one, and no user data has been recorded with it.</p>
+        </details>
+        <details class="qa">
+          <summary>Why not just use simulation? It scales and costs almost nothing.</summary>
+          <p>We do use simulation, and it is the right way to get trajectories and task structure at volume. But contact is the least accurate part of every physics engine, so friction, deformation and slip are approximated, and a policy trained only in simulation learns to correct against numbers the solver invented. The sim to real gap in manipulation is a contact gap. Real recordings are how you find out which of your simulated grasps were fiction.</p>
+        </details>
+        <details class="qa">
+          <summary>Why can a better model not estimate force from video?</summary>
+          <p>Because at the instant that matters the picture barely changes. The grip literature reports that a slip is answered by a corrective squeeze within roughly a tenth of a second, while the hand itself moves about a millimetre, which is at or under the resolution hand trackers report. We have not measured those numbers ourselves and we do not present them as ours. A vision model can learn a useful prior over what a grasp normally needs, but a prior is not a measurement, and it degrades on exactly the unfamiliar object you wanted the robot to handle.</p>
+        </details>
+        <details class="qa">
+          <summary>Why would force recorded on a human hand transfer to a robot gripper?</summary>
+          <p>This is the question that decides whether the company works, so we will not dress it up. Contact force does not transfer as a joint command, it transfers as a target: how much normal force a given material needs before it stops slipping, and how fast a correction has to arrive. That is a property of the object and the task rather than of the hand holding it, which is why we record material and contact area alongside the force. Instrumenting the robot instead is cheaper and in domain, and teams should do it. It only tells you about grasps the robot already attempts, which is why it does not replace watching a person succeed at something the robot currently fails.</p>
+        </details>
+        <details class="qa">
+          <summary>The Band is not built. What stops it staying CAD forever?</summary>
+          <p>Nothing but us building it, which is why we publish what state it is in instead of a launch date. The geometry is watertight, every part fits a 180 mm bed, and the snap fit and bayonet are toleranced with audits that must be proven to fail on a bad build before they count as checks. The next milestone is a printed unit recording contact, vision and inertial against one clock. Until that exists we keep calling it in design.</p>
+        </details>
+        <details class="qa">
+          <summary>Why blockchain at all? This sounds like a database.</summary>
+          <p>For our own bookkeeping a database is fine and we use one. Paying people is not the reason either: Wise and Stripe Connect move small amounts to large populations every day, and asking a contributor to hold a wallet is a barrier, not a feature. The reason is narrower. A buyer wants to verify a slice without trusting our internal records, and a contributor wants to check their own terms without asking us. Writing only a payload hash and the agreed terms makes the receipt and the provenance one entry. A signed manifest in a public append only log gives most of the same property, and if that suits a buyer better we will use it.</p>
+        </details>
+        <details class="qa">
+          <summary>Why would any buyer trust your provenance?</summary>
+          <p>They should not trust it, they should be able to check it. Terms and consent are recorded with the contribution at capture rather than asserted about it later. Be clear about the limit: that proves what was submitted and under what terms, not that the stream came off a real hand. Hardware attestation is what closes that gap and we have not built it. The honest offer is that you audit the first paid slice rather than take our word about a network that does not exist yet.</p>
+        </details>
+        <details class="qa">
+          <summary>What stops Meta, or a funded competitor, from doing this?</summary>
+          <p>Nothing stops them, and if measured contact matters as much as we think, somebody with more money will build a version. We expect it to be closed and pointed at their own models, which is what a platform does with hand data. That is not a moat, it is a bet on being early and open in a business with hardware and operations attached, which is genuinely less attractive than software and is a real reason large teams have stayed on cameras.</p>
+        </details>
+        <details class="qa">
+          <summary>Why believe a small team can ship a wearable sensor?</summary>
+          <p>Partly, and only partly. Hotaru is evidence we take a device from parameters to a shipped object in public: 22 printed parts, CAD in pure Python, published STLs and audits anyone can rerun. That is evidence about geometry, tolerancing and release discipline. It is not evidence about transduction, drift, calibration across different hands, or yield, which is the part that actually kills force sensing wearables. Those are ahead of us and we have not solved them.</p>
+        </details>
+        <details class="qa">
+          <summary>Who buys contact data, and has anyone paid you?</summary>
+          <p>Nobody has paid us and no licences are signed. The buyer we build for is a team training manipulation policies that already knows which of its tasks fail, because we would rather record twenty named failures than a generic corpus nobody asked for. If that is you, telling us the failing tasks costs nothing and changes what we instrument first.</p>
+        </details>
+        <details class="qa">
+          <summary>What would prove you wrong?</summary>
+          <p>The weak version is a manipulation benchmark where adding measured contact force to pose and video does not improve success on unfamiliar objects. That is a soft test, because an extra informative channel rarely hurts. The real one has a denominator: whether a dollar spent on measured force beats the same dollar spent on more simulation, more demonstrations, or tactile sensors mounted on the robot. We can run the weak version on our own tasks as soon as a Band records, and we should, before asking anybody to fund the strong one.</p>
+        </details>
+    </div>
+  </section>
+
   <section class="fwrap" id="stands">
     <p class="feyebrow">Honest status</p>
     <h2 class="fh2">Where this<br>actually stands</h2>
@@ -523,10 +637,57 @@ td.what{color:var(--fg-dim)}
       route is a direct email.
     </div>
 
-    <p style="margin-top:var(--s-600);display:flex;gap:var(--s-100);flex-wrap:wrap;justify-content:center">
-      <a class="btn primary" href="mailto:hello@thenar.io">hello@thenar.io</a>
-      <a class="btn ghost" href="https://aibo.loompad.tech">See what we have shipped</a>
-    </p>
+
+  </section>
+
+  <section class="fwrap" id="contact">
+    <p class="feyebrow">Talk to us</p>
+    <h2 class="fh2">Tell us which<br>tasks are failing</h2>
+    <p class="flede" style="margin-top:var(--s-300)">
+      If you train manipulation policies, the twenty tasks your robot fails at
+      are worth more to us than any pitch we could make. Sending them costs you
+      nothing and changes what we instrument first.</p>
+
+    <form class="join" id="join" novalidate>
+      <div class="row">
+        <label class="fld">
+          <span>Name</span>
+          <input id="f-name" name="name" type="text" autocomplete="name"
+                 required maxlength="120" placeholder="Your name">
+          <em class="fe" id="e-name" aria-live="polite"></em>
+        </label>
+        <label class="fld">
+          <span>Email</span>
+          <input id="f-email" name="email" type="email" autocomplete="email"
+                 required maxlength="200" placeholder="you@lab.org">
+          <em class="fe" id="e-email" aria-live="polite"></em>
+        </label>
+      </div>
+      <label class="fld">
+        <span>What you do</span>
+        <select id="f-role" name="role">
+          <option value="">Choose one</option>
+          <option>Training manipulation policies</option>
+          <option>Robotics hardware</option>
+          <option>Research lab</option>
+          <option>Investor</option>
+          <option>Would wear a Band</option>
+          <option>Something else</option>
+        </select>
+      </label>
+      <label class="fld">
+        <span>Which tasks fail, and on what hardware</span>
+        <textarea id="f-note" name="note" rows="4" maxlength="2000"
+                  placeholder="Opening jars. Anything deformable. A parallel gripper on a Franka."></textarea>
+      </label>
+      <div class="submit">
+        <button class="btn primary" id="f-go" type="submit">Send it</button>
+        <p class="fstatus" id="f-status" role="status" aria-live="polite"></p>
+      </div>
+      <p class="fnote">We reply from a person, not a sequence. No list, no
+        newsletter. Or write to
+        <a href="mailto:hello@thenar.io">hello@thenar.io</a> directly.</p>
+    </form>
   </section>
 </main>
 
@@ -536,6 +697,8 @@ td.what{color:var(--fg-dim)}
   <span style="display:flex;gap:var(--s-300);flex-wrap:wrap">
     <a href="https://aibo.loompad.tech">Hotaru</a>
     <a href="https://github.com/nickthelegend/aibo-pet">Source</a>
+    <a href="./privacy.html">Privacy</a>
+    <a href="./terms.html">Terms</a>
   </span>
 </div></footer>
 
@@ -543,6 +706,7 @@ td.what{color:var(--fg-dim)}
 import { makeGrasp } from "./grasp.js";
 import { mountHotaru } from "./hotaru.js";
 import { mountBand } from "./band.js";
+import { mountChain } from "./chain.js";
 import { mountBandView } from "./bandview.js";
 
 /* Reveal is added by script, never in the markup, so a JS failure leaves the
@@ -625,6 +789,70 @@ if ("IntersectionObserver" in window) {
 
 mountHotaru(document.querySelector("#hot"));
 mountBand(document.querySelector("#bandc"));
+mountChain(document.querySelector("#chainc"));
+
+/* The one conversion on the page. Validation runs here as a courtesy and
+   again on the server, because the browser copy is not a control. Every
+   failure says what went wrong and what to do instead; a form that fails
+   silently loses the person it was built for. */
+(function () {
+  const f = document.querySelector("#join");
+  if (!f) return;
+  const $ = id => document.querySelector(id);
+  const go = $("#f-go"), status = $("#f-status");
+  const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+  function fieldError(input, slot, msg) {
+    slot.textContent = msg || "";
+    input.setAttribute("aria-invalid", msg ? "true" : "false");
+    return !msg;
+  }
+
+  f.addEventListener("submit", async e => {
+    e.preventDefault();
+    const name = $("#f-name").value.trim();
+    const email = $("#f-email").value.trim();
+    const okName = fieldError($("#f-name"), $("#e-name"),
+      name ? "" : "We need a name to reply to.");
+    const okMail = fieldError($("#f-email"), $("#e-email"),
+      !email ? "We need an email to reply to."
+             : EMAIL.test(email) ? "" : "That does not look like an email address.");
+    if (!okName || !okMail) {
+      (okName ? $("#f-email") : $("#f-name")).focus();
+      return;
+    }
+
+    go.disabled = true;
+    const label = go.textContent;
+    go.textContent = "Sending";
+    status.textContent = "";
+    status.className = "fstatus";
+
+    try {
+      const r = await fetch("/api/join", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name, email,
+          role: $("#f-role").value,
+          note: $("#f-note").value.trim(),
+        }),
+      });
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(data.error || "That did not go through.");
+      f.querySelector(".row").remove();
+      f.querySelectorAll(".fld, .submit .btn").forEach(el => el.remove());
+      status.className = "fstatus ok";
+      status.textContent = "Sent. We read everything and reply ourselves, "
+        + "usually within a couple of days.";
+    } catch (err) {
+      status.className = "fstatus bad";
+      status.textContent = err.message;
+      go.disabled = false;
+      go.textContent = label;
+    }
+  });
+})();
 
 /* Two views of the same 100 kB file. The hero is the product shot and comes
    apart as you scroll past it; the band section pins an exploded copy that
