@@ -120,7 +120,14 @@ def world_components():
 
 # keycap prints TOP FACE DOWN too -- see part_keycap's docstring: flat top on
 # the bed, walls flaring out at 14 deg, stem growing up off the roof.
-PRINT_FLIP = {"lid": 180.0, "keycap": 180.0}
+# shoulder is flipped because its four lid lugs are cantilevered into the
+# bore with flat undersides 20 mm up, and the r68..77.6 flange overhangs the
+# skirt it stands on. Printed as modelled that is 10,270 mm2 hanging over air
+# and the lugs come off the bed as drooping string with the screw holes in
+# space. Upside down it is 287 mm2. The 45 degree taper becomes a 45 degree
+# overhang, which is a surface finish cost, not a structural one.
+# Measured by cad/audit_support.py, both orientations.
+PRINT_FLIP = {"lid": 180.0, "keycap": 180.0, "shoulder": 180.0}
 PRINT_SHIFT = {}                     # name -> (flip_deg, dz) applied below
 
 

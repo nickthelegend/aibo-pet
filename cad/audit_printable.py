@@ -178,9 +178,11 @@ def _overhangs(limit_deg=45.0):
     print("Nothing needs support -- every part prints as modelled."
           if not flagged else
           "Support (or a redesign) needed: " + ", ".join(flagged))
-    print("'bridge' is exposed near-horizontal ceiling: spans a gap, normally "
-          "prints.\n'overhang' is exposed sloping face past "
+    print("'bridge' is exposed near-horizontal ceiling. It spans a gap ONLY if\n"
+          "it is anchored at both ends -- audit_support.py checks that; this\n"
+          "classifier does not.\n'overhang' is exposed sloping face past "
           f"{limit_deg:.0f} deg off vertical.")
+    return flagged
     # Returned so export_web can put the supports flag on each plate rather
     # than a second implementation drifting away from this one. main() ignores
     # it, which is why adding a return here is safe.

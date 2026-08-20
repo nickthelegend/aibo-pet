@@ -17,8 +17,13 @@ ring goes on.
   ..         4 seat lugs at r48, tops at 58: what the lid lands on and screws
              into. At r53 their counterbores broke out of the recessed lid.
 
-Prints as modelled, sitting on its wide rim: the taper only ever narrows
-going up, so the whole thing is self-supporting.
+PRINTS UPSIDE DOWN, on the lid rebate rim. It does not print as modelled:
+the four lid lugs cantilever into the bore with flat undersides 20 mm above
+the bed, and the flange overhangs the skirt it would stand on. That is
+10,270 mm2 over thin air, and it is how the first one came out with its
+screw holes hanging in space. Inverted it is 287 mm2. The taper then runs
+as a 45 degree overhang, which costs surface finish and nothing else.
+assembly.PRINT_FLIP carries the rotation; audit_support.py measures it.
 """
 from __future__ import annotations
 

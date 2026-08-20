@@ -459,7 +459,9 @@
      33.4
     ],
     "fits_bed": true,
-    "supports": [],
+    "supports": [
+     "shoulder"
+    ],
     "mb": 1.22,
     "url": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plate-2b-shoulder.stl"
    },

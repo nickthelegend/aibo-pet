@@ -252,8 +252,21 @@ def main():
     import io as _io, contextlib as _ctx
     sys.path.insert(0, HERE)
     import audit_printable as _ap
+    import audit_support as _as
+    import assembly as _asm
     with _ctx.redirect_stdout(_io.StringIO()):
+        # Two different failure modes, so two different audits, unioned:
+        #   _overhangs   face is steeper than 45 deg -- droops even though
+        #                there IS material under it
+        #   audit_support face has NOTHING under it -- the classifier calls
+        #                that a bridge, which is only true when both ends are
+        #                anchored. It is what let the shoulder's lid lugs
+        #                print with their screw holes hanging in space.
         needs_support = set(_ap._overhangs())
+        for _n, _m in _asm.print_items():
+            _a, _w, _c = _as.unsupported(_m)
+            if _a > _as.MIN_AREA:
+                needs_support.add(_n)
 
     with open(os.path.join(exp, "PLATES.json")) as f:
         pj = json.load(f)
