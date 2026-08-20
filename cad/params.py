@@ -207,7 +207,23 @@ BASE_TOP_D    = 118.0  # diameter where the shoulder meets the lid
 # shoulder's rim, so the base reads as one turned form. It used to be
 # BASE_TOP_D itself -- a O118 plate sitting on a O118 opening, standing
 # LID_T (3.4) proud of it, which is the step you could see in the assembly.
-LID_OD        = BASE_TOP_D - 2 * WALL_STRUCT - 0.4   # 112.8, 0.4 in the bore
+# 0.30 diametral, 0.15 per side. It was 0.40 and the printed lid rattled.
+# Clearance is NOT what stops it turning though -- no achievable slip fit
+# does. LID_KEY_N tabs do that.
+LID_FIT       = 0.30
+LID_OD        = BASE_TOP_D - 2 * WALL_STRUCT - LID_FIT
+
+# The lid used to land on four M3 lugs cantilevered 12 mm into the bore.
+# They printed as drooping string with the screw holes in mid air, and the
+# screws were the only thing stopping the lid spinning. Both jobs are now
+# done by the ring itself: a continuous seat ledge takes the weight all the
+# way round, and three keys take the torque. No screws, no lugs.
+SEAT_LEDGE_W  = 2.0    # how far the ledge steps inward from the rebate bore
+SEAT_RAMP     = 2.0    # 45 deg relief under it, so it self supports
+LID_KEY_N     = 3
+LID_KEY_W     = 6.0    # tab width across the chord
+LID_KEY_D     = 1.6    # radial depth
+LID_KEY_FIT   = 0.25   # per side, on the key flanks
 BASE_W        = BASE_D # (compat) the footprint is square-bounded by the circle
 BASE_R        = BASE_D / 2.0
 LID_T         = 3.4
@@ -261,12 +277,14 @@ LID_RIB_T     = 4.0
 # Pulled in from r53 to r48. With the lid recessed to O112.8 its rim is at
 # r56.4, and an M3 counterbore (O6.2) centred at r53 reached r56.1 -- it would
 # have broken straight out of the edge. At r48 there is 5.3 mm of rim left.
-LUG_POS       = [(48.0, 0.0), (-48.0, 0.0), (0.0, 48.0), (0.0, -48.0)]
+# LUG_POS and LUG_Z0 are gone. They described four cantilevered M3 lugs that
+# printed in mid air; the lid now lands on a continuous ledge and is keyed.
+# Leaving them here would have let the audits keep validating against a
+# fixing the geometry no longer has, which is exactly how this shipped.
 # Shoulder-to-tub mounts. Three points, hand-placed into the only gaps left
 # at the rim (the speaker land, USB boss, mic boss and cap clamp take the rest).
 SHOULDER_POS  = [(-51.0, 51.0), (-51.0, -51.0), (51.0, -51.0)]
 SHOULDER_BOSS_Z = 26.0
-LUG_Z0        = 48.0
 YOKE_GAP      = 1.0    # yoke inner face -> housing outer face, per side
 BJOINT_PLINTH = 8.0    # standoff under the base joint
 BJOINT_AXIS_Z = 82.65  # world Z of the base pivot. Set by the yoke's swing

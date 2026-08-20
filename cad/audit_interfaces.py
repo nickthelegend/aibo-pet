@@ -34,6 +34,42 @@ import part_arms as PA
 import part_shoulder as PS
 
 FAILS = []
+def _keys_fit():
+    """The shoulder's keys must clear the lid's notches. Both come from ONE
+    profile function so they cannot drift, but that is not the same as
+    proving the clearance is the right way round, so this measures it.
+    Shapely's .within() is no good here: the two share an outer edge and
+    boundary contact makes it False on a joint that fits perfectly."""
+    import part_shoulder as _PS
+    seat_r = (P.BASE_TOP_D - 2 * P.WALL_STRUCT) / 2.0
+    key = _PS._key_profile(seat_r, 0.0)
+    notch = _PS._key_profile(seat_r, P.LID_KEY_FIT)
+    return key.difference(notch).area < 1e-9
+
+
+def _seat_ledge_exists():
+    """Read the SHOULDER MESH, not the parameters. The row this backs used to
+    assert four lugs purely from len(LUG_POS), which stayed true long after
+    the lugs stopped being able to hold anything up."""
+    import numpy as np
+    import assembly as _A
+    sh = {n: m for n, m, *_ in _A.world_items()}["shoulder"]
+    V = np.asarray(sh.V)
+    # material inboard of the rebate bore, at the seat height
+    seat_r = (P.BASE_TOP_D - 2 * P.WALL_STRUCT) / 2.0
+    band = V[(V[:, 2] > P.LID_SEAT_Z - 1.5) & (V[:, 2] < P.LID_SEAT_Z + 0.5)]
+    if not len(band):
+        return False
+    r = np.hypot(band[:, 0], band[:, 1])
+    # 1.0 mm is a FIXED threshold, deliberately not derived from
+    # SEAT_LEDGE_W. Testing for material inboard of (seat_r - SEAT_LEDGE_W)
+    # is circular: set the ledge width to zero and the threshold moves out to
+    # the bore itself, where the wall always is, and the check passes on a
+    # shoulder with no ledge at all. It did.
+    return bool((r < seat_r - 1.0).any())
+
+
+
 ROWS = []
 
 
@@ -51,9 +87,10 @@ iface("base", "shoulder", "up / off the rim",
       f"{len(P.SHOULDER_POS)} bosses at r{math.hypot(*P.SHOULDER_POS[0]):.0f}")
 
 iface("shoulder", "lid", "up / out of the bore",
-      f"{len(P.LUG_POS)}x M3 into seat lugs + snap bead",
-      len(P.LUG_POS) >= 3 and P.SNAP_BEAD > 0.3,
-      f"{len(P.LUG_POS)} lugs, {P.SNAP_BEAD} mm bead at Z{P.SNAP_Z}")
+      f"continuous seat ledge + {P.LID_KEY_N} keys + snap bead",
+      _seat_ledge_exists() and _keys_fit() and P.SNAP_BEAD > 0.3,
+      f"{P.SEAT_LEDGE_W} mm ledge all round, {P.LID_KEY_N} keys, "
+      f"{P.SNAP_BEAD} mm bead at Z{P.SNAP_Z}")
 
 iface("lid", "base-joint", "overturning moment from the arm",
       "4x M3 through the lid into the bulkhead tops",

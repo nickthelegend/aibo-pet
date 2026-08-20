@@ -46,17 +46,18 @@ def build():
     # passes the screws through. Without them the lid takes the inserts.
     jd = P.M3_CLEAR if P.BULKHEADS else P.M3_INSERT_D
     joint = unary_union([affinity.translate(pl.circle(jd), x, y) for x, y in bolts])
-    rim = unary_union([affinity.translate(pl.circle(P.M3_CLEAR), x, y)
-                       for x, y in P.LUG_POS])
-    rim_cb = unary_union([affinity.translate(pl.circle(P.M3_HEAD_D), x, y)
-                          for x, y in P.LUG_POS])
+    # No rim screws any more. The lid is held by the snap bead and located by
+    # three notches over the shoulder's keys; the lugs those screws went into
+    # were the part that printed in mid air.
     cable = box(-11.0, P.BSERVO_AXIS_Y - 7.0, 11.0, P.BSERVO_AXIS_Y + 7.0)
     mx_cut = affinity.translate(pl.rounded_rect(P.MX_CUT, P.MX_CUT, P.MX_CORNER_R), *mx)
     mx_rel = affinity.translate(pl.rounded_rect(P.MX_BODY_SQ, P.MX_BODY_SQ, 1.0), *mx)
 
-    m = pl.banded(OUTER, Z0, Z1, [
-        (unary_union([joint, rim, cable]), Z0, Z1),
-        (rim_cb, Z1 - 2.0, Z1),
+    import part_shoulder as _sh
+    notches = _sh._key_profile((P.BASE_TOP_D - 2 * P.WALL_STRUCT) / 2.0,
+                               P.LID_KEY_FIT)
+    m = pl.banded(OUTER.difference(notches), Z0, Z1, [
+        (unary_union([joint, cable]), Z0, Z1),
         (mx_rel, Z0, MX_PLATE_Z0),
         (mx_cut, MX_PLATE_Z0, Z1),
     ])

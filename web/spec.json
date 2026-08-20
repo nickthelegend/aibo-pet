@@ -17,7 +17,7 @@
     160.0,
     33.4
    ],
-   "cm3": 50.7,
+   "cm3": 55.4,
    "fits": true
   },
   {
@@ -27,7 +27,7 @@
     113.8,
     6.4
    ],
-   "cm3": 41.2,
+   "cm3": 37.8,
    "fits": true
   },
   {
@@ -232,7 +232,7 @@
    "a": "shoulder",
    "b": "lid",
    "dof": "up / out of the bore",
-   "held_by": "4x M3 into seat lugs + snap bead"
+   "held_by": "continuous seat ledge + 3 keys + snap bead"
   },
   {
    "a": "lid",
@@ -362,7 +362,7 @@
   "servos": 4,
   "height_mm": 316,
   "reach_mm": 345,
-  "plastic_cm3": 492,
+  "plastic_cm3": 493,
   "plates": 9,
   "m3": 15,
   "m2": 5,
@@ -552,7 +552,7 @@
     "supports": [
      "shoulder"
     ],
-    "mb": 1.22,
+    "mb": 1.49,
     "url": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plate-2b-shoulder.stl"
    },
    {
@@ -622,7 +622,7 @@
     ],
     "fits_bed": true,
     "supports": [],
-    "mb": 0.52,
+    "mb": 0.28,
     "url": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plate-4-head.stl"
    },
    {

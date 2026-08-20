@@ -88,7 +88,7 @@ def main():
     rim = P.BASE_TOP_D - 2 * P.WALL_STRUCT
     Fr = Md / (rim / 1000.0)
     print(f"  lid rim couple    span {rim:.0f} mm -> {Fr:6.1f} N")
-    print(f"  per seat lug      {Fr/2:6.1f} N over {len(P.LUG_POS)} lugs")
+    print(f"  seat ledge        {Fr/2:6.1f} N spread round a continuous ring")
 
     # --- the rib web: is the lid stiff enough without bulkheads? -----------
     # Each bolt's share travels down ITS OWN radial rib to the rim, which is

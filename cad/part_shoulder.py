@@ -67,6 +67,19 @@ def shoulder_od(z):
     return P.BASE_D - (P.BASE_D - P.BASE_TOP_D) * t
 
 
+def _key_profile(seat_r, fit):
+    """The three keys, grown by `fit` per side. ONE definition, used by the
+    shoulder to add them and by the lid to cut its notches, so the two halves
+    cannot drift apart the way two copies of the same numbers always do."""
+    out = []
+    for k in range(P.LID_KEY_N):
+        a = 90.0 + k * (360.0 / P.LID_KEY_N)
+        w = P.LID_KEY_W / 2.0 + fit
+        tab = box(-w, seat_r - P.LID_KEY_D - fit, w, seat_r + 0.8)
+        out.append(affinity.rotate(tab, a - 90.0, origin=(0, 0)))
+    return unary_union(out)
+
+
 def build():
     m = pl.revolve_shell(P.BASE_STRAIGHT, P.LID_SEAT_Z, shoulder_od,
                          P.WALL_STRUCT, steps=24)
@@ -102,15 +115,40 @@ def build():
                    pl.circle(2 * (inner_at_rim - 1.7), 128))
     m += pl.prism(sk, SKIRT_Z0, P.BASE_STRAIGHT + OVL)
 
-    # lid hold-down lugs
-    for cx, cy in P.LUG_POS:
-        a = math.atan2(cy, cx)
-        prof = affinity.translate(pl.circle(P.M3_BOSS_D), cx, cy).union(
-            pl.stroke([(cx, cy), (cx + 12 * math.cos(a), cy + 12 * math.sin(a))], 3.4))
-        prof = prof.intersection(pl.circle(SEAT_IN + 2 * OVL, 128))
-        bore = affinity.translate(pl.circle(P.M3_INSERT_D), cx, cy)
-        m += pl.prism(prof, P.LUG_Z0, P.LID_SEAT_Z)
-        m += pl.prism(prof.difference(bore), P.LID_SEAT_Z - OVL, P.BASE_H)
+    # ---- lid seat: a continuous ledge, not four lugs ----
+    # The lugs are gone. They reached 12 mm into the bore from a wall that
+    # recedes at exactly 45 degrees, so nothing could support them from below
+    # and they printed as string. A ring seat has none of that problem: it
+    # steps inward SEAT_LEDGE_W from the rebate bore and is relieved beneath
+    # at 45 degrees, so it self supports, and it carries the lid all the way
+    # round instead of at four points.
+    seat_r = SEAT_IN / 2.0
+    inner_r = seat_r - P.SEAT_LEDGE_W
+    # Built as a short stack of rings rather than one loft, for two reasons.
+    # loft_solid takes hole-free profiles, so lofting circle to circle here
+    # produced a SOLID frustum that plugged the whole bore with a O109 disc.
+    # And the ledge has to reach the wall at every height: the taper bore is
+    # 111.6 - z, so a ring of constant outer radius floats free 1 mm inside it
+    # a millimetre below the seat, which is the same defect as the lugs.
+    # Each ring therefore runs from the LOCAL bore inward to a constant
+    # inner_r, and consecutive rings overlap so the slicer fuses them.
+    steps = 8
+    for k in range(steps):
+        za = P.LID_SEAT_Z - (k + 1) * (P.SEAT_RAMP + 1.2) / steps
+        zb = P.LID_SEAT_Z - k * (P.SEAT_RAMP + 1.2) / steps + OVL
+        bore_r = shoulder_od(za) / 2.0 - P.WALL_STRUCT
+        m += pl.prism(pl.ring2d(pl.circle(2 * (bore_r + OVL), 128),
+                                pl.circle(2 * inner_r, 128)), za, zb)
+
+    # ---- three keys, so it cannot turn ----
+    # A slip fit never stops rotation however tight it is; the four screws
+    # used to. These protrude INWARD from the rebate bore and drop into
+    # notches in the lid's rim. Keys on the ring and notches in the lid, not
+    # the other way round, because this kernel does no 3D CSG: adding a prism
+    # is free, cutting a slot into an already built ring is not.
+    # Vertical walls top to bottom, so they add no overhang at all.
+    m += pl.prism(_key_profile(seat_r, 0.0), P.LID_Z0 - OVL, P.LID_Z1)
+
     return [("shoulder", m, P.COLORS["base"])]
 
 
