@@ -46,21 +46,48 @@ export async function mountBandView(cv, opts = {}) {
              dim: 0, dimT: 0, model: M4.id() };
   });
 
-  // Two framings, not one. Framing only the exploded extent leaves the
-  // assembled product small and low in shot; framing only the assembled one
-  // throws parts out of frame the moment it opens. So compute both and lerp
-  // the camera with the transition.
-  function extent(withOffset) {
-    const lo = [1e9, 1e9, 1e9], hi = [-1e9, -1e9, -1e9];
-    for (const p of parts) for (let k = 0; k < 3; k++) {
-      const o = withOffset ? p.off[k] : 0;
-      lo[k] = Math.min(lo[k], p.lo[k] + o);
-      hi[k] = Math.max(hi[k], p.hi[k] + o);
-    }
-    return { ctr: [0, 1, 2].map(i => (lo[i] + hi[i]) / 2),
-             span: Math.max(...[0, 1, 2].map(i => hi[i] - lo[i])) };
+  // Corner points of every part, in the two poses. Framing is solved against
+  // these each frame rather than estimated from a bounding sphere: the
+  // exploded spread is long and thin, so a sphere around the box diagonal
+  // over-zooms badly, while the box's longest edge crops the corners as the
+  // model turns. Solving it exactly is 32 dot products and always right.
+  function corners(e) {
+    const out = [];
+    for (const p of parts)
+      for (let c = 0; c < 8; c++)
+        out.push([(c & 1 ? p.hi[0] : p.lo[0]) + p.off[0] * e,
+                  (c & 2 ? p.hi[1] : p.lo[1]) + p.off[1] * e,
+                  (c & 4 ? p.hi[2] : p.lo[2]) + p.off[2] * e]);
+    return out;
   }
-  const A = extent(false), E = extent(true);
+  function centre(pts) {
+    const lo = [1e9, 1e9, 1e9], hi = [-1e9, -1e9, -1e9];
+    for (const q of pts) for (let k = 0; k < 3; k++) {
+      if (q[k] < lo[k]) lo[k] = q[k];
+      if (q[k] > hi[k]) hi[k] = q[k];
+    }
+    return [0, 1, 2].map(i => (lo[i] + hi[i]) / 2);
+  }
+
+  const cross = (a, b) => [a[1]*b[2] - a[2]*b[1], a[2]*b[0] - a[0]*b[2],
+                           a[0]*b[1] - a[1]*b[0]];
+  const norm = v => { const l = Math.hypot(v[0], v[1], v[2]) || 1;
+                      return [v[0]/l, v[1]/l, v[2]/l]; };
+  const dot = (a, b) => a[0]*b[0] + a[1]*b[1] + a[2]*b[2];
+
+  /* Smallest distance along `dir` that keeps every point inside both fields
+     of view. A point sits inside when |x| <= tan(fovx/2) * (d - z), so each
+     point sets a lower bound on d and the answer is the largest of them. */
+  function fitDistance(pts, ctr, dir, tx, ty) {
+    const za = dir, xa = norm(cross([0, 0, 1], za)), ya = cross(za, xa);
+    let d = 0;
+    for (const p of pts) {
+      const w = [p[0] - ctr[0], p[1] - ctr[1], p[2] - ctr[2]];
+      const qx = dot(w, xa), qy = dot(w, ya), qz = dot(w, za);
+      d = Math.max(d, qz + Math.abs(qx) / tx, qz + Math.abs(qy) / ty);
+    }
+    return d;
+  }
 
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const st = { explode: 0, target: 0, az: -0.7, spin: true };
@@ -82,14 +109,21 @@ export async function mountBandView(cv, opts = {}) {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     const e0 = st.explode;
-    const ctr = [0, 1, 2].map(i => mix(A.ctr[i], E.ctr[i], e0));
-    const dist = mix(A.span * 1.45, E.span * 1.35, e0);
+    const pts = corners(e0);
+    const ctr = centre(pts);
+
+    const fovy = 0.6;
+    const aspect = cv.width / cv.height;
+    const ty = Math.tan(fovy / 2), tx = ty * aspect;
     const el = 0.30;
-    const eye = [ctr[0] + dist * Math.cos(el) * Math.sin(st.az),
-                 ctr[1] + dist * Math.cos(el) * Math.cos(st.az),
-                 ctr[2] + dist * Math.sin(el)];
+    const dir = [Math.cos(el) * Math.sin(st.az),
+                 Math.cos(el) * Math.cos(st.az),
+                 Math.sin(el)];
+    const dist = fitDistance(pts, ctr, dir, tx, ty) * 1.08;
+    const eye = [ctr[0] + dist * dir[0], ctr[1] + dist * dir[1],
+                 ctr[2] + dist * dir[2]];
     const V = M4.look(eye, ctr, [0, 0, 1]);
-    const P = M4.persp(0.6, cv.width / cv.height, 5, 4000);
+    const P = M4.persp(fovy, aspect, Math.max(dist * 0.02, 1), dist * 4);
 
     gl.useProgram(prog);
     for (const p of parts) {
