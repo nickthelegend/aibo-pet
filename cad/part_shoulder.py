@@ -32,7 +32,8 @@ import os
 import sys
 
 from shapely import affinity
-from shapely.geometry import box
+import numpy as np
+from shapely.geometry import Polygon, box
 from shapely.ops import unary_union
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -43,6 +44,16 @@ OVL = pl.OVL
 SEAT_IN = P.BASE_TOP_D - 2 * P.WALL_STRUCT      # 113.2, constant lid bore
 FLANGE_R = 68.0
 SKIRT_Z0 = P.BASE_STRAIGHT - 6.0   # 6 mm of skirt DOWN inside the tub bore.
+
+# The tub's mic boss does not stop at the rim. It runs up to Z41, seven
+# millimetres proud, over 262..278 degrees at r74.2..78.5, and the ring lands
+# straight on it -- which is why the first shoulder sat tilted and would not
+# seat however hard it was pressed. Measured with cad/solidtest.py, not
+# guessed. The tub is already printed and is not changing, so the ring gets
+# the relief, and it doubles as the acoustic window the mic needed anyway.
+MIC_A0, MIC_A1 = 256.0, 284.0      # sector, with 6 deg of margin each side
+MIC_R = 72.4                       # cut inward to here, clear of r74.2
+MIC_Z1 = 42.0                      # clear of the boss top at Z41
                                    # Was hardcoded 36, which sat above the rim
                                    # once the taper moved down to 34 and turned
                                    # the skirt inside out.
@@ -67,6 +78,14 @@ def shoulder_od(z):
     return P.BASE_D - (P.BASE_D - P.BASE_TOP_D) * t
 
 
+def _mic_relief():
+    """The sector cut out of the ring so the tub's mic boss can pass."""
+    pts = [(0.0, 0.0)]
+    for a in np.linspace(math.radians(MIC_A0), math.radians(MIC_A1), 40):
+        pts.append((95.0 * math.cos(a), 95.0 * math.sin(a)))
+    return Polygon(pts).difference(pl.circle(2 * MIC_R, 128))
+
+
 def _key_profile(seat_r, fit):
     """The three keys, grown by `fit` per side. ONE definition, used by the
     shoulder to add them and by the lid to cut its notches, so the two halves
@@ -81,8 +100,21 @@ def _key_profile(seat_r, fit):
 
 
 def build():
-    m = pl.revolve_shell(P.BASE_STRAIGHT, P.LID_SEAT_Z, shoulder_od,
-                         P.WALL_STRUCT, steps=24)
+    relief = _mic_relief()
+    # Taper in two pieces. The stretch that has to clear the boss is a stack
+    # of banded rings so the sector can be differenced out of each one;
+    # revolve_shell makes a single lofted shell that cannot be cut, this
+    # kernel having no 3D CSG. Above the boss it goes back to the smooth loft.
+    steps = 16
+    m = pl.Mesh()
+    for k in range(steps):
+        za = P.BASE_STRAIGHT + k * (MIC_Z1 - P.BASE_STRAIGHT) / steps
+        zb = P.BASE_STRAIGHT + (k + 1) * (MIC_Z1 - P.BASE_STRAIGHT) / steps + OVL
+        od = shoulder_od(za)
+        ring = pl.ring2d(pl.circle(od, 128), pl.circle(od - 2 * P.WALL_STRUCT, 128))
+        m += pl.prism(ring.difference(relief), za, zb)
+    m += pl.revolve_shell(MIC_Z1 - OVL, P.LID_SEAT_Z, shoulder_od,
+                          P.WALL_STRUCT, steps=16)
     ring = pl.ring2d(pl.circle(P.BASE_TOP_D, 128), pl.circle(SEAT_IN, 128))
     # The snap groove recesses the BORE and leaves the outside alone. It was
     # the other way round -- ring2d(BASE_TOP_D, SEAT_IN + 2*SNAP_BEAD), the
@@ -106,14 +138,22 @@ def build():
                          for x, y in P.SHOULDER_POS])
     heads = unary_union([affinity.translate(pl.circle(P.M3_HEAD_D), x, y)
                          for x, y in P.SHOULDER_POS])
-    m += pl.banded(flange, P.BASE_STRAIGHT - OVL, P.BASE_STRAIGHT + 3.0,
+    # Starts AT the rim, not OVL below it. That 0.2 mm is a trick for fusing
+    # shells WITHIN one part; between two separate parts it is interference,
+    # and it was the last thing holding the ring off the tub. It still fuses
+    # upward into the taper, which also starts at BASE_STRAIGHT.
+    m += pl.banded(flange.difference(relief), P.BASE_STRAIGHT, P.BASE_STRAIGHT + 3.0,
                    [(holes, P.BASE_STRAIGHT, P.BASE_STRAIGHT + 3.0),
                     (heads, P.BASE_STRAIGHT + 1.2, P.BASE_STRAIGHT + 3.0)])
 
-    # locating skirt into the tub bore
-    sk = pl.ring2d(pl.circle(2 * (inner_at_rim - 0.3), 128),
-                   pl.circle(2 * (inner_at_rim - 1.7), 128))
-    m += pl.prism(sk, SKIRT_Z0, P.BASE_STRAIGHT + OVL)
+    # ---- no locating skirt ----
+    # It used to drop a 6 mm ring at r75.9..77.2 into the tub bore. The tub's
+    # internals do not leave that annulus free: bulkheads and boss ribs reach
+    # inward past r75.9 over about a fifth of the circumference, as far as r66
+    # near 166 degrees. A continuous skirt clearing all of it would need an OD
+    # of r65.6, which locates nothing in a O155 bore. It was fouling on 15 of
+    # 68 probed angles and is a large part of why the ring sat proud.
+    # The three M3s at r72 locate the ring; the rim carries it.
 
     # ---- lid seat: a continuous ledge, not four lugs ----
     # The lugs are gone. They reached 12 mm into the bore from a wall that

@@ -14,10 +14,10 @@
    "name": "shoulder",
    "mm": [
     160.0,
-    160.0,
-    33.4
+    157.6,
+    27.4
    ],
-   "cm3": 55.4,
+   "cm3": 51.8,
    "fits": true
   },
   {
@@ -362,7 +362,7 @@
   "servos": 4,
   "height_mm": 316,
   "reach_mm": 345,
-  "plastic_cm3": 493,
+  "plastic_cm3": 490,
   "plates": 9,
   "m3": 15,
   "m2": 5,
@@ -372,7 +372,7 @@
  "downloads": {
   "base": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/",
   "zip": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/all-stls.zip",
-  "zip_mb": 1.9,
+  "zip_mb": 2.0,
   "files": {
    "amp-tab": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/amp-tab.stl",
    "arm-fore": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/arm-fore.stl",
@@ -409,7 +409,7 @@
    "plate-5-small": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plate-5-small.stl"
   },
   "plates_zip": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plates.zip",
-  "plates_zip_mb": 2.5
+  "plates_zip_mb": 2.6
  },
  "print_pose": {
   "base": {
@@ -545,14 +545,14 @@
     ],
     "used_mm": [
      160.0,
-     160.0,
-     33.4
+     157.6,
+     27.4
     ],
     "fits_bed": true,
     "supports": [
      "shoulder"
     ],
-    "mb": 1.49,
+    "mb": 1.97,
     "url": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plate-2b-shoulder.stl"
    },
    {
