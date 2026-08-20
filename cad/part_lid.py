@@ -39,6 +39,26 @@ Z0, Z1 = P.LID_Z0, P.LID_Z1
 MX_PLATE_Z0 = Z1 - P.MX_PLATE_T
 
 
+def swept_profile():
+    """(hard, bead): the lid's XY footprint, split by what may interfere.
+
+    The plate and the skirt are HARD -- they must clear the opening outright.
+    The snap bead is DESIGNED to interfere with the bore by SNAP_BEAD and
+    flex past it, so it is returned separately; what it must not do is foul
+    a key, which is 1.6 mm deep and will not yield. Exported so the
+    insertion audit tests THE PROFILES THE PART IS BUILT FROM rather than
+    re-measuring the mesh -- a vertex sampled sweep bins lid material and key
+    material that sit at different angles into the same bin and reports a
+    clash that is not there."""
+    import part_shoulder as _sh
+    seat_in = P.BASE_TOP_D - 2 * P.WALL_STRUCT
+    notches = _sh._key_profile(seat_in / 2.0, P.LID_KEY_FIT)
+    sk_out = pl.circle(min(seat_in - 0.3, P.LID_OD - 0.2), 128)
+    bead = pl.circle(seat_in - 0.3 + 2 * P.SNAP_BEAD, 128)
+    hard = unary_union([OUTER, sk_out]).difference(notches)
+    return hard, bead.difference(notches)
+
+
 def build():
     mx = P.MX_CTR
     bolts = [(sx * P.JOINT_BOLT_X, y) for sx in (-1, 1) for y in P.JOINT_BOLT_Y]
@@ -78,8 +98,15 @@ def build():
     bead = pl.ring2d(pl.circle(seat_in - 0.3 + 2 * P.SNAP_BEAD, 128),
                      pl.circle(seat_in - 0.3 - 2 * 1.4, 128))
     hole = unary_union([mx_rel, cable])
-    m += pl.banded(skirt.difference(hole), P.LID_SEAT_Z, Z0 + OVL, [])
-    m += pl.prism(bead.difference(hole), P.SNAP_Z + 0.3, P.SNAP_Z + 1.3)
+    # The notches must run the FULL height of the lid, not just the plate.
+    # The lid is inserted from the rim and drops to its seat, so the skirt and
+    # the snap bead pass down through the keys on the way. Notching only the
+    # plate left the bead 1.82 mm proud of the keys: a lid that fits perfectly
+    # once seated and cannot be got in. audit_insert.py measures the sweep.
+    m += pl.banded(skirt.difference(hole).difference(notches),
+                   P.LID_SEAT_Z, Z0 + OVL, [])
+    m += pl.prism(bead.difference(hole).difference(notches),
+                  P.SNAP_Z + 0.3, P.SNAP_Z + 1.3)
     return [("lid", m, P.COLORS["lid"])]
 
 

@@ -35,14 +35,14 @@
       ]
     },
     "lid": {
-      "shells": 4,
-      "triangles": 5584,
-      "volume_mm3": 37827.73,
+      "shells": 8,
+      "triangles": 5544,
+      "volume_mm3": 37710.49,
       "watertight": true,
       "fits_a1_mini": true,
       "bbox_mm": [
         113.8,
-        113.8,
+        113.7,
         6.4
       ]
     },
