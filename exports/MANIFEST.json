@@ -25,7 +25,7 @@
     "shoulder": {
       "shells": 36,
       "triangles": 39868,
-      "volume_mm3": 52559.91,
+      "volume_mm3": 52377.35,
       "watertight": true,
       "fits_a1_mini": true,
       "bbox_mm": [

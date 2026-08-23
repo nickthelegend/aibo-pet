@@ -200,7 +200,11 @@ def build():
     steps = 8
     for k in range(steps):
         za = P.LID_SEAT_Z - (k + 1) * (P.SEAT_RAMP + 1.2) / steps
-        zb = P.LID_SEAT_Z - k * (P.SEAT_RAMP + 1.2) / steps + OVL
+        # Top ring stops AT the seat plane. The usual +OVL is for fusing
+        # shells within a part; here it put 0.2 mm of ledge into the lid's
+        # space and held the lid proud. Lower rings still overlap upward.
+        zb = min(P.LID_SEAT_Z,
+                 P.LID_SEAT_Z - k * (P.SEAT_RAMP + 1.2) / steps + OVL)
         bore_r = shoulder_od(za) / 2.0 - P.WALL_STRUCT
         m += pl.prism(pl.ring2d(pl.circle(2 * (bore_r + OVL), 128),
                                 pl.circle(2 * inner_r, 128)), za, zb)

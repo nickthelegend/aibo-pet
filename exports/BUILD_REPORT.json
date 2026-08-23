@@ -1,0 +1,456 @@
+{
+ "plates": [
+  {
+   "plate": "plate-1-test",
+   "parts": [
+    "horn-mg996r",
+    "spline-test"
+   ],
+   "mb": 0.23,
+   "xy": [
+    118.0,
+    48.0
+   ],
+   "z": 7.3,
+   "fits": true,
+   "supports": [],
+   "why": "print FIRST -- verifies the printed spline before you commit"
+  },
+  {
+   "plate": "plate-2-base",
+   "parts": [
+    "base"
+   ],
+   "mb": 0.8,
+   "xy": [
+    160.0,
+    160.0
+   ],
+   "z": 58.0,
+   "fits": true,
+   "supports": [],
+   "why": "the round tub; it owns the bed on its own"
+  },
+  {
+   "plate": "plate-2b-shoulder",
+   "parts": [
+    "shoulder"
+   ],
+   "mb": 1.99,
+   "xy": [
+    160.0,
+    157.6
+   ],
+   "z": 33.4,
+   "fits": true,
+   "supports": [
+    "shoulder"
+   ],
+   "why": "the shoulder ring -- goes on AFTER the electronics"
+  },
+  {
+   "plate": "plate-3a-arm-lower",
+   "parts": [
+    "arm-lower"
+   ],
+   "mb": 1.01,
+   "xy": [
+    59.7,
+    26.5
+   ],
+   "z": 154.0,
+   "fits": true,
+   "supports": [
+    "arm-lower"
+   ],
+   "why": "arm segment 1 of 3 -- standing on its yoke"
+  },
+  {
+   "plate": "plate-3b-arm-upper",
+   "parts": [
+    "arm-upper"
+   ],
+   "mb": 1.01,
+   "xy": [
+    59.7,
+    26.5
+   ],
+   "z": 154.0,
+   "fits": true,
+   "supports": [
+    "arm-upper"
+   ],
+   "why": "arm segment 2 of 3 -- standing on its yoke"
+  },
+  {
+   "plate": "plate-3c-arm-fore",
+   "parts": [
+    "arm-fore"
+   ],
+   "mb": 1.0,
+   "xy": [
+    59.7,
+    21.2
+   ],
+   "z": 132.9,
+   "fits": true,
+   "supports": [
+    "arm-fore"
+   ],
+   "why": "arm segment 3 of 3 -- standing on its yoke"
+  },
+  {
+   "plate": "plate-4-head",
+   "parts": [
+    "lid"
+   ],
+   "mb": 0.28,
+   "xy": [
+    113.8,
+    113.7
+   ],
+   "z": 6.4,
+   "fits": true,
+   "supports": [],
+   "why": "cone (mouth down) + lid (top face down)"
+  },
+  {
+   "plate": "plate-4-head-2",
+   "parts": [
+    "shade"
+   ],
+   "mb": 0.74,
+   "xy": [
+    66.0,
+    66.0
+   ],
+   "z": 72.0,
+   "fits": true,
+   "supports": [
+    "shade"
+   ],
+   "why": "cone (mouth down) + lid (top face down)"
+  },
+  {
+   "plate": "plate-5-small",
+   "parts": [
+    "spk-clamp",
+    "horn-adapter",
+    "base-joint",
+    "horn-sg90",
+    "cap-base",
+    "cap-shoulder",
+    "cap-elbow",
+    "cap-head",
+    "keycap",
+    "yoke-screw",
+    "yoke-screw",
+    "yoke-screw",
+    "yoke-screw",
+    "esp-tab",
+    "amp-tab",
+    "mic-tab"
+   ],
+   "mb": 3.72,
+   "xy": [
+    150.2,
+    139.0
+   ],
+   "z": 51.8,
+   "fits": true,
+   "supports": [
+    "base-joint"
+   ],
+   "why": "everything that is quick"
+  }
+ ],
+ "parts": [
+  {
+   "part": "base",
+   "watertight": true,
+   "tris": 16036,
+   "vol_cm3": 128.7,
+   "bbox": [
+    160.0,
+    160.0,
+    58.0
+   ],
+   "fits_bed": true,
+   "over_air_mm2": 0.0
+  },
+  {
+   "part": "shoulder",
+   "watertight": true,
+   "tris": 39868,
+   "vol_cm3": 52.4,
+   "bbox": [
+    160.0,
+    157.6,
+    33.4
+   ],
+   "fits_bed": true,
+   "over_air_mm2": 869.2
+  },
+  {
+   "part": "lid",
+   "watertight": true,
+   "tris": 5544,
+   "vol_cm3": 37.7,
+   "bbox": [
+    113.8,
+    113.7,
+    6.4
+   ],
+   "fits_bed": true,
+   "over_air_mm2": 0.0
+  },
+  {
+   "part": "base-joint",
+   "watertight": true,
+   "tris": 20396,
+   "vol_cm3": 54.5,
+   "bbox": [
+    80.0,
+    34.5,
+    51.8
+   ],
+   "fits_bed": true,
+   "over_air_mm2": 556.3
+  },
+  {
+   "part": "cap-base",
+   "watertight": true,
+   "tris": 2424,
+   "vol_cm3": 4.2,
+   "bbox": [
+    49.7,
+    26.5,
+    3.0
+   ],
+   "fits_bed": true,
+   "over_air_mm2": 0.0
+  },
+  {
+   "part": "arm-lower",
+   "watertight": true,
+   "tris": 20260,
+   "vol_cm3": 58.1,
+   "bbox": [
+    59.7,
+    26.5,
+    154.0
+   ],
+   "fits_bed": true,
+   "over_air_mm2": 120.1
+  },
+  {
+   "part": "arm-upper",
+   "watertight": true,
+   "tris": 20260,
+   "vol_cm3": 58.1,
+   "bbox": [
+    59.7,
+    26.5,
+    154.0
+   ],
+   "fits_bed": true,
+   "over_air_mm2": 120.1
+  },
+  {
+   "part": "arm-fore",
+   "watertight": true,
+   "tris": 20088,
+   "vol_cm3": 35.1,
+   "bbox": [
+    59.7,
+    21.2,
+    132.9
+   ],
+   "fits_bed": true,
+   "over_air_mm2": 117.4
+  },
+  {
+   "part": "cap-shoulder",
+   "watertight": true,
+   "tris": 2424,
+   "vol_cm3": 4.2,
+   "bbox": [
+    49.7,
+    26.5,
+    3.0
+   ],
+   "fits_bed": true,
+   "over_air_mm2": 0.0
+  },
+  {
+   "part": "cap-elbow",
+   "watertight": true,
+   "tris": 2424,
+   "vol_cm3": 4.2,
+   "bbox": [
+    49.7,
+    26.5,
+    3.0
+   ],
+   "fits_bed": true,
+   "over_air_mm2": 0.0
+  },
+  {
+   "part": "cap-head",
+   "watertight": true,
+   "tris": 2424,
+   "vol_cm3": 1.8,
+   "bbox": [
+    35.3,
+    18.0,
+    3.0
+   ],
+   "fits_bed": true,
+   "over_air_mm2": 0.0
+  },
+  {
+   "part": "shade",
+   "watertight": true,
+   "tris": 14840,
+   "vol_cm3": 29.6,
+   "bbox": [
+    66.0,
+    66.0,
+    72.0
+   ],
+   "fits_bed": true,
+   "over_air_mm2": 0.0
+  },
+  {
+   "part": "horn-mg996r",
+   "watertight": true,
+   "tris": 1848,
+   "vol_cm3": 2.2,
+   "bbox": [
+    48.0,
+    48.0,
+    7.3
+   ],
+   "fits_bed": true,
+   "over_air_mm2": 5.6
+  },
+  {
+   "part": "horn-sg90",
+   "watertight": true,
+   "tris": 1008,
+   "vol_cm3": 0.5,
+   "bbox": [
+    31.0,
+    31.0,
+    4.9
+   ],
+   "fits_bed": true,
+   "over_air_mm2": 0.0
+  },
+  {
+   "part": "horn-adapter",
+   "watertight": true,
+   "tris": 1776,
+   "vol_cm3": 4.9,
+   "bbox": [
+    48.0,
+    48.0,
+    10.1
+   ],
+   "fits_bed": true,
+   "over_air_mm2": 0.0
+  },
+  {
+   "part": "spline-test",
+   "watertight": true,
+   "tris": 2696,
+   "vol_cm3": 9.6,
+   "bbox": [
+    66.0,
+    26.0,
+    6.0
+   ],
+   "fits_bed": true,
+   "over_air_mm2": 0.0
+  },
+  {
+   "part": "spk-clamp",
+   "watertight": true,
+   "tris": 716,
+   "vol_cm3": 2.1,
+   "bbox": [
+    10.0,
+    53.8,
+    19.0
+   ],
+   "fits_bed": true,
+   "over_air_mm2": 0.0
+  },
+  {
+   "part": "mic-tab",
+   "watertight": true,
+   "tris": 444,
+   "vol_cm3": 0.3,
+   "bbox": [
+    21.1,
+    7.0,
+    3.2
+   ],
+   "fits_bed": true,
+   "over_air_mm2": 0.0
+  },
+  {
+   "part": "esp-tab",
+   "watertight": true,
+   "tris": 432,
+   "vol_cm3": 0.2,
+   "bbox": [
+    16.0,
+    8.0,
+    2.0
+   ],
+   "fits_bed": true,
+   "over_air_mm2": 0.0
+  },
+  {
+   "part": "amp-tab",
+   "watertight": true,
+   "tris": 432,
+   "vol_cm3": 0.2,
+   "bbox": [
+    15.0,
+    8.0,
+    2.0
+   ],
+   "fits_bed": true,
+   "over_air_mm2": 0.0
+  },
+  {
+   "part": "keycap",
+   "watertight": true,
+   "tris": 4504,
+   "vol_cm3": 1.1,
+   "bbox": [
+    17.9,
+    17.9,
+    9.0
+   ],
+   "fits_bed": true,
+   "over_air_mm2": 0.0
+  },
+  {
+   "part": "yoke-screw",
+   "watertight": true,
+   "tris": 8756,
+   "vol_cm3": 0.7,
+   "bbox": [
+    15.7,
+    15.7,
+    9.5
+   ],
+   "fits_bed": true,
+   "over_air_mm2": 0.0
+  }
+ ],
+ "checks": {}
+}
