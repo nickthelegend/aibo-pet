@@ -15,9 +15,9 @@
    "mm": [
     160.0,
     157.6,
-    27.4
+    33.4
    ],
-   "cm3": 51.8,
+   "cm3": 52.6,
    "fits": true
   },
   {
@@ -546,13 +546,13 @@
     "used_mm": [
      160.0,
      157.6,
-     27.4
+     33.4
     ],
     "fits_bed": true,
     "supports": [
      "shoulder"
     ],
-    "mb": 1.97,
+    "mb": 1.99,
     "url": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plate-2b-shoulder.stl"
    },
    {

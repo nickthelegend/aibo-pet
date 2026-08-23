@@ -54,6 +54,19 @@ SKIRT_Z0 = P.BASE_STRAIGHT - 6.0   # 6 mm of skirt DOWN inside the tub bore.
 MIC_A0, MIC_A1 = 256.0, 284.0      # sector, with 6 deg of margin each side
 MIC_R = 72.4                       # cut inward to here, clear of r74.2
 MIC_Z1 = 42.0                      # clear of the boss top at Z41
+
+# Three locating pads, replacing the continuous skirt that could not fit.
+# The tub bore is free out to r77.75 over most of the circle, but bulkheads
+# and boss ribs reach in past r75.9 in six narrow sectors, which is what the
+# full ring fouled on. These sit only where the bore was MEASURED clear, at
+# roughly 120 degree spacing, and away from the mic relief.
+# Without them nothing centres the ring: the three M3s pass through 3.2 mm
+# clearance holes, which stop it sliding once tightened but do not locate it.
+# Deleting the skirt outright and calling the screws a locator was wrong.
+PAD_ANGLES = (60.0, 185.0, 299.0)
+PAD_ARC = 22.0                     # degrees each
+PAD_OD_R = 77.5                    # 0.25 clear of the free bore at r77.75
+PAD_T = 1.4
                                    # Was hardcoded 36, which sat above the rim
                                    # once the taper moved down to 34 and turned
                                    # the skirt inside out.
@@ -146,7 +159,19 @@ def build():
                    [(holes, P.BASE_STRAIGHT, P.BASE_STRAIGHT + 3.0),
                     (heads, P.BASE_STRAIGHT + 1.2, P.BASE_STRAIGHT + 3.0)])
 
-    # ---- no locating skirt ----
+    # ---- three locating pads ----
+    pads = []
+    ring = pl.ring2d(pl.circle(2 * PAD_OD_R, 256),
+                     pl.circle(2 * (PAD_OD_R - PAD_T), 256))
+    for c in PAD_ANGLES:
+        pts = [(0.0, 0.0)]
+        for a in np.linspace(math.radians(c - PAD_ARC / 2),
+                             math.radians(c + PAD_ARC / 2), 24):
+            pts.append((95.0 * math.cos(a), 95.0 * math.sin(a)))
+        pads.append(ring.intersection(Polygon(pts)))
+    m += pl.prism(unary_union(pads), SKIRT_Z0, P.BASE_STRAIGHT + OVL)
+
+    # ---- the continuous skirt is gone ----
     # It used to drop a 6 mm ring at r75.9..77.2 into the tub bore. The tub's
     # internals do not leave that annulus free: bulkheads and boss ribs reach
     # inward past r75.9 over about a fifth of the circumference, as far as r66

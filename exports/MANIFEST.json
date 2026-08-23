@@ -23,15 +23,15 @@
       ]
     },
     "shoulder": {
-      "shells": 33,
-      "triangles": 39448,
-      "volume_mm3": 51792.09,
+      "shells": 36,
+      "triangles": 39868,
+      "volume_mm3": 52559.91,
       "watertight": true,
       "fits_a1_mini": true,
       "bbox_mm": [
         160.0,
         157.6,
-        27.4
+        33.4
       ]
     },
     "lid": {
