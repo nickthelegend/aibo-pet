@@ -119,7 +119,7 @@
    "parts": [
     "shade"
    ],
-   "mb": 0.74,
+   "mb": 0.72,
    "xy": [
     66.0,
     66.0
@@ -311,8 +311,8 @@
   {
    "part": "shade",
    "watertight": true,
-   "tris": 14840,
-   "vol_cm3": 29.6,
+   "tris": 14452,
+   "vol_cm3": 29.9,
    "bbox": [
     66.0,
     66.0,
@@ -452,5 +452,5 @@
    "over_air_mm2": 0.0
   }
  ],
- "checks": {}
+ "interference": "none: all overlapping-box part pairs probed, 0 points in both solids"
 }

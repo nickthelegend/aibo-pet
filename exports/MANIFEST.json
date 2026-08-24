@@ -143,9 +143,9 @@
       ]
     },
     "shade": {
-      "shells": 71,
-      "triangles": 14840,
-      "volume_mm3": 29608.34,
+      "shells": 40,
+      "triangles": 14452,
+      "volume_mm3": 29931.9,
       "watertight": true,
       "fits_a1_mini": true,
       "bbox_mm": [

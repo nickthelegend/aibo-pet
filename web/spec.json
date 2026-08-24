@@ -117,7 +117,7 @@
     66.0,
     72.0
    ],
-   "cm3": 29.6,
+   "cm3": 29.9,
    "fits": true
   },
   {
@@ -362,7 +362,7 @@
   "servos": 4,
   "height_mm": 316,
   "reach_mm": 345,
-  "plastic_cm3": 490,
+  "plastic_cm3": 491,
   "plates": 9,
   "m3": 15,
   "m2": 5,
@@ -640,7 +640,7 @@
     "supports": [
      "shade"
     ],
-    "mb": 0.74,
+    "mb": 0.72,
     "url": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plate-4-head-2.stl"
    },
    {
