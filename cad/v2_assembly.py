@@ -95,7 +95,8 @@ def print_items():
     """Everything in print pose, flat side down, bottoms on Z=0."""
     out = []
     for n, m, c in (V.tub() + V.disc() + V.tower() + V.link1() + V.link2()
-                    + V.head_block() + V.clamp_bars()):
+                    + V.head_block() + V.clamp_bars()
+                    + V.v2_screw() + V.v2_trimcap()):
         q = m.copy()
         if n == "v2-disc":
             q.rotate_x(180.0)          # skirt up -> face down, prints flat

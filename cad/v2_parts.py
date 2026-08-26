@@ -53,7 +53,7 @@ DISC_T = 4.5
 DISC_Z0 = TUB_H                 # underside rides the rim
 SKIRT_ID = TUB_OD + 0.6         # 0.3 per side round the rim
 SKIRT_T = 2.4
-SKIRT_DROP = 5.0
+SKIRT_DROP = 6.5
 # The face reaches PAST the skirt: the first cut had the skirt at r75.3..77.7
 # under a face that ended at r74 -- a ring attached to nothing. Each shell
 # was watertight on its own, which is exactly why per-part validate() said
@@ -109,8 +109,31 @@ LINK2_HALF = 22.95
 # plainly; the three spacers and the head tail make the box rigid.
 LINK2_OUT_HALF = 24.45
 LINK2_OUT_START = 32.0
-STEADY_OD = P.AXLE_D + 8.0                    # 19, the steady ring
-STEADY_H = 1.2
+# There is NO steady ring at the elbow, and the reason is now written down
+# instead of rediscovered: a ring around the horn seat needs a bore in the
+# facing plate, and that plate's face is the one carrying the horn's cross
+# recess -- whose arms span 48. The bore would eat the recess. v1's elbow
+# bore on the horn hub itself (O13 in a O13.3 bore) and printed fine, so
+# 2.0 does the same. The trim cap plugs that hub bore after the M3 is home.
+HUB_BORE = P.HORN_HUB_D + P.HORN_FIT
+
+# Standoff and ledge positions, shared by the plates (through-holes), the
+# standoff parts (inserts) and the audit (hole-exists check). One list each,
+# because the first cut gave the plates NO holes at all -- the outer plate
+# could never have been screwed on -- and put the servo-tab ledges at
+# +/-25.8 from the elbow axis, where the MG996R's tabs are not: the tabs sit
+# at body-centre +/-26.8, and the body centre is 10.35 inboard of the axis.
+def l1_spots():
+    return [(20.0, -LINK_W / 2 + 6), (20.0, LINK_W / 2 - 6)]
+
+def l1_ledge_spots():
+    bc = L1 - (P.MG_L / 2.0 - P.MG_SHAFT_OFF)        # body centre
+    return [(bc - P.MG_TAB_SPAN / 2 + 1.5, 0.0),
+            (bc + P.MG_TAB_SPAN / 2 - 1.5, 0.0)]
+
+def l2_spots():
+    return [(LINK2_OUT_START + 8, -LINK_W / 2 + 6),
+            (LINK2_OUT_START + 8, LINK_W / 2 - 6), (L2 / 2 + 14, 0.0)]
 
 # head: nose narrow enough for the v1 shade's MEASURED yoke gap (37.3 --
 # H_HX was the MG housing's number and simply wrong for the SG head), tail
@@ -126,16 +149,39 @@ COLORS = {
     "v2-tub": "#E9E9EE", "v2-disc": "#E9E9EE", "v2-tower": "#E9E9EE",
     "v2-link1-in": "#E9E9EE", "v2-link1-out": "#E9E9EE",
     "v2-link2-in": "#E9E9EE", "v2-link2-out": "#E9E9EE",
-    "v2-cap": "#26262B", "v2-clamp": "#26262B",
+    "v2-cap": "#26262B", "v2-clamp": "#26262B", "v2-accent": "#4D17F5",
 }
 
 
 def _stadium(length, w, cap_d):
-    """Link plate outline: two joint discs joined by a straight."""
+    """Sculpted link outline, per the reference: full cap discs at the
+    joints, a TAPERED body between them, everything filleted. A parallel
+    stadium is what read as stale."""
     a = pl.circle(cap_d, SEG)
     b = affinity.translate(pl.circle(cap_d, SEG), length, 0)
-    mid = box(0, -w / 2, length, w / 2)
-    return unary_union([a, mid, b])
+    body = Polygon([(4, -w / 2 - 2), (length - 4, -w / 2 + 4),
+                    (length - 4, w / 2 - 4), (4, w / 2 + 2)])
+    return pl.smooth(unary_union([a, body, b]), 6.0)
+
+
+def _skeleton(length, keepout):
+    """The truss cutouts and glow slots that make the reference read as a
+    machine instead of a plank. Cut candidates are clipped to the plate's
+    safe interior and then MINUS the functional keepout, so styling can
+    never eat a bore, a recess, a standoff seat or the servo window."""
+    tris = []
+    x0, x1 = CAP_D / 2 + 8.0, length - CAP_D / 2 - 8.0
+    if x1 - x0 > 24:
+        xm = (x0 + x1) / 2
+        tris.append(Polygon([(x0, -LINK_W / 2 + 7), (xm - 3, -2),
+                             (x0, LINK_W / 2 - 7)]))
+        tris.append(Polygon([(x1, -LINK_W / 2 + 7), (xm + 3, -2),
+                             (x1, LINK_W / 2 - 7)]))
+    tris = [pl.smooth(t, 3.0) for t in tris if t.area > 40]
+    slots = [affinity.translate(pl.slot(13.0, 4.2), length - 37.0, dy)
+             for dy in (-9.0, 0.0, 9.0)]
+    cuts = unary_union(tris + slots)
+    return cuts.difference(keepout.buffer(3.0))
 
 
 def _horn_recess_openings(plate, x_axis, z0, t):
@@ -158,11 +204,26 @@ def _horn_recess_openings(plate, x_axis, z0, t):
 # ------------------------------------------------------------------ tub ----
 def tub():
     R = TUB_OD / 2.0
-    outer = pl.circle(TUB_OD, 160)
-    bore = pl.circle(TUB_OD - 2 * TUB_WALL, 160)
     m = pl.Mesh()
-    m += pl.prism(pl.ring2d(outer, bore), 0.0, TUB_H)          # wall
-    m += pl.prism(outer, 0.0, FLOOR)                            # floor
+    # Pebble profile: the wall blends out of the desk through a 12 mm fillet
+    # and bulges 3 past the rim diameter through the middle -- the reference
+    # base's soft soap-bar read -- then lands back exactly on O150 at the
+    # rim, because the rim is the slew surface and the slew is not styling.
+    import math as _math
+    # Base blend is a straight 40-degree chamfer, not a sine: the sine's
+    # tangent at z=0 sat at 46 degrees and the audit flagged the first two
+    # millimetres of wall as over air. A 16-over-19 line never exceeds 40.
+    # The bulge window still ends at 36 -- the disc's skirt hangs to 39.5 at
+    # r75.3, and the first curve peaked at r76.1 inside it.
+    def od(z):
+        if z < 19.0:
+            return TUB_OD - 16.0 + 16.0 * (z / 19.0)
+        if z < 36.0:
+            t = (z - 19.0) / 17.0
+            return TUB_OD + 6.0 * _math.sin(t * _math.pi)
+        return TUB_OD
+    m += pl.revolve_shell(0.0, TUB_H, od, TUB_WALL, steps=26)
+    m += pl.prism(pl.circle(od(0.4), 160), 0.0, FLOOR)          # floor
 
     # ---- pan servo mount: pocket walls + two tab pillars ----
     # servo body 40.7 x 19.7 centred so the SPLINE (offset 10.0 along the long
@@ -198,8 +259,12 @@ def tub():
 
     # speaker against +X wall: two rails + open back grille (v1 lesson: the
     # pocket stays open behind the driver)
-    # speaker against the +X wall: two rails bracket the driver, back open
-    sx0 = R - TUB_WALL - P.SPK_T - 0.8
+    # Speaker seat, INBOARD at x=58: the pebble chamfer pulls the wall away
+    # from under the old wall-hugging position, and the rails' outboard ends
+    # stood on the void (58 mm2, found at r70 by the over-air audit). On the
+    # flat floor there is nothing to hang over. The wall grille lands in the
+    # electronics pass, aimed at this seat.
+    sx0 = 58.0
     for sy in (-1, 1):
         y_in = sy * (P.SPK_L / 2 + 0.4)
         rail = box(sx0 - 3.0, min(y_in, y_in + sy * 3.0),
@@ -237,6 +302,21 @@ def disc():
     for (ix, iy) in _tower_bolts():
         openings.append((affinity.translate(pl.circle(P.M3_INSERT_D, 24), ix, iy),
                          DISC_Z0 - OVL, DISC_Z0 + DISC_T + OVL))
+    # Platter arcs, cut CLEAR THROUGH: a raised hub clashed with the tower
+    # base; an engraved groove over-airs its ceiling when the show face
+    # prints down. A through slot has neither failure mode, prints clean in
+    # both orientations, and matches the reference's vent language. Two
+    # rings of four 70-degree arcs, outside the tower base's 43 mm corners.
+    for gd, w in ((98.0, 3.2), (114.0, 3.2)):
+        ringc = pl.ring2d(pl.circle(gd + w, 128), pl.circle(gd - w, 128))
+        for k in range(4):
+            a0 = 10.0 + k * 90.0
+            wed = Polygon([(0, 0)] + [
+                (95.0 * math.cos(math.radians(a0 + t * 70.0 / 20)),
+                 95.0 * math.sin(math.radians(a0 + t * 70.0 / 20)))
+                for t in range(21)])
+            openings.append((ringc.intersection(wed),
+                             DISC_Z0 - OVL, DISC_Z0 + DISC_T + OVL))
     m += pl.banded(face, DISC_Z0, DISC_Z0 + DISC_T, openings)
 
     # rim skirt: hides the joint, locates the disc laterally round the rim
@@ -303,16 +383,14 @@ def _slices(d, cz, seg=24):
 
 
 # ---------------------------------------------------------------- links ----
-def _link_plate(name, length, colour, near, far):
-    """One flat plate, lying in XY at z 0..PLATE_T. Feature menu:
-      near/far in {"recess", "idler", "boss", "window", "stub", "mount", "-"}
-    recess  horn cross pocket (drive)          idler   AXLE_D bore
-    boss    servo output boss bore             window  MG996R body window
-    stub    printed threaded stub axle          mount  2x M3 clear holes
-    """
+def _link_plate(name, length, colour, near, far, spots=(), holes_at=()):
+    """One flat plate, lying in XY at z 0..PLATE_T. near/far feature menu:
+    recess | idler | boss3 | window | steadybore | mount | none.
+    `spots` get M3 through-holes (standoff screws); `holes_at` likewise (the
+    servo-tab clamp screws). Both also become styling keepouts."""
     prof = _stadium(length, LINK_W, CAP_D)
-    m = pl.Mesh()
     openings = []
+    keep = [affinity.translate(pl.circle(36.0, 48), x0, 0) for x0 in (0.0, length)]
     for x0, feat in ((0.0, near), (length, far)):
         at = lambda g: affinity.translate(g, x0, 0)
         if feat == "recess":
@@ -320,35 +398,29 @@ def _link_plate(name, length, colour, near, far):
         elif feat == "idler":
             openings.append((at(pl.circle(P.AXLE_D + P.AXLE_FIT, 48)),
                              -OVL, PLATE_T + OVL))
-        elif feat == "boss":
-            openings.append((at(pl.circle(P.MG_BOSS_D + 1.0, 48)),
-                             -OVL, PLATE_T + OVL))
         elif feat == "boss3":
-            # v1's horn seat: bore + a counterbore that thins the plate to
-            # BOSS_WALL so the short MG996R spline reaches the horn
             openings.append((at(pl.circle(P.MG_BOSS_D + 1.0, 48)),
                              -OVL, PLATE_T + OVL))
             openings.append((at(pl.circle(P.MG_BOSS_D + 7.0, 48)),
                              BOSS_WALL, PLATE_T + OVL))
-        elif feat == "steadybore":
-            openings.append((at(pl.circle(STEADY_OD + 0.3, 64)),
-                             -OVL, PLATE_T + OVL))
         elif feat == "window":
-            w = box(x0 - (P.MG_L + 0.8) / 2, -(P.MG_W + 0.8) / 2,
-                    x0 + (P.MG_L + 0.8) / 2, (P.MG_W + 0.8) / 2)
+            bc = x0 - (P.MG_L / 2.0 - P.MG_SHAFT_OFF)
+            w = box(bc - (P.MG_L + 0.8) / 2, -(P.MG_W + 0.8) / 2,
+                    bc + (P.MG_L + 0.8) / 2, (P.MG_W + 0.8) / 2)
             openings.append((w, -OVL, PLATE_T + OVL))
+            keep.append(w.buffer(2.0))
         elif feat == "mount":
             for dy in (-10.0, 10.0):
                 openings.append((affinity.translate(pl.circle(P.M3_CLEAR, 24), x0, dy),
                                  -OVL, PLATE_T + OVL))
-    m += pl.banded(prof, 0.0, PLATE_T, openings)
-    if far == "boss3" or near == "boss3":
-        # the steady ring the far plate rides, around the horn seat
-        x0 = length if far == "boss3" else 0.0
-        ring = pl.ring2d(pl.circle(STEADY_OD, 64),
-                         pl.circle(P.MG_BOSS_D + 7.0, 48))
-        m += pl.prism(affinity.translate(ring, x0, 0),
-                      PLATE_T - OVL, PLATE_T + STEADY_H)
+    for (cx, cy) in tuple(spots) + tuple(holes_at):
+        openings.append((affinity.translate(pl.circle(P.M3_CLEAR, 24), cx, cy),
+                         -OVL, PLATE_T + OVL))
+        keep.append(affinity.translate(pl.rounded_rect(13.0, 12.0, 2.0), cx, cy))
+    cuts = _skeleton(length, unary_union(keep))
+    if not cuts.is_empty:
+        openings.append((cuts, -OVL, PLATE_T + OVL))
+    m = pl.banded(prof, 0.0, PLATE_T, openings)
     return (name, m, colour)
 
 
@@ -366,29 +438,39 @@ def link1():
     c = COLORS["v2-link1-in"]
     return [
         # drive side +X at the shoulder; elbow flips drive to -X
-        _link_plate("v2-link1-in", L1, c, near="recess", far="window"),
-        _link_plate("v2-link1-out", L1, c, near="idler", far="boss3"),
-        # near-joint full-gap spacers + servo tab ledges on the window side
-        _standoffs("v2-link1-spacers",
-                   [(20.0, -LINK_W / 2 + 6), (20.0, LINK_W / 2 - 6)],
+        _link_plate("v2-link1-in", L1, c, near="recess", far="window",
+                    spots=l1_spots(), holes_at=l1_ledge_spots()),
+        _link_plate("v2-link1-out", L1, c, near="idler", far="boss3",
+                    spots=l1_spots()),
+        _standoffs("v2-link1-spacers", l1_spots(),
                    2 * LINK1_HALF - 0.4, COLORS["v2-clamp"]),
-        _standoffs("v2-link1-ledges",
-                   [(L1 - P.MG_TAB_SPAN / 2 + 1.0, 0.0),
-                    (L1 + P.MG_TAB_SPAN / 2 - 1.0, 0.0)],
+        _standoffs("v2-link1-ledges", l1_ledge_spots(),
                    P.MG_TAB_Z - P.MG_TAB_T, COLORS["v2-clamp"]),
     ]
 
 
-def _truncated_plate(name, length, start, colour, far):
-    """A plate that begins `start` from the near axis: no near cap at all."""
-    prof = unary_union([
-        box(start, -LINK_W / 2, length, LINK_W / 2),
-        affinity.translate(pl.circle(CAP_D, SEG), length, 0)])
+def _truncated_plate(name, length, start, colour, far, spots=()):
+    """A plate that begins `start` from the near axis: no near cap at all.
+    Same sculpt and skeleton treatment as the full plates."""
+    prof = pl.smooth(unary_union([
+        Polygon([(start, -LINK_W / 2 + 3), (length - 4, -LINK_W / 2),
+                 (length - 4, LINK_W / 2), (start, LINK_W / 2 - 3)]),
+        affinity.translate(pl.circle(CAP_D, SEG), length, 0)]), 6.0)
     openings = []
+    keep = [affinity.translate(pl.circle(36.0, 48), length, 0),
+            box(start - 2, -LINK_W / 2, start + 8, LINK_W / 2)]
     if far == "mount":
         for dy in (-10.0, 10.0):
             openings.append((affinity.translate(pl.circle(P.M3_CLEAR, 24), length, dy),
                              -OVL, PLATE_T + OVL))
+    for (cx, cy) in spots:
+        openings.append((affinity.translate(pl.circle(P.M3_CLEAR, 24), cx, cy),
+                         -OVL, PLATE_T + OVL))
+        keep.append(affinity.translate(pl.rounded_rect(13.0, 12.0, 2.0), cx, cy))
+    cuts = _skeleton(length, unary_union(keep)).intersection(
+        prof.buffer(-6.0))
+    if not cuts.is_empty:
+        openings.append((cuts, -OVL, PLATE_T + OVL))
     m = pl.banded(prof, 0.0, PLATE_T, openings)
     return (name, m, colour)
 
@@ -396,12 +478,11 @@ def _truncated_plate(name, length, start, colour, far):
 def link2():
     c = COLORS["v2-link2-in"]
     return [
-        _link_plate("v2-link2-in", L2, c, near="recess", far="mount"),
-        _truncated_plate("v2-link2-out", L2, LINK2_OUT_START, c, far="mount"),
-        _standoffs("v2-link2-spacers",
-                   [(LINK2_OUT_START + 8, -LINK_W / 2 + 6),
-                    (LINK2_OUT_START + 8, LINK_W / 2 - 6),
-                    (L2 / 2 + 14, 0.0)],
+        _link_plate("v2-link2-in", L2, c, near="recess", far="mount",
+                    spots=l2_spots()),
+        _truncated_plate("v2-link2-out", L2, LINK2_OUT_START, c, far="mount",
+                         spots=l2_spots()),
+        _standoffs("v2-link2-spacers", l2_spots(),
                    LINK2_HALF + LINK2_OUT_HALF - 0.4, COLORS["v2-clamp"]),
     ]
 
@@ -432,6 +513,34 @@ def head_block():
     ax.translate(dx=-HEAD_HALF + OVL, dy=D - 4.0, dz=HEAD_BLOCK_H / 2.0)
     m += ax
     return [("v2-head", m, COLORS["v2-tower"])]
+
+
+def _slot_head(d):
+    """A coin-slot disc: the visual signature of the reference's joints.
+    The slot goes clear through -- it prints clean in any orientation and
+    reads as machined from both sides."""
+    return pl.circle(d, 96).difference(box(-d * 0.36, -1.7, d * 0.36, 1.7))
+
+
+def v2_screw():
+    """The shoulder idler's retaining screw, v1's proven M6x2 printed thread
+    under a big slotted head. Turned with a coin or a flat blade."""
+    m = pl.Mesh()
+    m += pl.prism(_slot_head(26.0), 0.0, 3.2)
+    m += pl.prism(pl.circle(P.SCREW_MAJOR - 2 * pl.THREAD_RAMP * P.SCREW_PITCH, 48),
+                  3.2 - OVL, 4.2)
+    m += pl.thread(P.SCREW_MAJOR, P.SCREW_PITCH, 4.2 - OVL, 4.2 + P.SCREW_ENGAGE)
+    return [("v2-screw", m, COLORS["v2-accent"])]
+
+
+def v2_trimcap():
+    """The elbow's matching cap: same slotted face, a plug that glues into
+    the steady bore after the horn's M3 is home. Cosmetic, and honest about
+    it -- the slot turns nothing here."""
+    m = pl.Mesh()
+    m += pl.prism(_slot_head(32.0), 0.0, 3.2)
+    m += pl.prism(pl.circle(HUB_BORE - 0.25, 48), 3.2 - OVL, 3.2 + 2.4)
+    return [("v2-trimcap", m, COLORS["v2-accent"])]
 
 
 def clamp_bars():

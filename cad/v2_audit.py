@@ -74,6 +74,25 @@ def main():
         print(f"  {x:16s} {y:16s}{flag or '  clear'}")
     print(f"  ({pairs} overlapping-box pairs probed)")
 
+    # ---- assembly hardware really passes through the plates ----
+    print("\nstandoff and clamp screw holes (mesh probed, not assumed)")
+    import v2_parts as VP
+    plate_specs = [
+        ("v2-link1-in", VP.link1()[0][1], list(VP.l1_spots()) + list(VP.l1_ledge_spots())),
+        ("v2-link1-out", VP.link1()[1][1], list(VP.l1_spots())),
+        ("v2-link2-in", VP.link2()[0][1], list(VP.l2_spots())),
+        ("v2-link2-out", VP.link2()[1][1], list(VP.l2_spots())),
+    ]
+    for pn, mesh, spots in plate_specs:
+        probe = np.array([[x, y, VP.PLATE_T / 2.0] for x, y in spots])
+        blocked = ST.inside(mesh, probe)
+        n_ok = int((~blocked).sum())
+        ok = n_ok == len(spots)
+        if not ok:
+            fails.append(f"{pn}: {int(blocked.sum())} screw position(s) have no hole")
+        print(f"  {'PASS' if ok else 'FAIL':4s} {pn:16s} {n_ok}/{len(spots)} holes open")
+
+
     # ---- engagement ----
     print("\nengagement")
     rec = P.HORN_T + P.HORN_FIT
@@ -91,6 +110,8 @@ def main():
          (V.LINK2_OUT_HALF) - (V.LINK1_HALF + 5.2 - V.PLATE_T), 0.3, "mm"),
         ("sandwich gap vs MG996R width", V.MG_GAP - P.MG_W if hasattr(V,'MG_GAP') else (P.MG_W + 0.8) - P.MG_W, 0.4, "mm"),
         ("stub axle engage into link bore", P.SCREW_ENGAGE, 4.0, "mm"),
+        ("trim cap plug clears hub bore",
+         V.HUB_BORE - (V.HUB_BORE - 0.25), 0.2, "mm"),
     ]
     # shade yoke inner gap vs head block width, measured off the meshes
     import part_head

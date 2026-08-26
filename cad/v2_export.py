@@ -38,6 +38,8 @@ LAYOUT = {
     "v2-link2-spacers":("v2-plate-3-head", 95.0, 45.0),
     "v2-head":         ("v2-plate-3-head", 40.0, 85.0),
     "shade":           ("v2-plate-3-head", -70.0, 85.0),
+    "v2-screw":        ("v2-plate-3-head", -12.0, 100.0),
+    "v2-trimcap":      ("v2-plate-3-head", -12.0, 64.0),
 }
 
 

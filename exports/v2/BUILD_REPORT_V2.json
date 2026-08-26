@@ -4,8 +4,8 @@
   {
    "plate": "v2-plate-1-base",
    "size_mm": [
-    195.0,
-    212.0,
+    198.0,
+    215.0,
     59.0
    ]
   },
@@ -14,20 +14,21 @@
    "size_mm": [
     155.4,
     206.7,
-    9.5
+    11.0
    ]
   },
   {
    "plate": "v2-plate-3-head",
    "size_mm": [
-    233.8,
+    233.3,
     221.0,
     72.0
    ]
   }
  ],
  "supports": [
-  "v2-head"
+  "v2-head",
+  "v2-trimcap"
  ],
  "engagement": {
   "shoulder_horn_mm": 2.4,
