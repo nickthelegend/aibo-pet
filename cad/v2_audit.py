@@ -79,7 +79,7 @@ def main():
     rng = np.random.default_rng(9)
     pairs = 0
     def component(nm):
-        for pre in ("pan-", "sh-", "el-", "hd-"):
+        for pre in ("pan-", "sh-", "el-", "hd-", "mx-"):
             if nm.startswith(pre):
                 return pre
         return None
@@ -188,13 +188,36 @@ def main():
         print(f"  {'PASS' if ok else 'FAIL':4s} {name:34s} {val:6.2f} mm "
               f"(want {lo2}..{hi2})")
 
+    # ---- MX switch: does it actually clip in? ----
+    print("\nMX switch")
+    Mw2 = dict(world)
+    mxb = [m for n, m in world if n == "mx-mx-body"]
+    ok = bool(mxb)
+    if ok:
+        vb = np.asarray(mxb[0].V)
+        # plate face must be the front flat, body inboard of it
+        front = -V.FACET_FLAT + P.MX_PLATE_T
+        seated = vb[:, 1].min() >= front - 0.6
+        print(f"  {'PASS' if seated else 'FAIL':4s} body sits behind the plate face   "
+              f"y_min {vb[:, 1].min():.2f} vs {front:.2f}")
+        if not seated:
+            fails.append("MX body pokes through the front flat")
+        cut_ok = abs(P.MX_CUT - 14.1) < 1e-6 and abs(P.MX_PLATE_T - 1.5) < 1e-6
+        print(f"  {'PASS' if cut_ok else 'FAIL':4s} v1 plate spec kept              "
+              f"{P.MX_CUT} cutout in a {P.MX_PLATE_T} plate")
+        if not cut_ok:
+            fails.append("MX plate spec drifted from v1")
+    else:
+        fails.append("MX switch is not placed at all")
+        print("  FAIL switch not placed")
+
     # ---- connectivity: nothing printed may float ----
     # The arm read as "broken" because the elbow had a plate on one side
     # only. A bounds-touch graph catches that class of thing directly: every
     # printed part must come within fastening distance of another.
     print("\nconnectivity (printed parts, bounds proximity)")
     printed = [(n, m) for n, m in world
-               if not n.startswith(("pan-", "sh-", "el-", "hd-"))]
+               if not n.startswith(("pan-", "sh-", "el-", "hd-", "mx-"))]
     Bp = {n: m.bounds() for n, m in printed}
     def near(a, b, tol=1.6):
         return all(min(a[i+3], b[i+3]) - max(a[i], b[i]) > -tol for i in range(3))

@@ -138,6 +138,8 @@ def l2_spots():
     return [(LINK2_OUT_START + 8, -LINK_W / 2 + 6),
             (LINK2_OUT_START + 8, LINK_W / 2 - 6), (47.0, 0.0)]
 
+MX_Z_CONST = 24.0        # switch plate-face height on the front flat
+FACET_FLAT = 71.0        # y of the front/back flats
 SEG = 96
 
 COLORS = {
@@ -223,16 +225,27 @@ def tub():
     # back +Y) so the MX switch and the USB port get clean rectangular
     # openings in flat wall instead of ragged holes in a curve -- the
     # reference base does exactly this for its side port.
-    FACET_Y = 66.0
+    # A facet is a CHORD, not a guillotine. The first version differenced
+    # everything beyond y = -66 out of the finished ring -- but the wall
+    # lives at r 74.5..77.5, so the whole front wall is beyond 66 and the
+    # cut deleted it, leaving an open mouth with the MX frame floating in
+    # front of nothing. Each shell stayed watertight, so nothing complained.
+    # Chord the OUTER at F and the INNER at F - wall, and the flat keeps a
+    # full-thickness wall behind it.
+    FACET_Y = 71.0
     from shapely.geometry import box as _box
-    def _facets(prof):
-        cut_n = _box(-60, -95, 60, -FACET_Y)
-        cut_p = _box(-60, FACET_Y, 60, 95)
-        return prof.difference(cut_n).difference(cut_p)
+    def _flat(prof, f):
+        return prof.difference(_box(-95, -95, 95, -f)).difference(
+                               _box(-95, f, 95, 95))
 
     # wall openings, all expressed in XY + a z band:
-    mx_win  = _box(-P.MX_CUT / 2, -95, P.MX_CUT / 2, -FACET_Y + 1.5)
-    mx_rel  = _box(-P.MX_BODY_SQ / 2, -95, P.MX_BODY_SQ / 2, -FACET_Y - P.MX_PLATE_T)
+    # MX: the switch clips into a plate EXACTLY MX_PLATE_T thick, so the
+    # front flat is thinned to 1.5 over the switch footprint and the 14.1
+    # cutout goes through that. Behind it the wall opens to MX_BODY_SQ so
+    # the latches have somewhere to spring.
+    mx_win  = _box(-P.MX_CUT / 2, -95, P.MX_CUT / 2, 95)
+    mx_rel  = _box(-P.MX_BODY_SQ / 2, -95, P.MX_BODY_SQ / 2,
+                   -FACET_Y + P.MX_PLATE_T)
     usb_win = _box(-P.USB_PLUG_W / 2, FACET_Y - 8.0, P.USB_PLUG_W / 2, 95)
     mic_hole = affinity.translate(pl.circle(P.MIC_PORT_D, 24), -74.0, 0.0)
     mic_hole = mic_hole.union(_box(-80, -P.MIC_PORT_D / 2, -70, P.MIC_PORT_D / 2))
@@ -240,9 +253,10 @@ def tub():
         affinity.rotate(_box(60.0, -1.1, 80.0, 1.1), a, origin=(0, 0))
         for a in (-18, -12, -6, 0, 6, 12, 18)])
 
+    MX_Z = MX_Z_CONST
     WALL_OPEN = [
-        (mx_win,  22.0, 22.0 + P.MX_CUT),        # switch snaps into the plate
-        (mx_rel,  20.0, 20.0 + P.MX_BODY_SQ + 2.0),   # relief behind the plate
+        (mx_win,  MX_Z, MX_Z + P.MX_CUT),        # switch snaps into the plate
+        (mx_rel,  MX_Z - 1.0, MX_Z + P.MX_BODY_SQ + 1.0),  # latch relief
         (usb_win, FLOOR + 2.1, FLOOR + 2.1 + P.USB_PLUG_H),
         (mic_hole, 26.0, 26.0 + P.MIC_PORT_D),
         (grille,   8.0, 26.0),
@@ -252,15 +266,15 @@ def tub():
         za = TUB_H * k / steps
         zb = TUB_H * (k + 1) / steps + (OVL if k < steps - 1 else 0.0)
         o = od(za)
-        ring = _facets(pl.ring2d(pl.circle(o, 160),
-                                 pl.circle(o - 2 * TUB_WALL, 160)))
+        ring = _flat(pl.circle(o, 160), FACET_Y).difference(
+               _flat(pl.circle(o - 2 * TUB_WALL, 160), FACET_Y - TUB_WALL))
         cuts = unary_union([g for g, zl, zh in WALL_OPEN
                             if zl <= za + 0.01 and zh >= zb - 0.01] or
                            [Polygon()])
         ring = ring.difference(cuts)
         if not ring.is_empty:
             m += pl.prism(ring, za, zb)
-    m += pl.prism(_facets(pl.circle(od(0.4), 160)), 0.0, FLOOR)   # floor
+    m += pl.prism(_flat(pl.circle(od(0.4), 160), FACET_Y), 0.0, FLOOR)  # floor
 
     # ---- the rear crown: the bulged / non-bulged split the pan RANGE asks
     # for. The MG996R sweeps 180 degrees, all of it over the +Y front, so
@@ -293,9 +307,14 @@ def tub():
 
     # MX plate boss: the 1.5 plate the switch clips into is the facet itself;
     # a frame around the relief stiffens it from inside
-    frame = _box(-P.MX_BODY_SQ / 2 - 3, -FACET_Y + P.MX_PLATE_T,
-                 P.MX_BODY_SQ / 2 + 3, -FACET_Y + P.MX_PLATE_T + 2.6)
-    m += pl.prism(frame, FLOOR - OVL, 44.0)   # grounded, no over-air
+    frame = _box(-P.MX_BODY_SQ / 2 - 3.5, -FACET_Y + P.MX_PLATE_T,
+                 P.MX_BODY_SQ / 2 + 3.5, -FACET_Y + P.MX_PLATE_T + 3.0)
+    # The bore must go THROUGH the frame: mx_rel stops at the frame's front
+    # face, so it relieved the wall and then the switch's pins drove
+    # straight into the stiffener behind it.
+    mx_bore = _box(-P.MX_BODY_SQ / 2, -95, P.MX_BODY_SQ / 2, -52.0)
+    m += pl.banded(frame, FLOOR - OVL, 46.0,
+                   [(mx_bore, MX_Z - 1.5, MX_Z + P.MX_BODY_SQ + 1.5)])
     # USB tunnel: solid land bridging facet to the board edge, plug cavity cut
     tun = _box(-P.USB_PLUG_W / 2 - 2.4, 59.0, P.USB_PLUG_W / 2 + 2.4, FACET_Y + OVL)
     cav = _box(-P.USB_PLUG_W / 2, 58.0, P.USB_PLUG_W / 2, FACET_Y + 1)
@@ -387,6 +406,15 @@ def disc():
     thr = pl.circle(P.M3_CLEAR, 24)
 
     openings = _horn_recess_openings(face, (0.0, 0.0), DISC_Z0, DISC_T)
+    # ANNULAR relief for the pan servo's secondary case hump. The hump is
+    # fixed to the case while the disc turns over it, so a local pocket
+    # would only clear at one angle -- the sweep audit found the disc
+    # grounding on it at every step except 0 and +/-90. A groove at the
+    # hump's radius clears it through the whole rotation.
+    HUMP_R0, HUMP_R1, HUMP_TOP = 12.0, 26.0, 47.9
+    openings.append((pl.ring2d(pl.circle(2 * HUMP_R1, 96),
+                               pl.circle(2 * HUMP_R0, 96)),
+                     DISC_Z0 - OVL, HUMP_TOP))
     openings += [
         (kidney, DISC_Z0 - OVL, DISC_Z0 + DISC_T + OVL),
         (thr, DISC_Z0 - OVL, DISC_Z0 + DISC_T + OVL),
@@ -396,21 +424,10 @@ def disc():
     for (ix, iy) in _tower_bolts():
         openings.append((affinity.translate(pl.circle(P.M3_INSERT_D, 24), ix, iy),
                          DISC_Z0 - OVL, DISC_Z0 + DISC_T + OVL))
-    # Platter arcs, cut CLEAR THROUGH: a raised hub clashed with the tower
-    # base; an engraved groove over-airs its ceiling when the show face
-    # prints down. A through slot has neither failure mode, prints clean in
-    # both orientations, and matches the reference's vent language. Two
-    # rings of four 70-degree arcs, outside the tower base's 43 mm corners.
-    for gd, w in ((98.0, 3.2), (114.0, 3.2)):
-        ringc = pl.ring2d(pl.circle(gd + w, 128), pl.circle(gd - w, 128))
-        for k in range(4):
-            a0 = 10.0 + k * 90.0
-            wed = Polygon([(0, 0)] + [
-                (95.0 * math.cos(math.radians(a0 + t * 70.0 / 20)),
-                 95.0 * math.sin(math.radians(a0 + t * 70.0 / 20)))
-                for t in range(21)])
-            openings.append((ringc.intersection(wed),
-                             DISC_Z0 - OVL, DISC_Z0 + DISC_T + OVL))
+    # No arc vents. They were styling on the ONE face that has to stay a
+    # clean bearing surface and a clean top, and they read as busy rather
+    # than machined. The platter is plain; the crown and the link skeletons
+    # carry the visual language instead.
     m += pl.banded(face, DISC_Z0, DISC_Z0 + DISC_T, openings)
 
     # rim skirt: hides the joint and locates the disc round the rim

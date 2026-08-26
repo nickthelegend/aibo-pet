@@ -141,6 +141,20 @@ def world_items():
         mm.rotate_y(90.0)
         mm.translate(dx=xc + V.HEAD_HALF, dz=z_hd)
         out.append((f"hd-{n2}", mm, c2))
+    # ---- the MX switch and its keycap, in the front flat ----
+    # MX_Z and the 71 flat come from v2_parts; the switch's plate face sits
+    # on the OUTER surface, so the body hangs inward and the stem+cap point
+    # out at -Y.
+    mx = CO.mx_switch()
+    zs = np.vstack([np.asarray(mm.V) for _n, mm, _c in mx])
+    lo = zs.min(axis=0); hi = zs.max(axis=0)
+    for n2, mm, c2 in mx:
+        q = mm.copy()
+        q.translate(dx=-(lo[0] + hi[0]) / 2, dy=-(lo[1] + hi[1]) / 2, dz=-lo[2])
+        q.rotate_x(-90.0)          # stem +Z -> -Y, out through the front
+        q.translate(dy=-V.FACET_FLAT + P.MX_PLATE_T,
+                    dz=V.MX_Z_CONST + P.MX_BODY_SQ / 2)
+        out.append((f"mx-{n2}", q, c2))
     return out
 
 
