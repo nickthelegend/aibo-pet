@@ -34,47 +34,45 @@ def world_items():
         out.append((n, m.copy(), c))
 
     z_sh = V.DISC_Z0 + V.DISC_T + V.TWR_AXIS_Z
+    z_el = z_sh + V.L1
+    z_hd = z_el + V.L2
 
-    # ---- link1: plates flat in XY -> stand up. local X (length) -> world Z,
-    # local Z (thickness) -> world X. rotate_y(-90) does exactly that.
-    x_in = V.TWR_W / 2.0 + V.GAP_FIT                # 18.85 inner face
+    # ---- link1. Plates flat in XY; rotate_y(-90) maps length->+Z and
+    # thickness->-X, so a plate's local z0 face lands at the translate dx.
+    # Where the z0 face (the one carrying the recess or the boss web) must
+    # face -X we add rotate_z(180), which mirrors x and y.
     for n, m, c in V.link1():
         q = m.copy()
-        if n.endswith("-spacers") or n.endswith("-ledges"):
-            continue          # assembly hardware; lives in the print plates
         q.rotate_y(-90.0)
-        if n.endswith("-in"):
-            q.translate(dx=x_in + V.PLATE_T, dz=z_sh)
-        else:
-            q.translate(dx=-x_in, dz=z_sh)
+        if n == "v2-link1-in":
+            q.rotate_z(180.0)
+            q.translate(dx=V.L1_IN_HALF, dz=z_sh)      # plate 25.75..29.75
+        elif n == "v2-link1-out":
+            q.translate(dx=-V.L1_OUT_HALF, dz=z_sh)    # plate -30.15..-26.15
+        elif n == "v2-link1-spacers":
+            q.translate(dx=V.L1_IN_HALF - 0.2, dz=z_sh)
+        elif n == "v2-link1-ledges":
+            q.translate(dx=V.L1_IN_HALF - 0.05, dz=z_sh)
         out.append((n, q, c))
 
-    z_el = z_sh + V.L1
-
-    # ---- link2: drive plate -X (recess on the elbow horn), truncated
-    # idler plate +X clear of the servo tail's swept annulus
+    # ---- link2: drive -X (recess toward +X onto the elbow horn), idler +X
     for n, m, c in V.link2():
         q = m.copy()
-        if n.endswith("-spacers"):
-            continue
         q.rotate_y(-90.0)
-        if n.endswith("-in"):
-            q.translate(dx=-V.LINK2_HALF, dz=z_el)
-        else:
-            q.translate(dx=V.LINK2_OUT_HALF + V.PLATE_T, dz=z_el)
+        if n == "v2-link2-in":
+            q.translate(dx=-V.L2_IN_HALF, dz=z_el)     # plate -34.45..-30.45
+        elif n == "v2-link2-out":
+            q.rotate_z(180.0)
+            q.translate(dx=V.L2_OUT_HALF + V.PLATE_T, dz=z_el)  # 30.05..34.05
+        elif n == "v2-link2-spacers":
+            q.translate(dx=V.L2_OUT_HALF - 0.2, dz=z_el)
         out.append((n, q, c))
-
-    z_hd = z_el + V.L2
 
     # ---- head block between link2's plates at the far end; the tail is
     # asymmetric with the plates, so it shifts by half the difference
-    xc = (V.LINK2_OUT_HALF - V.LINK2_HALF) / 2.0
+    xc = (V.L2_OUT_HALF - V.L2_IN_HALF) / 2.0
     for n, m, c in V.head_block():
         q = m.copy()
-        # rotate_x(90): (x,y,z)->(x,-z,y). Nose (local +Y) turns to +Z, along
-        # the link; the SG axis at local y=22 lands at world z = 22, so one
-        # translate puts it on z_hd. Height (local z 0..30) becomes y -30..0,
-        # recentred with dy=+15.
         q.rotate_x(90.0)
         q.translate(dx=xc, dy=15.0, dz=z_hd - 22.0)
         out.append((n, q, c))
@@ -87,6 +85,57 @@ def world_items():
     sm.rotate_x(180.0)
     sm.translate(dx=xc, dz=z_hd)
     out.append((sname, sm, scol))
+
+    # ---- the hardware that visually and physically closes the joints ----
+    scr = V.v2_screw()[0][1].copy()
+    scr.rotate_y(90.0)
+    scr.translate(dx=-(V.L1_OUT_HALF + V.PLATE_T + 3.2), dz=z_sh)
+    out.append(("v2-screw", scr, V.COLORS["v2-accent"]))
+
+    cap = V.v2_trimcap()[0][1].copy()
+    cap.rotate_y(90.0)
+    cap.translate(dx=-(V.L2_IN_HALF + V.PLATE_T + 3.2), dz=z_el)
+    out.append(("v2-trimcap", cap, V.COLORS["v2-accent"]))
+
+    # ---- the servos themselves: the joints read as connected because the
+    # thing that connects them is finally in the picture ----
+    import components as CO
+    import numpy as np
+    def servo(kind):
+        parts = CO.mg996r() if kind == "mg" else CO.sg90()
+        ms = [(n2, mm.copy(), c2) for n2, mm, c2 in parts]
+        return ms
+    def spline_xy(ms):
+        V2 = np.vstack([np.asarray(mm.V) for _n, mm, _c in ms])
+        top = V2[V2[:, 2] > V2[:, 2].max() - 2.0]
+        return float(top[:, 0].mean()), float(top[:, 1].mean()), float(V2[:, 2].max())
+    # pan: spline up on (0,0), body on the tub floor
+    ms = servo("mg"); sx, sy, _t = spline_xy(ms)
+    for n2, mm, c2 in ms:
+        mm.translate(dx=-sx, dy=-sy, dz=V.FLOOR)
+        out.append((f"pan-{n2}", mm, c2))
+    # shoulder: spline +X, tip at +26.15 (case top 21.45 + 4.7)
+    ms = servo("mg"); sx, sy, t = spline_xy(ms)
+    for n2, mm, c2 in ms:
+        mm.translate(dx=-sx, dy=-sy, dz=-t)
+        mm.rotate_y(90.0)
+        mm.translate(dx=V.CASE_TOP + 4.7, dz=z_sh)
+        out.append((f"sh-{n2}", mm, c2))
+    # elbow: spline -X, tip at -30.85 (case top -26.15 - 4.7)
+    ms = servo("mg"); sx, sy, t = spline_xy(ms)
+    for n2, mm, c2 in ms:
+        mm.translate(dx=-sx, dy=-sy, dz=-t)
+        mm.rotate_z(180.0)
+        mm.rotate_y(-90.0)
+        mm.translate(dx=-(V.L1_OUT_HALF + 4.7), dz=z_el)
+        out.append((f"el-{n2}", mm, c2))
+    # head: SG90 height along X, spline tip flush with the nose face
+    ms = servo("sg"); sx, sy, t = spline_xy(ms)
+    for n2, mm, c2 in ms:
+        mm.translate(dx=-sx, dy=-sy, dz=-t)
+        mm.rotate_y(90.0)
+        mm.translate(dx=xc + V.HEAD_HALF, dz=z_hd)
+        out.append((f"hd-{n2}", mm, c2))
     return out
 
 
