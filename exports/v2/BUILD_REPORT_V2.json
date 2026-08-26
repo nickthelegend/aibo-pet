@@ -5,7 +5,7 @@
    "plate": "v2-plate-1-base",
    "size_mm": [
     214.4,
-    212.7,
+    221.0,
     67.8
    ]
   },
@@ -21,8 +21,16 @@
    "plate": "v2-plate-3-head",
    "size_mm": [
     236.6,
-    221.0,
-    72.0
+    224.0,
+    60.1
+   ]
+  },
+  {
+   "plate": "v2-plate-4-cone",
+   "size_mm": [
+    100.0,
+    204.0,
+    86.0
    ]
   }
  ],
@@ -30,7 +38,6 @@
   "v2-head",
   "v2-link1-in",
   "v2-link1-out",
-  "v2-trimcap",
   "v2-tub"
  ],
  "engagement": {

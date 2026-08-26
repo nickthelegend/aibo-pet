@@ -65,6 +65,7 @@ def main():
         #   cross arms are 6.8 wide and bridge wall to wall.
         if a > asup.MIN_AREA and n not in ("shade", "v2-head",
                                            "v2-screw", "v2-trimcap",
+                                           "v2-caphead",
                                            "v2-tub", "v2-link1-out",
                                            "v2-link1-in"):
             fails.append(f"{n}: {a:.0f} mm2 over air in print pose")
@@ -79,7 +80,12 @@ def main():
     rng = np.random.default_rng(9)
     pairs = 0
     def component(nm):
-        for pre in ("pan-", "sh-", "el-", "hd-", "mx-"):
+        # Every component model is a union of overlapping shells, so its own
+        # sub-meshes intersect by construction: an ESP32's module sits on its
+        # PCB, a speaker's cone inside its frame. Group by FAMILY and skip
+        # same-family pairs; cross-family pairs stay fully checked.
+        for pre in ("pan-", "sh-", "el-", "hd-", "mx-",
+                    "esp32-", "amp-", "mic-", "spk-"):
             if nm.startswith(pre):
                 return pre
         return None
@@ -103,6 +109,19 @@ def main():
         engaged = {frozenset(("v2-tower", "v2-screw")),
                    frozenset(("v2-link1-in", "v2-screw-elbow")),
                    frozenset(("v2-link2-out", "v2-screw-elbow"))}
+        # A horn EXISTS to occupy two things at once: its servo's spline and
+        # the recess it drives. Those are the joint working, not a clash.
+        HORN_OK = {
+            "horn-pan": ("pan-", "v2-disc"),
+            "horn-shoulder": ("sh-", "v2-tower", "v2-link1-in"),
+            "horn-elbow": ("el-", "v2-link1-out", "v2-link2-in"),
+            "horn-head": ("hd-", "v2-head", "shade"),
+        }
+        for hn, oks in HORN_OK.items():
+            if hn in (x, y):
+                other = y if x == hn else x
+                if other.startswith(tuple(oks)):
+                    n_in = 0
         if frozenset((x, y)) in engaged or n_in <= 5:
             n_in = 0
         flag = "" if n_in == 0 else f"  CLASH {n_in}"
@@ -147,8 +166,6 @@ def main():
         ("elbow servo tail inside the sandwich",
          V.L1_IN_HALF - V.ELBOW_TAIL, 1.0, "mm"),
         ("stub axle engage into link bore", P.SCREW_ENGAGE, 4.0, "mm"),
-        ("trim cap plug clears hub bore",
-         V.HUB_BORE - (V.HUB_BORE - 0.25), 0.2, "mm"),
     ]
     # shade yoke inner gap vs head block width, measured off the meshes
     import part_head
@@ -188,36 +205,57 @@ def main():
         print(f"  {'PASS' if ok else 'FAIL':4s} {name:34s} {val:6.2f} mm "
               f"(want {lo2}..{hi2})")
 
-    # ---- MX switch: does it actually clip in? ----
-    print("\nMX switch")
-    Mw2 = dict(world)
-    mxb = [m for n, m in world if n == "mx-mx-body"]
-    ok = bool(mxb)
-    if ok:
-        vb = np.asarray(mxb[0].V)
-        # plate face must be the front flat, body inboard of it
-        front = -V.FACET_FLAT + P.MX_PLATE_T
-        seated = vb[:, 1].min() >= front - 0.6
-        print(f"  {'PASS' if seated else 'FAIL':4s} body sits behind the plate face   "
-              f"y_min {vb[:, 1].min():.2f} vs {front:.2f}")
-        if not seated:
-            fails.append("MX body pokes through the front flat")
-        cut_ok = abs(P.MX_CUT - 14.1) < 1e-6 and abs(P.MX_PLATE_T - 1.5) < 1e-6
-        print(f"  {'PASS' if cut_ok else 'FAIL':4s} v1 plate spec kept              "
-              f"{P.MX_CUT} cutout in a {P.MX_PLATE_T} plate")
-        if not cut_ok:
-            fails.append("MX plate spec drifted from v1")
+    # ---- MX switch: does it actually clip into the turret top? ----
+    # Mesh-probed, not assumed: the plate band must be SOLID beside the
+    # cutout and OPEN inside it, the relief hollow under the plate, and the
+    # pod solid outside the relief wall. A probe list that cannot tell those
+    # apart would pass a turret with no pocket at all.
+    print("\nMX switch (turret top, mesh probed)")
+    tub_m = dict(world)["v2-tub"]
+    cx, cy = V.MXC
+    zp = V.MX_PLATE_Z + 0.7           # inside the 1.5 plate band
+    zr = 50.0                          # inside the relief band
+    probes = [
+        ("plate solid beside the cutout", (cx, cy - (P.MX_CUT / 2 + 0.6), zp), True),
+        ("cutout open for the clips",     (cx, cy, zp), False),
+        ("relief hollow under the plate", (cx, cy, zr), False),
+        ("pod solid outside the relief",  (cx, cy - (P.MX_BODY_SQ / 2 + 1.2), zr), True),
+        ("wire bore open below",          (cx, cy, 36.0), False),
+        ("top face solid at the rim",     (cx + 12.0, cy, V.TR_TOP - 0.7), True),
+    ]
+    for lbl, pt, want in probes:
+        got = bool(ST.inside(tub_m, np.array([pt], dtype=float))[0])
+        ok = got == want
+        if not ok:
+            fails.append(f"MX turret: {lbl} (solid={got}, wanted {want})")
+        print(f"  {'PASS' if ok else 'FAIL':4s} {lbl:32s} solid={got}")
+    stem_up = [m for n, m in world if n == "mx-mx-stem"]
+    if stem_up:
+        vb = np.asarray(stem_up[0].V)
+        ok = vb[:, 2].min() >= V.TR_TOP - 1e-6
+        print(f"  {'PASS' if ok else 'FAIL':4s} {'stem points UP from the fixed pod':32s} "
+              f"z_min {vb[:, 2].min():.1f}")
+        if not ok:
+            fails.append("MX stem does not stand clear of the turret top")
     else:
         fails.append("MX switch is not placed at all")
         print("  FAIL switch not placed")
+    cut_ok = abs(P.MX_CUT - 14.1) < 1e-6 and abs(P.MX_PLATE_T - 1.5) < 1e-6
+    print(f"  {'PASS' if cut_ok else 'FAIL':4s} v1 plate spec kept              "
+          f"{P.MX_CUT} cutout in a {P.MX_PLATE_T} plate")
+    if not cut_ok:
+        fails.append("MX plate spec drifted from v1")
 
     # ---- connectivity: nothing printed may float ----
     # The arm read as "broken" because the elbow had a plate on one side
     # only. A bounds-touch graph catches that class of thing directly: every
     # printed part must come within fastening distance of another.
     print("\nconnectivity (printed parts, bounds proximity)")
+    # v2-keycap holds onto the SWITCH stem, which is hardware, so the
+    # printed-to-printed graph would always report it floating
     printed = [(n, m) for n, m in world
-               if not n.startswith(("pan-", "sh-", "el-", "hd-", "mx-"))]
+               if not n.startswith(("pan-", "sh-", "el-", "hd-", "mx-",
+                                    "v2-keycap"))]
     Bp = {n: m.bounds() for n, m in printed}
     def near(a, b, tol=1.6):
         return all(min(a[i+3], b[i+3]) - max(a[i], b[i]) > -tol for i in range(3))

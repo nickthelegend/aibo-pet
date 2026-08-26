@@ -11,7 +11,7 @@ The joint stack, +X is the drive side everywhere:
             depth; carried as a measured number in the audit, not a hope.
   idlers    every -X side rides a printed threaded stub + yoke-screw, v1's
             proven pair, unchanged.
-  head      SG90 in the head block between link2's plates; the v1 cone shade
+  head      MG996R in the head block between link2's plates; the cone shade
             drops onto the same interface it always had.
 """
 from __future__ import annotations
@@ -20,7 +20,12 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import numpy as np
+
+import components as CO
 import params as P
+import part_head
+import part_horn
 import partlib as pl
 import v2_parts as V
 
@@ -78,7 +83,6 @@ def world_items():
         out.append((n, q, c))
 
     # ---- the v1 cone shade, unchanged, on the head axis
-    import part_head
     sname, smesh, scol = part_head.build()[0]
     sm = smesh.copy()
     sm.translate(dz=-part_head.TILT)
@@ -97,36 +101,56 @@ def world_items():
     scr2.translate(dx=V.L2_OUT_HALF + V.PLATE_T + 3.2, dz=z_el)
     out.append(("v2-screw-elbow", scr2, V.COLORS["v2-accent"]))
 
-    cap = V.v2_trimcap()[0][1].copy()
-    cap.rotate_y(90.0)
-    cap.translate(dx=-(V.L2_IN_HALF + V.PLATE_T + 3.2), dz=z_el)
-    out.append(("v2-trimcap", cap, V.COLORS["v2-accent"]))
+    # No trim cap at the elbow. Its job was to plug the hub bore -- but the
+    # HORN occupies that bore, which is the whole point of the joint, and
+    # the cap was driving 4 mm into it. A cosmetic part that fights the
+    # drive train is not worth a redesign, and deleting it takes a piece off
+    # the plate rather than adding one.
 
-    # ---- the servos themselves: the joints read as connected because the
-    # thing that connects them is finally in the picture ----
-    import components as CO
-    import numpy as np
+    # ---- the real printed horns: what actually carries torque from each
+    # spline into its plate. v1's part_horn, unchanged.
+    HORNS = {n: m for n, m, _c in part_horn.build()}
+    HC = V.COLORS["v2-accent"]
+    hp = HORNS["horn-mg996r"].copy()
+    hp.rotate_x(180.0)
+    hp.translate(dz=V.DISC_Z0 + (P.HORN_T + P.HORN_FIT))
+    out.append(("horn-pan", hp, HC))
+    hs = HORNS["horn-mg996r"].copy()
+    hs.rotate_y(90.0)
+    hs.translate(dx=V.DRIVE_CHEEK[1] - 1.0, dz=z_sh)
+    out.append(("horn-shoulder", hs, HC))
+    he = HORNS["horn-mg996r"].copy()
+    he.rotate_y(-90.0)
+    he.translate(dx=-(V.L1_OUT_HALF + V.BOSS_WALL), dz=z_el)
+    out.append(("horn-elbow", he, HC))
+    hh = HORNS["horn-mg996r"].copy()
+    hh.rotate_y(90.0)
+    # cross face at the COUNTERBORE floor, exactly like the shoulder cheek:
+    # 1.0 into the nose face buys the same 1.7 of spline in the socket
+    hh.translate(dx=xc + V.HEAD_HALF - V.HEAD_CBORE_T, dz=z_hd)
+    out.append(("horn-head", hh, HC))
+
+    # ---- the servos: the joints read as connected because the thing that
+    # connects them is in the picture ----
     def servo(kind):
-        parts = CO.mg996r() if kind == "mg" else CO.sg90()
-        ms = [(n2, mm.copy(), c2) for n2, mm, c2 in parts]
-        return ms
+        return [(n2, mm.copy(), c2)
+                for n2, mm, c2 in (CO.mg996r() if kind == "mg" else CO.sg90())]
+
     def spline_xy(ms):
         V2 = np.vstack([np.asarray(mm.V) for _n, mm, _c in ms])
         top = V2[V2[:, 2] > V2[:, 2].max() - 2.0]
         return float(top[:, 0].mean()), float(top[:, 1].mean()), float(V2[:, 2].max())
-    # pan: spline up on (0,0), body on the tub floor
-    ms = servo("mg"); sx, sy, _t = spline_xy(ms)
+
+    ms = servo("mg"); sx, sy, t = spline_xy(ms)
     for n2, mm, c2 in ms:
         mm.translate(dx=-sx, dy=-sy, dz=V.FLOOR)
         out.append((f"pan-{n2}", mm, c2))
-    # shoulder: spline +X, tip at +26.15 (case top 21.45 + 4.7)
     ms = servo("mg"); sx, sy, t = spline_xy(ms)
     for n2, mm, c2 in ms:
         mm.translate(dx=-sx, dy=-sy, dz=-t)
         mm.rotate_y(90.0)
         mm.translate(dx=V.CASE_TOP + 4.7, dz=z_sh)
         out.append((f"sh-{n2}", mm, c2))
-    # elbow: spline -X, tip at -30.85 (case top -26.15 - 4.7)
     ms = servo("mg"); sx, sy, t = spline_xy(ms)
     for n2, mm, c2 in ms:
         mm.translate(dx=-sx, dy=-sy, dz=-t)
@@ -134,27 +158,72 @@ def world_items():
         mm.rotate_y(-90.0)
         mm.translate(dx=-(V.L1_OUT_HALF + 4.7), dz=z_el)
         out.append((f"el-{n2}", mm, c2))
-    # head: SG90 height along X, spline tip flush with the nose face
-    ms = servo("sg"); sx, sy, t = spline_xy(ms)
+    ms = servo("mg"); sx, sy, t = spline_xy(ms)
     for n2, mm, c2 in ms:
         mm.translate(dx=-sx, dy=-sy, dz=-t)
         mm.rotate_y(90.0)
-        mm.translate(dx=xc + V.HEAD_HALF, dz=z_hd)
+        # spline tip at the DERIVED station the pockets were cut for --
+        # HEAD_HALF is the drive face, 0.7 short of the tip, and using it
+        # here sank the whole servo 0.7 into the pocket floor
+        mm.translate(dx=xc + V.HEAD_SPLINE_TIP, dz=z_hd)
         out.append((f"hd-{n2}", mm, c2))
-    # ---- the MX switch and its keycap, in the front flat ----
-    # MX_Z and the 71 flat come from v2_parts; the switch's plate face sits
-    # on the OUTER surface, so the body hangs inward and the stem+cap point
-    # out at -Y.
-    mx = CO.mx_switch()
-    zs = np.vstack([np.asarray(mm.V) for _n, mm, _c in mx])
-    lo = zs.min(axis=0); hi = zs.max(axis=0)
-    for n2, mm, c2 in mx:
+
+    # ---- the real electronics, on the stations the tub builds ----
+    for parts, xy, z, rz in (
+            (CO.esp32_s3(),   V.ESP_XY, V.FLOOR + V.ESP_POST, V.ESP_ROT),
+            (CO.max98357a(),  V.AMP_XY, V.FLOOR + V.AMP_POST, 0.0),
+            (CO.inmp441(),    V.MIC_XY, V.MIC_Z, 90.0)):
+        for n2, mm, c2 in parts:
+            q = mm.copy()
+            if rz:
+                q.rotate_z(rz)
+            q.translate(dx=xy[0], dy=xy[1], dz=z)
+            out.append((n2, q, c2))
+    # Speaker on edge against the +X wall, cone facing out. rotate_y(90)
+    # then rotate_x(90) maps local (x,y,z) -> world (z, x, y): the 40 mm
+    # length lands along Y between the rails, the 20 mm width stands up in
+    # Z, and the cone axis points +X at the grille. The first attempt used
+    # rotate_z after rotate_y and put the frame 8 mm below the tub floor.
+    for n2, mm, c2 in CO.speaker2040():
         q = mm.copy()
-        q.translate(dx=-(lo[0] + hi[0]) / 2, dy=-(lo[1] + hi[1]) / 2, dz=-lo[2])
-        q.rotate_x(-90.0)          # stem +Z -> -Y, out through the front
-        q.translate(dy=-V.FACET_FLAT + P.MX_PLATE_T,
-                    dz=V.MX_Z_CONST + P.MX_BODY_SQ / 2)
+        q.rotate_y(90.0)
+        q.rotate_x(90.0)
+        q.translate(dx=V.SPK_XY[0], dy=V.SPK_XY[1], dz=V.SPK_Z)
+        out.append((n2, q, c2))
+
+    # ---- the MX switch, in the turret top, stem UP ----
+    # The component's own origin is the clip-plate top, which is exactly
+    # V.TR_TOP: no rotation at all, the switch drops straight in. The body
+    # hangs into the pod's relief, the pins into the wire bore.
+    for n2, mm, c2 in CO.mx_switch():
+        q = mm.copy()
+        q.translate(dx=V.MXC[0], dy=V.MXC[1], dz=V.TR_TOP)
         out.append((f"mx-{n2}", q, c2))
+
+    # printed keycap over the stem: stem pocket ceiling rests on the stem
+    # top; the skirt's inner relief wraps the upper housing without touching
+    kc = V.v2_keycap()[0][1].copy()
+    kc.rotate_x(180.0)
+    kc.translate(dx=V.MXC[0], dy=V.MXC[1],
+                 dz=V.TR_TOP + P.MX_UPPER_H + P.MX_STEM_UP + 1.5)
+    out.append(("v2-keycap", kc, V.COLORS["v2-accent"]))
+
+    # the elbow's blue cap, back on: the joint reads symmetrical again
+    tc = V.v2_trimcap()[0][1].copy()
+    tc.rotate_y(90.0)
+    # cup mouth toward the plate: the pocket swallows the proud hub end
+    tc.translate(dx=-(V.L2_IN_HALF + V.PLATE_T) - 3.2, dz=z_el)
+    out.append(("v2-trimcap", tc, V.COLORS["v2-accent"]))
+
+    # the head hub's cap: RETENTION, not just trim -- glued to the hub, its
+    # flange overlaps the drive plate's drop-in slot rails, closing the path
+    # the shade came in by. Its own keyhole slot points up: it drops down
+    # the corridor between the drive plate and link2-out.
+    tc2 = V.v2_caphead()[0][1].copy()
+    tc2.rotate_y(-90.0)
+    tc2.translate(dx=xc + V.HEAD_HALF + P.HORN_HUB_T - V.HEAD_CBORE_T + 1.2,
+                  dz=z_hd)
+    out.append(("v2-caphead", tc2, V.COLORS["v2-accent"]))
     return out
 
 
@@ -164,7 +233,8 @@ def print_items():
     out = []
     for n, m, c in (V.tub() + V.disc() + V.tower() + V.link1() + V.link2()
                     + V.head_block() + V.clamp_bars()
-                    + V.v2_screw() + V.v2_trimcap()):
+                    + V.v2_screw() + V.v2_trimcap() + V.v2_caphead()
+                    + V.v2_keycap() + V.v2_horns()):
         q = m.copy()
         if n == "v2-disc":
             q.rotate_x(180.0)          # skirt up -> face down, prints flat
@@ -180,7 +250,6 @@ def print_items():
         q.translate(dz=-b[2])
         out.append((n, q))
     # the shade prints exactly as v1 ships it
-    import part_head
     sn, sm, _sc = part_head.build()[0]
     q = sm.copy(); b = q.bounds(); q.translate(dz=-b[2])
     out.append(("shade", q))

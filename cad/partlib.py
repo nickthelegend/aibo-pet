@@ -626,6 +626,13 @@ def banded(profile, z0, z1, openings):
     solid neighbours stop EXACTLY at the opening edge -- their cap faces are
     the opening's floor and ceiling. Bands at z0/z1 are not stretched past
     the part's own extent.
+
+    The stretch is masked by the neighbour's own profile. Where two openings
+    ABUT in z -- a pin relief whose ceiling is a pocket's floor -- an
+    unmasked stretch would lay the lower band's solid across the upper
+    opening's floor and plug it. Intersecting with the neighbour keeps the
+    stretch to where both bands are solid, which is the only place fusing
+    was ever needed.
     """
     marks = {z0, z1}
     for _g, a, b in openings:
@@ -634,19 +641,29 @@ def banded(profile, z0, z1, openings):
         if z0 < b < z1:
             marks.add(b)
     zs = sorted(marks)
-    m = Mesh()
-    for a, b in zip(zs[:-1], zs[1:]):
-        if b - a < 1e-6:
-            continue
+    bands = [(a, b) for a, b in zip(zs[:-1], zs[1:]) if b - a >= 1e-6]
+    cuts = []
+    for a, b in bands:
         act = [g for g, oa, ob in openings if oa <= a + 1e-6 and ob >= b - 1e-6]
-        if act:
-            lo = a - OVL if a > z0 else a
-            hi = b + OVL if b < z1 else b
-            cut = profile.difference(unary_union(act))
-            if not cut.is_empty:
-                m += prism(cut, lo, hi)
-        else:
+        cuts.append(profile.difference(unary_union(act)) if act else profile)
+
+    m = Mesh()
+    for i, (a, b) in enumerate(bands):
+        cut = cuts[i]
+        if cut.is_empty:
+            continue
+        if cut is profile:                       # solid band: never stretched
             m += prism(profile, a, b)
+            continue
+        m += prism(cut, a, b)
+        if a > z0:                               # down into the band below
+            ov = cut.intersection(cuts[i - 1])
+            if not ov.is_empty:
+                m += prism(ov, a - OVL, min(a + OVL, b))
+        if b < z1:                               # up into the band above
+            ov = cut.intersection(cuts[i + 1])
+            if not ov.is_empty:
+                m += prism(ov, max(b - OVL, a), b + OVL)
     return m
 
 

@@ -386,11 +386,11 @@ CONVERGE_Z    = 28.0   # yoke plates -> tube (inner edge travels 25.45 @ 42 deg)
 # Proper Pixar cone: wide mouth, long taper, apex behind. The tilt pivot sits
 # BEHIND the cone (where the taper is narrower than the servo housing) -- that
 # is the only place a yoke can straddle a cone without burying itself in it.
-SHADE_OD      = 66.0   # mouth outer diameter
-SHADE_APEX_D  = 20.0   # diameter at the back of the taper
-SHADE_DEPTH   = 52.0   # mouth -> back of taper
+SHADE_OD      = 88.0   # mouth outer diameter
+SHADE_APEX_D  = 44.0   # diameter at the back of the taper
+SHADE_DEPTH   = 62.0   # mouth -> back of taper
 SHADE_WALL    = 1.6    # thin on purpose: it hangs off an SG90
-SHADE_COLLAR  = 10.0   # outward flare tying the yoke plates to the cone
+SHADE_COLLAR  = 18.0   # outward flare tying the yoke plates to the cone
 # Was 60.0, which put the cone's apex 8 mm from the head pivot while the
 # head cup's cap is 35 mm across and reaches ~18 mm out. The shade's collar
 # and yoke arm ran straight through the cap: 779 mm3 of solid overlap, found

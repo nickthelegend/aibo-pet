@@ -37,6 +37,7 @@ from shapely.geometry import Polygon, box
 from shapely.ops import unary_union
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import components as CO
 import params as P
 import partlib as pl
 
@@ -114,10 +115,34 @@ LINK2_OUT_START = 32.0
 HUB_BORE = P.HORN_HUB_D + P.HORN_FIT
 ELBOW_TAIL = -26.15 + P.MG_H     # +16.75, must stay inside L1_IN_HALF
 
-# head: nose sized to the shade's MEASURED 37.3 yoke gap; tail spans link2
-HEAD_HALF = 18.3
+# head: the tilt joint is an MG996R too, so the robot is ONE servo part
+# number in four places -- one spare covers every joint, one horn fits
+# everywhere, and the head no longer runs a 29.5 case where a 42.9 one has
+# to reach. The nose half-width is the servo's own reach: case bottom to
+# spline tip is MG_SHAFT_TOP, measured from the case CENTRE that is
+# 26.15 -- the identical number link1's outer plate already sits at.
+HEAD_SHAFT_Y = 22.0                      # nose-local station of the tilt axis
+HEAD_SHAFT_Z = 15.0
+# The nose's drive face is the DRIVE CHEEK plane, not the spline tip. Putting
+# it at the tip looks right and is wrong: the horn's socket is bored from its
+# cross face, so a horn seated flush on the tip engages ZERO spline. The
+# shoulder gets this right by standing its cheek 0.7 short of the tip and
+# counterboring 1.0 into it, which buys 1.7 of spline in the socket and 1.5
+# of cross in the plate's recess. The head now uses the identical stack --
+# same faces, same numbers, same horn.
+HEAD_HALF = DRIVE_CHEEK[1]                             # 25.45, the drive face
+HEAD_SPLINE_TIP = P.MG_SHAFT_TOP - P.MG_H / 2          # 26.15, 0.7 proud
+HEAD_CBORE_D = 20.0
+HEAD_CBORE_T = 1.0
 HEAD_TAIL_W = L2_IN_HALF + L2_OUT_HALF - 2 * GAP_FIT   # 59.7
-HEAD_NOSE_LEN = 26.0
+# The tail is as wide as the sandwich, so anywhere it reaches, the shade's
+# yoke cannot. It stops below the yoke's lowest sweep instead of running the
+# full nose depth.
+HEAD_TAIL_TOP = 8.0
+# 24.5, not 26: the enlarged shade's apex-side ring (O44.6) closes over
+# the head at world 297.5, and a 26 nose topped out at 298.5 -- the cone's
+# open end bit 1.0 into the nose's upper corners.
+HEAD_NOSE_LEN = 24.5
 HEAD_BLOCK_H = 30.0
 
 # Standoff and ledge positions, shared by the plates (through-holes), the
@@ -138,8 +163,48 @@ def l2_spots():
     return [(LINK2_OUT_START + 8, -LINK_W / 2 + 6),
             (LINK2_OUT_START + 8, LINK_W / 2 - 6), (47.0, 0.0)]
 
-MX_Z_CONST = 24.0        # switch plate-face height on the front flat
+# Board stations: one definition, used by the tub's posts AND by the
+# assembly that drops the real components onto them.
+# The ESP32's USB connectors live on the +X SHORT edge of the board, and
+# the old charge window sat in the FRONT wall -- pointed at the board's
+# side, where no plug could ever reach a port. Rotating the board to face
+# the window does not fit either: wall to pan-servo collar is 57 and the
+# board is 64. So the board stays long-axis-X, slides +16 toward the right
+# wall, and the charge opening moves to the +X wall as a recessed well in
+# line with the connectors. Reach from wall surface to port face is 12.7.
+# y=33, not 40: the +X+Y corner of the 64 x 30 board reaches r 67.9 there,
+# 1.3 inside the pebble wall at PCB height -- at 40 it was r 72.9, in the
+# wall. The -Y edge at 18 still clears the pan clamp bosses, which top out
+# at y 17.15.
+ESP_XY = (16.0, 33.0)
+ESP_ROT = 0.0
+ESP_POST = 10.0          # > 8.5 of ESP32-S3 pin
+AMP_XY = (-40.0, -34.0)
+AMP_POST = 7.5           # > 6.0 of amp pin
+# y=-6: the charge well's walls own y 16..50 on this side; at y=0 the
+# speaker's +Y edge (20) sat 4 inside them. x=54: the pebble foot pulls the
+# wall in to r 65.7 at z=4, and at x=58 the shifted frame's -Y corner
+# reached r 68.6 -- inside the foot. 54 keeps the whole footprint at
+# r <= 64.9.
+SPK_XY = (54.0, -6.0)
+SPK_Z = 14.0             # 20 mm tall on edge; keeps it off the 2.4 floor
+# x=-63.5: the wall's bulge leans IN over the old -66 pocket (inner face
+# r72 at the pocket mouth vs a board edge at r73.5), so the mic could never
+# be lowered into it. 2.5 inboard clears the lean the whole way down.
+MIC_XY = (-63.5, 0.0)
+MIC_Z = 26.0
 FACET_FLAT = 71.0        # y of the front/back flats
+
+# The MX button rides the TURRET: a solid pod grown out of the rear wall and
+# crown, with the switch dropped into its TOP face, stem up. The button is
+# part of the FIXED base -- the disc turns, the button does not -- which is
+# the only arrangement where "press the top of the base" works at every pan
+# angle. The old front-wall mount is gone.
+MXC = (0.0, -87.25)      # switch centre, in the turret top
+TR_R0, TR_R1 = 77.5, 97.0
+TR_A0, TR_A1 = 256.0, 284.0
+TR_TOP = 56.0            # same height as the crown cap
+MX_PLATE_Z = TR_TOP - P.MX_PLATE_T     # 54.5, the 1.5 clip plate
 SEG = 96
 
 COLORS = {
@@ -243,23 +308,23 @@ def tub():
     # front flat is thinned to 1.5 over the switch footprint and the 14.1
     # cutout goes through that. Behind it the wall opens to MX_BODY_SQ so
     # the latches have somewhere to spring.
-    mx_win  = _box(-P.MX_CUT / 2, -95, P.MX_CUT / 2, 95)
-    mx_rel  = _box(-P.MX_BODY_SQ / 2, -95, P.MX_BODY_SQ / 2,
-                   -FACET_Y + P.MX_PLATE_T)
-    usb_win = _box(-P.USB_PLUG_W / 2, FACET_Y - 8.0, P.USB_PLUG_W / 2, 95)
+    # USB charge well in the +X wall, in line with the board's connector
+    # edge; spans BOTH ports (26 across) plus clearance
+    usb_win = _box(48.9, ESP_XY[1] - 15.0, 95.0, ESP_XY[1] + 15.0)
+    # MX lead: from under the turret pocket, through rear wall and bulge
+    wire_win = _box(-4.0, -95, 4.0, -66.0)
     mic_hole = affinity.translate(pl.circle(P.MIC_PORT_D, 24), -74.0, 0.0)
     mic_hole = mic_hole.union(_box(-80, -P.MIC_PORT_D / 2, -70, P.MIC_PORT_D / 2))
     grille = unary_union([
         affinity.rotate(_box(60.0, -1.1, 80.0, 1.1), a, origin=(0, 0))
         for a in (-18, -12, -6, 0, 6, 12, 18)])
 
-    MX_Z = MX_Z_CONST
+    USB_Z0 = FLOOR + ESP_POST + 1.4 - 2.4          # below the port slab
     WALL_OPEN = [
-        (mx_win,  MX_Z, MX_Z + P.MX_CUT),        # switch snaps into the plate
-        (mx_rel,  MX_Z - 1.0, MX_Z + P.MX_BODY_SQ + 1.0),  # latch relief
-        (usb_win, FLOOR + 2.1, FLOOR + 2.1 + P.USB_PLUG_H),
+        (usb_win, USB_Z0, USB_Z0 + P.USB_PLUG_H + 1.6),
         (mic_hole, 26.0, 26.0 + P.MIC_PORT_D),
         (grille,   8.0, 26.0),
+        (wire_win, 26.0, 34.0),
     ]
     steps = 40
     for k in range(steps):
@@ -290,41 +355,81 @@ def tub():
              200.0 * math.sin(math.radians(a0 + t * (a1 - a0) / 40)))
             for t in range(41)]
         return _Poly(pts)
+    # The crown parts at the turret: its ring through 256..284 would run
+    # straight across the pod's switch relief (795 probe points inside
+    # crown and MX body at once). The pod carries that sector's wall.
     CR_IR, CR_OR = 78.2, 81.2
-    sec = _sector(195.0, 345.0)
-    mx_gap = _box(-P.MX_BODY_SQ / 2 - 4, -95, P.MX_BODY_SQ / 2 + 4, -60)
+    sec = _sector(195.0, TR_A0).union(_sector(TR_A1, 345.0))
     for k in range(28):
         za = 56.0 * k / 28.0
         zb = 56.0 * (k + 1) / 28.0 + (OVL if k < 27 else 0.0)
         ro = CR_OR if za >= 8.0 else CR_OR - (8.0 - za) * 1.1
         ring = pl.ring2d(pl.circle(2 * ro, 160), pl.circle(2 * CR_IR, 160))
         ring = ring.intersection(sec)
-        # the MX switch keeps its window: the crown parts around it, which
-        # reads as the reference's deliberate rear port valley
-        ring = ring.difference(mx_gap)
         if not ring.is_empty:
             m += pl.prism(ring, za, zb)
 
-    # MX plate boss: the 1.5 plate the switch clips into is the facet itself;
-    # a frame around the relief stiffens it from inside
-    frame = _box(-P.MX_BODY_SQ / 2 - 3.5, -FACET_Y + P.MX_PLATE_T,
-                 P.MX_BODY_SQ / 2 + 3.5, -FACET_Y + P.MX_PLATE_T + 3.0)
-    # The bore must go THROUGH the frame: mx_rel stops at the frame's front
-    # face, so it relieved the wall and then the switch's pins drove
-    # straight into the stiffener behind it.
-    mx_bore = _box(-P.MX_BODY_SQ / 2, -95, P.MX_BODY_SQ / 2, -52.0)
-    m += pl.banded(frame, FLOOR - OVL, 46.0,
-                   [(mx_bore, MX_Z - 1.5, MX_Z + P.MX_BODY_SQ + 1.5)])
-    # USB tunnel: solid land bridging facet to the board edge, plug cavity cut
-    tun = _box(-P.USB_PLUG_W / 2 - 2.4, 59.0, P.USB_PLUG_W / 2 + 2.4, FACET_Y + OVL)
-    cav = _box(-P.USB_PLUG_W / 2, 58.0, P.USB_PLUG_W / 2, FACET_Y + 1)
-    m += pl.banded(tun, FLOOR - OVL, FLOOR + 2.1 + P.USB_PLUG_H + 2.4,
-                   [(cav, FLOOR + 2.1, FLOOR + 2.1 + P.USB_PLUG_H)])
+    # ---- the button turret: the reference base's rear pod, load-bearing ----
+    # A solid sector pod fused across crown and wall bulge, flat on top at
+    # the crown's own 56. The MX switch drops into that top face exactly the
+    # way it used to clip into the front flat -- same 1.5 plate, same 14.1
+    # cutout, same 16 latch relief -- but rotated flat, so the key faces UP
+    # from the fixed part of the base. Its lead runs down a bore inside the
+    # pod and through the rear wall at 26..34, under the skirt's lowest
+    # point (39.5), so the path never crosses anything that rotates.
+    tsec = _sector(TR_A0, TR_A1)
+    mx_sq = _box(MXC[0] - P.MX_CUT / 2, MXC[1] - P.MX_CUT / 2,
+                 MXC[0] + P.MX_CUT / 2, MXC[1] + P.MX_CUT / 2)
+    mx_re = _box(MXC[0] - P.MX_BODY_SQ / 2, MXC[1] - P.MX_BODY_SQ / 2,
+                 MXC[0] + P.MX_BODY_SQ / 2, MXC[1] + P.MX_BODY_SQ / 2)
+    vwire = affinity.translate(pl.circle(8.0, 24), *MXC)
+    T_OPEN = [
+        (mx_sq, MX_PLATE_Z, TR_TOP + OVL),
+        (mx_re, 44.0, MX_PLATE_Z),
+        (vwire, 28.0, 44.0 + OVL),
+        (wire_win, 26.0, 34.0),
+    ]
+    # Bands are split at every opening edge. A fixed 2 mm grid missed the
+    # 54.5 plate line: the 54..56 band carried no active opening, and the
+    # mesh probe found the "cutout" solid.
+    marks = sorted({0.0, 2.0, 4.0, 6.0, 8.0, 26.0, 28.0, 34.0, 44.0,
+                    MX_PLATE_Z, TR_TOP})
+    for za, zb in zip(marks[:-1], marks[1:]):
+        ro = TR_R1 if za >= 8.0 else TR_R1 - (8.0 - za) * 1.1
+        ring = pl.ring2d(pl.circle(2 * ro, 160), pl.circle(2 * TR_R0, 160))
+        ring = ring.intersection(tsec)
+        cuts = unary_union([g for g, zl, zh in T_OPEN
+                            if zl <= za + 0.01 and zh >= zb - 0.01] or
+                           [Polygon()])
+        ring = ring.difference(cuts)
+        if not ring.is_empty:
+            m += pl.prism(ring, za, zb + (OVL if zb < TR_TOP else 0.0))
+
+    # USB well: a solid land from just past the board edge into the +X
+    # wall, with the plug cavity cut through it in line with the ports. The
+    # wall opening (usb_win) opens the curved shell; this well walls the
+    # passage so the plug cannot wander into the tub.
+    USB_Z0 = FLOOR + ESP_POST + 1.4 - 2.4
+    tun = _box(49.6, ESP_XY[1] - 17.0, 64.0, ESP_XY[1] + 17.0)
+    cav = _box(48.9, ESP_XY[1] - 14.5, 80.0, ESP_XY[1] + 14.5)
+    m += pl.banded(tun, FLOOR - OVL, USB_Z0 + P.USB_PLUG_H + 1.6 + 2.4,
+                   [(cav, USB_Z0, USB_Z0 + P.USB_PLUG_H + 1.6)])
     # mic cradle behind its port
-    mic_boss = affinity.translate(pl.circle(P.MIC_D + 3.2, 48), -66.0, 0.0)
-    mic_pock = affinity.translate(pl.circle(P.MIC_D + 2 * P.MIC_FIT, 48), -66.0, 0.0)
+    # The INMP441 breakout is a 15 x 12.6 CARD, so the cradle is rectangular.
+    # A round pocket sized on MIC_D held the board's midline and let all four
+    # corners bury themselves in the boss wall.
+    mic_l, mic_w = P.MIC_D + 2 * P.MIC_FIT, 12.6 + 2 * P.MIC_FIT
+    mcx = MIC_XY[0]
+    mic_pock = _box(mcx - mic_l / 2, -mic_w / 2, mcx + mic_l / 2, mic_w / 2)
+    mic_boss = _box(mcx - mic_l / 2 - 2.4, -mic_w / 2 - 2.4,
+                    mcx + mic_l / 2 + 2.4, mic_w / 2 + 2.4)
+    # the pocket floor IS the seat: the breakout's bottom face lands on it at
+    # MIC_Z, and its pins -- 6 long -- drop through a relief below that, which
+    # a 22.0 floor did not have (they buried 2 mm into solid boss).
+    mic_pin = affinity.translate(pl.circle(7.0, 24), mcx, 0.0)
     m += pl.banded(mic_boss.difference(_box(-95, -20, -73, 20)), FLOOR - OVL, 38.0,
-                   [(mic_pock, 22.0, 38.0 + OVL)])
+                   [(mic_pock, MIC_Z, 38.0 + OVL),
+                    (mic_pin, MIC_Z - 8.0, MIC_Z + OVL)])
 
     # Disc retention is the pan horn's centre M3, full stop. A clip system
     # was tried and produced three unsolvable conflicts (a radial screw
@@ -359,16 +464,31 @@ def tub():
             m += pl.prism(bos.difference(bor), FLOOR - OVL, PAN_TAB_Z + 6.0)
 
     # ---- electronics, on the floor, v1 footprints ----
-    def posts(cx, cy, dx, dy):
+    def posts(cx, cy, offs, h_post):
+        """Standoffs tall enough that the board's THROUGH-HOLE PINS clear the
+        floor. An ESP32-S3's pins hang 8.5 below its PCB and the amp's 6.0;
+        5 mm posts would have driven both straight into the tub floor.
+
+        The offsets are given per board rather than as a symmetric inset,
+        because a rectangle inset from the PCB edge lands ON the header
+        strips: the ESP32's two rows own y +/-12.1..14.7 for the board's
+        whole length, and the amp's single row owns y -8.7..-6.1. A 5.4 post
+        under either one holds the board up by its connectors."""
         pp = pl.Mesh()
-        for ex, ey in ((-1, -1), (-1, 1), (1, -1), (1, 1)):
-            p = (cx + ex * dx / 2, cy + ey * dy / 2)
+        for ox, oy in offs:
+            p = (cx + ox, cy + oy)
             b = affinity.translate(pl.circle(5.4, 24), *p)
-            h = affinity.translate(pl.circle(P.M2_PILOT, 16), *p)
-            pp += pl.prism(b.difference(h), FLOOR - OVL, FLOOR + 5.0)
+            hh = affinity.translate(pl.circle(P.M2_PILOT, 16), *p)
+            pp += pl.prism(b.difference(hh), FLOOR - OVL, FLOOR + h_post)
         return pp
-    m += posts(0.0, 44.0, P.ESP_L - 5, P.ESP_W - 5)             # ESP32-S3
-    m += posts(-38.0, -40.0, P.AMP_L - 4, P.AMP_W - 4)          # MAX98357A
+    # ESP32-S3: inboard of the header rows (|y| <= 12.1 - 2.7 post radius)
+    # +X pair sits at +26.5, not +29.5: the charge well's land begins at
+    # 49.6 and a post at 45.5 reached into it
+    m += posts(*ESP_XY, [(ox, sy * 8.5) for ox in (-29.5, 26.5)
+                         for sy in (-1, 1)], ESP_POST)
+    # MAX98357A: its one row is along -Y, so both pairs sit above it
+    m += posts(*AMP_XY, [(sx * 7.5, oy) for sx in (-1, 1)
+                         for oy in (6.0, -2.5)], AMP_POST)
 
     # speaker against +X wall: two rails + open back grille (v1 lesson: the
     # pocket stays open behind the driver)
@@ -377,9 +497,9 @@ def tub():
     # stood on the void (58 mm2, found at r70 by the over-air audit). On the
     # flat floor there is nothing to hang over. The wall grille lands in the
     # electronics pass, aimed at this seat.
-    sx0 = 58.0
+    sx0 = SPK_XY[0]
     for sy in (-1, 1):
-        y_in = sy * (P.SPK_L / 2 + 0.4)
+        y_in = SPK_XY[1] + sy * (P.SPK_L / 2 + 0.4)
         rail = box(sx0 - 3.0, min(y_in, y_in + sy * 3.0),
                    sx0 + P.SPK_T + 1.2, max(y_in, y_in + sy * 3.0))
         m += pl.prism(rail, FLOOR - OVL, FLOOR + 26.0)
@@ -673,18 +793,51 @@ def link2():
 
 
 # ----------------------------------------------------------------- head ----
+def head_pockets(fit=P.MG_FIT):
+    """The MG996R's cavity in the head, taken from the SERVO MESH.
+
+    Every other servo pocket in this file is a hand-derived box list, and
+    each one cost a rebuild when a face was transcribed instead of derived
+    -- the first head pocket had the SG90's length and width swapped and put
+    1218 probe points inside servo and nose at once. So this reads the real
+    component's own sub-part bounds and maps them into the head's frame.
+
+    The servo lies height-along-X, the one orientation whose spline can span
+    the nose wall. Servo-local (x, y, z) -> head-local:
+
+        head x = z - MG_SHAFT_TOP + HEAD_HALF     (spline tip on the +X face)
+        head y = (HEAD_SHAFT_Y + SPL_X) - x       (length along -Y)
+        head z = y + HEAD_SHAFT_Z                 (width along Z)
+
+    Returns (openings, floor_z). Every pocket is cut OPEN TO THE TOP: the
+    servo is dropped straight down into the nose, and a boss channel bored
+    blind through the +X wall would have to be threaded on sideways with the
+    case already seated, which is not a motion a hand can make. The wall at
+    the boss is 0.7 thick anyway -- it was never carrying load.
+    """
+    spl_x = -(P.MG_L / 2.0 - P.MG_SHAFT_OFF)      # -10.35, spline centre
+    out, floor = [], None
+    for n, mm, _c in CO.mg996r():
+        if n.endswith("-label"):
+            continue                              # printed sticker, not solid
+        b = mm.bounds()
+        hx0 = b[2] - P.MG_SHAFT_TOP + HEAD_SPLINE_TIP
+        hx1 = b[5] - P.MG_SHAFT_TOP + HEAD_SPLINE_TIP
+        hy0 = (HEAD_SHAFT_Y + spl_x) - b[3]
+        hy1 = (HEAD_SHAFT_Y + spl_x) - b[0]
+        hz0 = b[1] + HEAD_SHAFT_Z
+        floor = hz0 - fit if floor is None else min(floor, hz0 - fit)
+        out.append(box(hx0 - fit, hy0 - fit, hx1 + fit, hy1 + fit))
+    return out, floor
+
+
 def head_block():
-    """Nose carries the v1 shade on the SG90 axis; tail bolts between
-    link2's plates.
+    """Nose carries the shade on the tilt axis; tail bolts between link2's
+    plates.
 
     Local frame: X width, Y depth (tail y -13..13, nose y 9..35), Z height
     0..30. In world it is rotated x+90, so local (x,y,z) lands at
-    (x, 15-z, z_head-22+y). The SG axis is local (.,22,15).
-
-    The SG90 lies height-along-X: case bottom at x=-17.2, spline tip flush
-    with the nose's +X face at 18.3 through a 3.0 wall -- 35.5 total, which
-    is the one orientation the servo actually reaches through. The first
-    cut pointed its LENGTH along the pocket and the spline at a wall.
+    (x, 15-z, z_head-22+y). The tilt axis is local (., 22, 15).
 
     Tail screws: link2's plates bolt through at world (y=+/-10, z_head-22),
     which is local (y=0, z=5) and (z=25). Those are 2.8 x 3.2 tunnels cut
@@ -694,44 +847,41 @@ def head_block():
     # HEAD_TAIL_W already nets out the running fit; subtracting it again
     # here left the tail rattling 0.8 per side (the contact row caught it)
     tail_w = HEAD_TAIL_W
-    D = 26.0
-    tail = pl.rounded_rect(tail_w, D, 5.0)
-    # screw tunnels as z-bands cut across the full tail
-    tun = box(-tail_w / 2 - OVL, -1.4, tail_w / 2 + OVL, 1.4)
-    # the SG's lower length end reaches local y < 13, i.e. INTO the tail
-    # band, so the tail carries the same case and tab cuts as the nose
-    case_t = box(-17.6, 4.5, 12.7, 28.3)
-    tabs_t = box(-4.6, -0.5, 1.4, 33.0)
-    hump_t = box(12.3 - OVL, 8.5, 15.5, 14.2)
-    m += pl.banded(tail, 0.0, HEAD_BLOCK_H, [
-        (tun, 3.4, 6.6), (tun, 23.4, 26.6),
-        (case_t, 8.5, HEAD_BLOCK_H + OVL),
-        (tabs_t, 8.5, HEAD_BLOCK_H + OVL),
-        (hump_t, 12.9, 17.1)])
+    D = HEAD_NOSE_LEN
+    pockets, floor = head_pockets()
+    # the servo's lower length end reaches local y < 13, i.e. INTO the tail
+    # band, so the tail carries the same cuts as the nose. The lead's own
+    # pocket is one of them, and it is run OUT through the +Y wall: a servo
+    # whose cable has nowhere to go does not seat, however well the case fits.
+    cuts = [(g, floor, HEAD_BLOCK_H + OVL) for g in pockets]
+    cuts.append((box(-9.0, D - 4.0 + 1.0, -3.0, D + 10.0), 11.0,
+                 HEAD_BLOCK_H + OVL))
 
+    tail_d = HEAD_TAIL_TOP + D / 2.0
+    tail = affinity.translate(pl.rounded_rect(tail_w, tail_d, 5.0),
+                              0.0, HEAD_TAIL_TOP - tail_d / 2.0)
+    tun = box(-tail_w / 2 - OVL, -1.4, tail_w / 2 + OVL, 1.4)
+    m += pl.banded(tail, 0.0, HEAD_BLOCK_H,
+                   [(tun, 3.4, 6.6), (tun, 23.4, 26.6)] + cuts)
+
+    # nose: the drive face carries the horn's counterbore, exactly as the
+    # shoulder cheek does, so the cross sits 1.0 in and the socket swallows
+    # 1.7 of spline
     nose = affinity.translate(pl.rounded_rect(2 * HEAD_HALF, D, 5.0), 0, D - 4.0)
-    # The SG90 sits height-along-X (the only orientation whose spline spans
-    # the wall), which puts its LENGTH along local Y and its WIDTH along
-    # local Z. The first pocket had length and width swapped and the sweep
-    # put 1218 points inside servo and nose at once.
-    #   case:   x -17.6..12.7,  y 4.5..28.3,  z 8.5 .. open top
-    #   tabs:   thin x column at -1.3, poking past both length ends
-    #   boss:   x 12.7..15.4 round-ish channel; spline x 15.4..18.4
-    case = box(-17.6, 4.5, 12.7, 31.5)      # +31.5: the lead exits up here
-    tabs = box(-4.6, -0.5, 1.4, 33.0)
-    bossc = box(12.7 - OVL, 22 - 4.4, 15.4, 22 + 4.4)
-    hump = box(12.3 - OVL, 8.5, 15.5, 14.2)
-    spl = box(15.4 - OVL, 22 - 2.8, HEAD_HALF + OVL, 22 + 2.8)
-    m += pl.banded(nose, 0.0, HEAD_BLOCK_H, [
-        (case, 8.5, HEAD_BLOCK_H + OVL),
-        (tabs, 8.5, HEAD_BLOCK_H + OVL),
-        (bossc, 15.0 - 4.4, 15.0 + 4.4),
-        (hump, 12.9, 17.1),
-        (spl, 15.0 - 2.8, 15.0 + 2.8),
-    ])
-    ax = pl.prism(pl.circle(P.AXLE_D, 48), 0.0, P.AXLE_LEN + OVL)
+    cb = affinity.translate(pl.circle(HEAD_CBORE_D, 48),
+                            HEAD_HALF - HEAD_CBORE_T, HEAD_SHAFT_Y)
+    cb = cb.intersection(box(HEAD_HALF - HEAD_CBORE_T, -99, 99, 99))
+    m += pl.banded(nose, 0.0, HEAD_BLOCK_H, cuts + [
+        (cb, HEAD_SHAFT_Z - HEAD_CBORE_D / 2, HEAD_SHAFT_Z + HEAD_CBORE_D / 2)])
+
+    # idler stub: 4 long, so it fills the shade's bore without reaching
+    # link2's inner face. ANNULAR: the shade's keyhole slot is open toward
+    # the yoke tip, so an M3 + washer self-tapped down this pilot is what
+    # keeps the plate on the stub when the head nods.
+    ax = pl.prism(pl.ring2d(pl.circle(P.AXLE_D, 48), pl.circle(2.8, 16)),
+                  0.0, 4.0 + OVL)
     ax.rotate_y(-90.0)
-    ax.translate(dx=-HEAD_HALF + OVL, dy=22.0, dz=15.0)
+    ax.translate(dx=-HEAD_HALF + OVL, dy=HEAD_SHAFT_Y, dz=HEAD_SHAFT_Z)
     m += ax
     return [("v2-head", m, COLORS["v2-tower"])]
 
@@ -757,11 +907,67 @@ def v2_screw():
 def v2_trimcap():
     """The elbow's matching cap: same slotted face, a plug that glues into
     the steady bore after the horn's M3 is home. Cosmetic, and honest about
-    it -- the slot turns nothing here."""
+    it -- the slot turns nothing here.
+
+    No plug at all: the horn's hub end stands 2.0 PROUD of the plate's
+    outer face (probed, not assumed -- the first cap was modelled against
+    an imagined recessed hub and drove 4 mm into the real one). The cap is
+    a shallow CUP: its rim glues to the plate around the bore, and the
+    proud hub end lives inside the pocket with 0.3 all round."""
     m = pl.Mesh()
-    m += pl.prism(_slot_head(32.0), 0.0, 3.2)
-    m += pl.prism(pl.circle(HUB_BORE - 0.25, 48), 3.2 - OVL, 3.2 + 2.4)
+    head = _slot_head(32.0)
+    pocket = pl.circle(P.HORN_HUB_D + 0.6, 48)
+    m += pl.banded(head, 0.0, 3.2, [(pocket, 0.9, 3.2 + OVL)])
     return [("v2-trimcap", m, COLORS["v2-accent"])]
+
+
+def v2_caphead():
+    """The head hub's blue cap. Same family as the elbow cup, different
+    constraints: link2-out stands 1.3 outboard of its face, so it cannot
+    arrive along the axis at all -- it DROPS down the 4.5 corridor between
+    the shade's drive plate and link2-out, and a keyhole slot lets it pass
+    over the hub on the way. Glued to the hub, its flange overlaps the
+    drive plate's own drop-in slot rails, which is what keeps the shade
+    from sliding back off the joint. Retention that looks like trim.
+
+    O26, not 32: it must fit the corridor and still cover the slot rails
+    (13.3 slot under a 26 flange leaves 6.3 of overlap each side)."""
+    m = pl.Mesh()
+    head = _slot_head(26.0)
+    pocket = pl.circle(P.HORN_HUB_D + 0.6, 48)
+    slot = box(0.0, -(P.HORN_HUB_D + 0.6) / 2, 14.0, (P.HORN_HUB_D + 0.6) / 2)
+    m += pl.banded(head, 0.0, 3.2, [(pocket.union(slot), 0.9, 3.2 + OVL)])
+    return [("v2-caphead", m, COLORS["v2-accent"])]
+
+
+def v2_keycap():
+    """The MX keycap, printed: a 17 square hat. Inner stem pocket grips the
+    7.2 stem boss; a wider skirt relief clears the 15.6 upper housing so
+    the cap can bottom out without ever touching it. Printed top-face-down,
+    exactly as modelled."""
+    m = pl.Mesh()
+    cap = pl.rounded_rect(17.0, 17.0, 3.0)
+    stem = pl.rounded_rect(P.MX_STEM_SQ + 0.2, P.MX_STEM_SQ + 0.2, 0.4)
+    skirt = pl.rounded_rect(P.MX_UPPER_SQ + 0.6, P.MX_UPPER_SQ + 0.6, 0.8)
+    m += pl.banded(cap, 0.0, 6.0, [
+        (stem, 1.5, 4.6),
+        (skirt, 4.6, 6.0 + OVL),
+    ])
+    return [("v2-keycap", m, COLORS["v2-accent"])]
+
+
+def v2_horns():
+    """Four printed MG996R horns on one strip -- pan, shoulder, elbow, head.
+    They were never on a plate: every joint's drive assumed a printed horn
+    that the zip did not contain."""
+    import part_horn
+    horn = {n: mm for n, mm, _c in part_horn.build()}["horn-mg996r"]
+    m = pl.Mesh()
+    for i in range(4):
+        q = horn.copy()
+        q.translate(dx=(i % 2) * 52.0, dy=(i // 2) * 52.0)
+        m += q
+    return [("v2-horns", m, COLORS["v2-accent"])]
 
 
 def clamp_bars():

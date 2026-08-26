@@ -204,14 +204,19 @@ def mx_switch():
     body and pins hang below, stem stands proud. The cap goes over the stem."""
     up = P.MX_UPPER_SQ
     parts = [("mx-upper", _b(up, up, 0.0, P.MX_UPPER_H, r=0.6), C["pcb-black"]),
+             # the body NECKS at the plate: 15 square below, 13.9 through
+             # the 14.1 cutout -- that neck is what the clips grip
              ("mx-body", _b(P.MX_BODY_SQ - 1.0, P.MX_BODY_SQ - 1.0,
-                            -P.MX_BODY_DROP, 0.0, r=0.6), C["white"])]
+                            -P.MX_BODY_DROP, -P.MX_PLATE_T, r=0.6), C["white"]),
+             ("mx-neck", _b(P.MX_CUT - 0.2, P.MX_CUT - 0.2,
+                            -P.MX_PLATE_T, 0.0, r=0.4), C["white"])]
     stem = P.MX_UPPER_H
     parts.append(("mx-stem", _b(P.MX_STEM_SQ, P.MX_STEM_SQ, stem,
                                 stem + P.MX_STEM_UP, r=0.4), C["keycap"]))
-    for sx in (-2.5, 2.5):
-        parts.append(("mx-pins", _b(0.9, 0.5, -P.MX_BODY_DROP - P.MX_PIN_DROP,
-                                    -P.MX_BODY_DROP, cx=sx), C["metal"]))
+    for tag, sx in (("l", -2.5), ("r", 2.5)):
+        parts.append((f"mx-pins-{tag}",
+                      _b(0.9, 0.5, -P.MX_BODY_DROP - P.MX_PIN_DROP,
+                         -P.MX_BODY_DROP, cx=sx), C["metal"]))
     return parts
 
 
