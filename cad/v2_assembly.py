@@ -92,6 +92,11 @@ def world_items():
     scr.translate(dx=-(V.L1_OUT_HALF + V.PLATE_T + 3.2), dz=z_sh)
     out.append(("v2-screw", scr, V.COLORS["v2-accent"]))
 
+    scr2 = V.v2_screw()[0][1].copy()
+    scr2.rotate_y(-90.0)
+    scr2.translate(dx=V.L2_OUT_HALF + V.PLATE_T + 3.2, dz=z_el)
+    out.append(("v2-screw-elbow", scr2, V.COLORS["v2-accent"]))
+
     cap = V.v2_trimcap()[0][1].copy()
     cap.rotate_y(90.0)
     cap.translate(dx=-(V.L2_IN_HALF + V.PLATE_T + 3.2), dz=z_el)
@@ -149,8 +154,14 @@ def print_items():
         q = m.copy()
         if n == "v2-disc":
             q.rotate_x(180.0)          # skirt up -> face down, prints flat
-        if n.endswith("-in"):
-            q.rotate_x(180.0)          # horn recess prints UP, not over air
+        # "-in" plates flip so the horn recess prints UP -- EXCEPT link1-in,
+        # whose outer face now grows the elbow's stub axle. Recess and stub
+        # are on opposite faces and only one can face up. The stub wins: it
+        # is a 5.6 vertical boss that prints perfectly standing, while the
+        # recess face-down is a 3.1 pocket bridging between anchored walls.
+        # Flipping it instead stood the whole plate on the stub: 4939 mm2.
+        if n.endswith("-in") and n != "v2-link1-in":
+            q.rotate_x(180.0)
         b = q.bounds()
         q.translate(dz=-b[2])
         out.append((n, q))

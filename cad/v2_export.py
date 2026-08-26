@@ -39,6 +39,7 @@ LAYOUT = {
     "v2-head":         ("v2-plate-3-head", 40.0, 85.0),
     "shade":           ("v2-plate-3-head", -70.0, 85.0),
     "v2-screw":        ("v2-plate-3-head", -12.0, 100.0),
+    "v2-screw-elbow":  ("v2-plate-3-head", 20.0, 100.0),
     "v2-trimcap":      ("v2-plate-3-head", -12.0, 64.0),
 }
 
@@ -117,11 +118,71 @@ def main():
             z.write(os.path.join(EXP, pn + ".stl"), pn + ".stl")
     print(f"hotaru2-plates.zip  {os.path.getsize(zp)/1e6:.1f} MB")
 
-    # GLB of the assembled robot for the site
-    world = [(n, m.V, m.F, c if isinstance(c, str) else "#E9E9EE")
-             for n, m, c in (A.world_items())]
-    write_glb(os.path.join(WEB, "hotaru2.glb"), world)
-    print(f"web/hotaru2.glb  {os.path.getsize(os.path.join(WEB,'hotaru2.glb'))/1e6:.1f} MB")
+    # ---- GLBs: the site hero, and every view the parts viewer offers ----
+    world = A.world_items()
+
+    def _glb(path, items):
+        """The PARTS VIEWER reads partlib's flavour (exploded soup carrying
+        NORMAL); web/gl.js reads export_web's (indexed, normal-free, normals
+        rebuilt in the shader). Writing one file in the other's flavour
+        fails at load with a bufferView error, which is exactly how the v2
+        models first landed in the old viewer. Path decides the writer."""
+        items = [(n, m, c if isinstance(c, str) else "#E9E9EE")
+                 for n, m, c in items]
+        pl.glb_write(path, items)
+        return os.path.getsize(path) / 1e6
+
+    def _glb_web(path, items):
+        write_glb(path, [(n, m.V, m.F, c if isinstance(c, str) else "#E9E9EE")
+                         for n, m, c in items])
+        return os.path.getsize(path) / 1e6
+
+    mb = _glb_web(os.path.join(WEB, "hotaru2.glb"), world)
+    print(f"web/hotaru2.glb  {mb:.1f} MB")
+
+    # printed parts only: the servos are components, not things you print
+    SERVO_PRE = ("pan-", "sh-", "el-", "hd-")
+    printed = [(n, m, c) for n, m, c in world
+               if not n.startswith(SERVO_PRE)]
+    _glb(os.path.join(EXP, "hotaru2-populated.glb"), world)
+    _glb(os.path.join(EXP, "hotaru2-assembled.glb"), printed)
+
+    # exploded: push each part out along the axis it comes apart on. The arm
+    # separates along +Z (it stacks), the base parts along their own radius.
+    import numpy as _np
+    ex = []
+    for n, m, c in printed:
+        q = m.copy()
+        b = q.bounds()
+        cz = (b[2] + b[5]) / 2.0
+        if n in ("v2-tub",):
+            dz = 0.0
+        elif n == "v2-disc":
+            dz = 26.0
+        elif n == "v2-tower":
+            dz = 52.0
+        elif n.startswith("v2-link1"):
+            dz = 78.0
+        elif n.startswith("v2-link2"):
+            dz = 104.0
+        else:
+            dz = 130.0
+        # and fan the sandwich plates apart in X so both faces are visible
+        dx = 0.0
+        if n.endswith("-in"):
+            dx = 34.0
+        elif n.endswith("-out"):
+            dx = -34.0
+        elif n.endswith(("-spacers", "-ledges")):
+            dx = 68.0
+        q.translate(dx=dx, dz=dz)
+        ex.append((n, q, c))
+    _glb(os.path.join(EXP, "hotaru2-exploded.glb"), ex)
+
+    # one GLB per plate, in print pose, so the viewer can show what slices
+    for pn, mesh in plates.items():
+        _glb(os.path.join(EXP, pn + ".glb"), [(pn, mesh, "#E9E9EE")])
+    print(f"GLBs: populated, assembled, exploded, {len(plates)} plates")
 
     report = {
         "audit": "cad/v2_audit.py -- all checks pass",

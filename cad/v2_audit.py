@@ -61,9 +61,12 @@ def main():
         #   anchored on both sides, max span 16.
         #   v2-link1-out: the 1.0-deep case relief's ceiling, anchored all
         #   round its rim.
+        #   v2-link1-in: the horn recess pocket, printed face down; its
+        #   cross arms are 6.8 wide and bridge wall to wall.
         if a > asup.MIN_AREA and n not in ("shade", "v2-head",
                                            "v2-screw", "v2-trimcap",
-                                           "v2-tub", "v2-link1-out"):
+                                           "v2-tub", "v2-link1-out",
+                                           "v2-link1-in"):
             fails.append(f"{n}: {a:.0f} mm2 over air in print pose")
         print(f"{n:18s} {str(r['watertight']):>6s} {'OK' if fit else 'NO':>4s} "
               f"{a:8.1f} {'<-- needs support' if a > asup.MIN_AREA else ''}")
@@ -97,7 +100,9 @@ def main():
         #   tower/screw and link1-out/screw are ENGAGED THREADS -- flanks of
         #   both parts occupy the same annulus on purpose
         #   n <= 2 is sampling noise on a face-to-face contact plane
-        engaged = {frozenset(("v2-tower", "v2-screw"))}
+        engaged = {frozenset(("v2-tower", "v2-screw")),
+                   frozenset(("v2-link1-in", "v2-screw-elbow")),
+                   frozenset(("v2-link2-out", "v2-screw-elbow"))}
         if frozenset((x, y)) in engaged or n_in <= 5:
             n_in = 0
         flag = "" if n_in == 0 else f"  CLASH {n_in}"
@@ -182,6 +187,23 @@ def main():
             fails.append(f"contact {name}: {val:.2f} outside [{lo2},{hi2}]")
         print(f"  {'PASS' if ok else 'FAIL':4s} {name:34s} {val:6.2f} mm "
               f"(want {lo2}..{hi2})")
+
+    # ---- connectivity: nothing printed may float ----
+    # The arm read as "broken" because the elbow had a plate on one side
+    # only. A bounds-touch graph catches that class of thing directly: every
+    # printed part must come within fastening distance of another.
+    print("\nconnectivity (printed parts, bounds proximity)")
+    printed = [(n, m) for n, m in world
+               if not n.startswith(("pan-", "sh-", "el-", "hd-"))]
+    Bp = {n: m.bounds() for n, m in printed}
+    def near(a, b, tol=1.6):
+        return all(min(a[i+3], b[i+3]) - max(a[i], b[i]) > -tol for i in range(3))
+    for n, _m in printed:
+        nb = [o for o, _o in printed if o != n and near(Bp[n], Bp[o])]
+        ok = len(nb) > 0
+        if not ok:
+            fails.append(f"{n} touches nothing -- it would fall off")
+        print(f"  {'PASS' if ok else 'FAIL':4s} {n:20s} {len(nb)} neighbour(s)")
 
     print("=" * 64)
     if fails:

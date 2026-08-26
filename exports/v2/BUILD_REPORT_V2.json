@@ -28,6 +28,7 @@
  ],
  "supports": [
   "v2-head",
+  "v2-link1-in",
   "v2-link1-out",
   "v2-trimcap",
   "v2-tub"

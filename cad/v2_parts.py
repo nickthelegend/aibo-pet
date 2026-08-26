@@ -541,6 +541,9 @@ def _link_plate(name, length, colour, near, far, spots=(), holes_at=()):
             for dy in (-10.0, 10.0):
                 openings.append((affinity.translate(pl.circle(P.M3_CLEAR, 24), x0, dy),
                                  -OVL, PLATE_T + OVL))
+    if "stub" in (near, far):
+        x0 = length if far == "stub" else 0.0
+        keep.append(affinity.translate(pl.circle(30.0, 48), x0, 0))
     for (cx, cy) in tuple(spots) + tuple(holes_at):
         openings.append((affinity.translate(pl.circle(P.M3_CLEAR, 24), cx, cy),
                          -OVL, PLATE_T + OVL))
@@ -549,6 +552,17 @@ def _link_plate(name, length, colour, near, far, spots=(), holes_at=()):
     if not cuts.is_empty:
         openings.append((cuts, -OVL, PLATE_T + OVL))
     m = pl.banded(prof, 0.0, PLATE_T, openings)
+    if "stub" in (near, far):
+        # threaded stub on the OUTER face, so the next link's idler plate
+        # rides it and a yoke-screw traps it -- v1's proven pair
+        x0 = length if far == "stub" else 0.0
+        boss = pl.prism(pl.circle(P.AXLE_D, 48), PLATE_T - OVL, PLATE_T + 0.6)
+        boss.translate(dx=x0)
+        ax = pl.threaded_bore(P.AXLE_D, P.SCREW_MAJOR, P.SCREW_PITCH,
+                              0.0, P.SCREW_ENGAGE, clearance=P.SCREW_FIT / 2)
+        ax.translate(dx=x0, dz=PLATE_T + 0.6 - OVL)
+        m += boss
+        m += ax
     return (name, m, colour)
 
 
@@ -582,7 +596,11 @@ def link1():
         # drive side +X at the shoulder; elbow flips drive to -X. The elbow
         # servo lives ENTIRELY inside the sandwich (tail at +16.75 against an
         # inner face at +25.75), so there is no window and nothing sweeps.
-        _link_plate("v2-link1-in", L1, c, near="recess", far="none",
+        # far end grows the elbow's idler stub: with the elbow servo now
+        # fully inside the sandwich there is nothing proud to dodge, so the
+        # elbow is a real two-sided yoke instead of the single-sided
+        # compromise -- which is why it read as a missing cap.
+        _link_plate("v2-link1-in", L1, c, near="recess", far="stub",
                     spots=l1_spots(), holes_at=l1_ledge_spots()),
         _link_plate("v2-link1-out", L1, c, near="idler", far="boss3",
                     spots=l1_spots()),
@@ -629,9 +647,9 @@ def link2():
         _link_plate("v2-link2-in", L2, c, near="recess", far="none",
                     spots=l2_spots(),
                     holes_at=[(L2 - 22.0, -10.0), (L2 - 22.0, 10.0)]),
-        _truncated_plate("v2-link2-out", L2, LINK2_OUT_START, c, far="none",
-                         spots=list(l2_spots())
-                             + [(L2 - 22.0, -10.0), (L2 - 22.0, 10.0)]),
+        _link_plate("v2-link2-out", L2, c, near="idler", far="none",
+                    spots=list(l2_spots())
+                        + [(L2 - 22.0, -10.0), (L2 - 22.0, 10.0)]),
         _standoffs("v2-link2-spacers", l2_spots(),
                    L2_IN_HALF + L2_OUT_HALF - 0.4, COLORS["v2-clamp"]),
     ]
