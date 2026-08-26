@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>HOTARU 2.0 — the pan base redesign</title>
-<meta name="description" content="Hotaru 2.0: a 180-degree pan base, rim slew bearing, flat sandwich links, and the same cone. Three P1S plates. v1 is deprecated.">
+<meta name="description" content="Hotaru 2.0: a two-part pan base with the button on top, one MG996R in all four joints, an O88 cone, flat sandwich links. Four P1S plates. v1 is deprecated.">
 <link rel="icon" href="./mark.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -67,7 +67,7 @@ canvas:active{cursor:grabbing}
   <div class="stage">
     <canvas id="c"></canvas>
     <span class="hint">DRAG TO ROTATE · SCROLL TO ZOOM</span>
-    <span class="badge">LIVE MODEL · 3 P1S PLATES</span>
+    <span class="badge">LIVE MODEL · 4 P1S PLATES</span>
   </div>
 
   <div class="grid">
@@ -76,27 +76,29 @@ canvas:active{cursor:grabbing}
       such reduction a 180 degree servo cannot reach 180 at the table. Direct
       drive can, so direct drive it is: <b>1:1 on the spline</b>, wires through
       a kidney slot with a service loop.</p></div>
-    <div class="card"><h3>Sandwich links, windowed servo</h3>
-      <p>Flat plates with round caps. The elbow MG996R passes <b>through a
-      window</b> in the inner plate with its tail proud on the face — a
-      47.6 mm servo does not fit inside a 37.3 mm gap, so 2.0 stops
-      pretending it does. Cross engagement 1.5 mm with 0.3 running
-      clearance, held by the audit.</p></div>
-    <div class="card"><h3>The cone survives</h3>
-      <p>The head nose is sized to the shade's <b>measured</b> 37.3 mm yoke
-      gap, so the v1 cone mounts unmodified. Every drive interface — horn
-      recess, threaded stub, yoke-screw, clamp bars — carries over from
-      parts that already printed and held.</p></div>
+    <div class="card"><h3>One servo, four joints</h3>
+      <p>Pan, shoulder, elbow and head all run the <b>same MG996R</b> on the
+      same printed horn and the same derived stack — 1.7 mm of spline in
+      the socket, 1.5 mm of cross in the recess, at every joint. One spare
+      covers the whole robot. The fixed base carries the key switch <b>on
+      top</b>, in its own pod, so the button never turns with the disc.</p></div>
+    <div class="card"><h3>The cone grew up</h3>
+      <p>An <b>Ø88 mouth</b> over a deeper taper, a spoked carrier for the
+      LED ring, and a yoke rebuilt as <b>drop-in channels</b> — the closure
+      audit proved the old closed recess could not be assembled along any
+      straight path. Retention comes back as a glued hub cap and a stub
+      screw.</p></div>
   </div>
 
   <div class="foot">
-    <a class="btn" href="https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/hotaru2-plates.zip" download>hotaru2-plates.zip · 0.6 MB</a>
+    <a class="btn" href="https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/hotaru2-plates.zip" download>hotaru2-plates.zip · 2.0 MB</a>
     <a class="btn ghost" href="https://github.com/nickthelegend/aibo-pet">CAD + audits on GitHub</a>
   </div>
   <p class="note">All audits pass: watertight, bed fit, over-air by ray cast,
-    pairwise interference, and the joint engagement numbers themselves.
-    Supports needed on one small part (the head block). v1 remains available
-    but is deprecated.</p>
+    pairwise interference, the engagement numbers, a 25-pose pan sweep, a
+    joint-motion sweep, and an assembly-closure walk that drives every part
+    to its seat. Supports needed on one small part (the head block). v1
+    remains available but is deprecated.</p>
 </main>
 <script type="module">
 import { M4, loadGLB, makeGL } from "./gl.js";

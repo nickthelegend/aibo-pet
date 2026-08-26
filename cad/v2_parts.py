@@ -924,18 +924,21 @@ def v2_trimcap():
 def v2_caphead():
     """The head hub's blue cap. Same family as the elbow cup, different
     constraints: link2-out stands 1.3 outboard of its face, so it cannot
-    arrive along the axis at all -- it DROPS down the 4.5 corridor between
-    the shade's drive plate and link2-out, and a keyhole slot lets it pass
-    over the hub on the way. Glued to the hub, its flange overlaps the
-    drive plate's own drop-in slot rails, which is what keeps the shade
-    from sliding back off the joint. Retention that looks like trim.
+    arrive along the axis; above, the cone's flare roofs the corridor at
+    +16, so it cannot drop from the top either (both walked by the closure
+    audit). It SLIDES IN FROM THE SIDE, along Y, between the drive plate
+    and link2-out, and its keyhole slot -- pointing along +Y -- passes over
+    the hub on the way. Glued to the hub, its flange overlaps the drive
+    plate's drop-in slot rails, which is what keeps the shade from sliding
+    back off the joint; and because the cap's own slot runs along Y while
+    the shade's escape runs along Z, the two can never line up.
 
     O26, not 32: it must fit the corridor and still cover the slot rails
     (13.3 slot under a 26 flange leaves 6.3 of overlap each side)."""
     m = pl.Mesh()
     head = _slot_head(26.0)
     pocket = pl.circle(P.HORN_HUB_D + 0.6, 48)
-    slot = box(0.0, -(P.HORN_HUB_D + 0.6) / 2, 14.0, (P.HORN_HUB_D + 0.6) / 2)
+    slot = box(-(P.HORN_HUB_D + 0.6) / 2, 0.0, (P.HORN_HUB_D + 0.6) / 2, 14.0)
     m += pl.banded(head, 0.0, 3.2, [(pocket.union(slot), 0.9, 3.2 + OVL)])
     return [("v2-caphead", m, COLORS["v2-accent"])]
 
