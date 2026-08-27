@@ -41,6 +41,7 @@ import components as CO
 import params as P
 import partlib as pl
 
+_GRILLE_SLOTS = 0     # set when the tub builds its vent banks
 OVL = pl.OVL
 BED = 256.0                     # P1S
 
@@ -341,15 +342,27 @@ def tub():
     wire_win = _box(-4.0, -95, 4.0, -66.0)
     mic_hole = affinity.translate(pl.circle(P.MIC_PORT_D, 24), -74.0, 0.0)
     mic_hole = mic_hole.union(_box(-80, -P.MIC_PORT_D / 2, -70, P.MIC_PORT_D / 2))
+    # Ventilation, sized by v2_margins rather than by eye. The tub is a
+    # CLOSED box holding the ESP32 and the pan servo, and 7 slots over 36
+    # degrees gave 277 mm2 -- about a sixth of what free convection needs to
+    # carry ~1.6 W at a 20 K rise. Two banks now:
+    #   +X  exhaust side, beside the speaker, already reads as a grille
+    #   -X  intake, stopping short of the crown's 195-degree foot
+    # Positive angles 20..35 are skipped: at r70 those land in the USB
+    # window's own y band and would leave the wall there more air than wall.
+    # The disc's kidney slot is the high outlet, so this convects.
+    _gang = [a for a in range(-45, 20, 5)] + [40, 45]
+    _gang += [a for a in range(140, 191, 5) if a != 180]   # 180 is the mic
     grille = unary_union([
-        affinity.rotate(_box(60.0, -1.1, 80.0, 1.1), a, origin=(0, 0))
-        for a in (-18, -12, -6, 0, 6, 12, 18)])
+        affinity.rotate(_box(60.0, -1.5, 80.0, 1.5), a, origin=(0, 0))
+        for a in _gang])
+    globals()["_GRILLE_SLOTS"] = len(_gang)
 
     USB_Z0 = FLOOR + ESP_POST + 1.4 - 2.4          # below the port slab
     WALL_OPEN = [
         (usb_win, USB_Z0, USB_Z0 + P.USB_PLUG_H + 1.6),
         (mic_hole, 26.0, 26.0 + P.MIC_PORT_D),
-        (grille,   8.0, 26.0),
+        (grille,   5.0, 33.0),
         (wire_win, 26.0, 34.0),
     ]
     steps = 40

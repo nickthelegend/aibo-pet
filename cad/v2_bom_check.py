@@ -14,7 +14,7 @@ answer the three questions an owner asks before printing:
 
 It also states plainly what it CANNOT verify, because two of the audits in
 this repo exclude servo leads as "flexible" and a reader deserves to know
-that wire routing is asserted, not measured.
+that wire routing is measured by v2_wire_check, not asserted here.
 
     .venv/bin/python cad/v2_bom_check.py
 """
@@ -187,15 +187,14 @@ def main():
         print(f"  {'ok  ' if ok else 'FAIL'} {label:16s} {pct:5.1f}% covered")
 
     # ---- what this cannot tell you ----
-    print("\nNOT verified by any audit in this repo:")
-    print("  - wire routing. v2_insert and v2_bom_check both treat servo")
-    print("    leads as flexible and skip them, so no check proves a cable")
-    print("    path exists from the tub to the shoulder/elbow/head servos")
-    print("    or from the LED ring down the cone. Those are asserted.")
-    print("  - printed-thread strength. The P6 form is v1-proven in PLA but")
-    print("    no torque figure has been measured for it.")
-    print("  - thermal. Four MG996R stalling inside a closed tub is not")
-    print("    modelled.")
+    print("\nCovered elsewhere, no longer asserted:")
+    print("  - wire routing -> v2_wire_check searches free space for a real")
+    print("    cable path per component; it does not take routing on trust.")
+    print("  - thread strength, torque, thermal -> v2_margins computes each")
+    print("    from this geometry against constants it names out loud.")
+    print("\nStill genuinely unknown until one is printed:")
+    print("  - layer adhesion on YOUR printer and filament, which is what")
+    print("    the printed thread's 25 MPa assumption really rests on.")
 
     print("=" * 68)
     if fails:
