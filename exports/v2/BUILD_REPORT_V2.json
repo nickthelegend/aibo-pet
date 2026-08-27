@@ -10,18 +10,18 @@
    ]
   },
   {
-   "plate": "v2-plate-2-disc",
+   "plate": "v2-plate-3-disc",
    "size_mm": [
-    155.4,
-    242.7,
-    11.0
+    190.7,
+    205.2,
+    30.0
    ]
   },
   {
-   "plate": "v2-plate-3-head",
+   "plate": "v2-plate-2-arm",
    "size_mm": [
-    236.6,
-    224.0,
+    221.6,
+    208.0,
     60.1
    ]
   },

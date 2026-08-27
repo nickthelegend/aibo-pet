@@ -25,27 +25,38 @@ WEB = os.path.normpath(os.path.join(HERE, "..", "web"))
 
 # name -> (plate, dx, dy)
 LAYOUT = {
+    # Plate 2 used to be "the disc and ONE link plate", with the other three
+    # link plates stranded on plate 3. It printed fine and read as a
+    # mistake -- you cannot look at a plate holding half of one arm and
+    # tell whether the file is broken. The four link plates are matched
+    # pairs, so they belong on one plate where you can see all four.
     "v2-tub":          ("v2-plate-1-base", 0.0, 0.0),
     "v2-tower":        ("v2-plate-1-base", 0.0, 115.0),
     "v2-clamps":       ("v2-plate-1-base", -90.0, 110.0),
-    "v2-disc":         ("v2-plate-2-disc", 0.0, -44.0),
-    "v2-link1-in":     ("v2-plate-2-disc", 0.0, 62.0),
-    "v2-link1-out":    ("v2-plate-3-head", -35.0, -80.0),
-    "v2-link2-in":     ("v2-plate-3-head", -35.0, -30.0),
-    "v2-link2-out":    ("v2-plate-3-head", -35.0, 20.0),
-    "v2-link1-spacers":("v2-plate-3-head", 95.0, -80.0),
-    "v2-link1-ledges": ("v2-plate-3-head", 95.0, -20.0),
-    "v2-link2-spacers":("v2-plate-3-head", 95.0, 45.0),
-    "v2-head":         ("v2-plate-3-head", 30.0, 95.0),
+    "v2-keycap":       ("v2-plate-1-base", -90.0, 80.0),
+
+    # plate 2: the whole arm, both pairs, with their spacers beside them
+    "v2-link1-in":     ("v2-plate-2-arm", 0.0, -81.0),
+    "v2-link1-out":    ("v2-plate-2-arm", 0.0, -27.0),
+    "v2-link2-in":     ("v2-plate-2-arm", 0.0, 27.0),
+    "v2-link2-out":    ("v2-plate-2-arm", 0.0, 81.0),
+    "v2-link1-spacers":("v2-plate-2-arm", 115.0, -81.0),
+    "v2-link1-ledges": ("v2-plate-2-arm", 115.0, -30.0),
+    "v2-link2-spacers":("v2-plate-2-arm", 115.0, 27.0),
+    "v2-screws":       ("v2-plate-2-arm", 115.0, 81.0),
+
+    # plate 3: the turntable and the head that rides the far end of the arm
+    "v2-disc":         ("v2-plate-3-disc", 0.0, -45.0),
+    "v2-head":         ("v2-plate-3-disc", 0.0, 60.0),
+    "v2-trimcap":      ("v2-plate-3-disc", 62.0, 58.0),
+    "v2-caphead":      ("v2-plate-3-disc", 100.0, 58.0),
+
+    # plate 4: the cone, its cap, and every printed fastener
     "shade":           ("v2-plate-4-cone", 0.0, 55.0),
-    "v2-screws":       ("v2-plate-2-disc", 0.0, 108.0),
     "v2-conecap":      ("v2-plate-4-cone", 110.0, 55.0),
+    "v2-horns":        ("v2-plate-4-cone", 0.0, -55.0),
     "v2-bolts":        ("v2-plate-4-cone", 115.0, -45.0),
     "v2-disckeys":     ("v2-plate-4-cone", 75.0, -100.0),
-    "v2-trimcap":      ("v2-plate-3-head", 75.0, 105.0),
-    "v2-caphead":      ("v2-plate-3-head", 108.0, 105.0),
-    "v2-keycap":       ("v2-plate-1-base", -90.0, 80.0),
-    "v2-horns":        ("v2-plate-4-cone", 0.0, -55.0),
 }
 
 
