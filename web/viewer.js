@@ -1,6 +1,6 @@
 /* viewer.js — the parts browser.
  *
- * Reuses web/hotaru-rig.glb (2.1 MB) rather than exports/aibo-assembled.glb
+ * Reuses web/hotaru2-rig.glb rather than exports/v2/hotaru2-assembled.glb
  * (6.9 MB): the rig already has every part indexed, welded and normal-free,
  * and it carries the chain, so assembled and exploded are both just poses
  * rather than two more files to ship.
@@ -56,11 +56,25 @@ function explodeOffset(name, i) {
 function poseParts() {
   if (!RIG) return;
   const piv = RIG.pivot, N = RIG.neutral;
-  let p = [piv[0], piv[1], piv[2]], cum = N.base;
   const J = ["base", "shoulder", "elbow", "head"];
 
+  /* Same two 2.0 rules app.js follows: the base joint is a PAN about Z that
+   * wraps the whole chain, and the cone is a GROUP (shell, LED cap, ring),
+   * not the single part v1's rig named. Posing only RIG.shade left the cap
+   * and the ring sitting at the world origin under the base. */
+  const panning = Array.isArray(RIG.panParts);
+  const outer = panning ? M4.rotZ(N.base) : M4.id();
+  let p = [piv[0], piv[1], piv[2]], cum = panning ? 0 : N.base;
+  if (panning) {
+    for (const nm of RIG.panParts) {
+      const part = PARTS.find(x => x.name === nm);
+      if (part) part.base = outer;
+    }
+  }
+
   RIG.segments.forEach((seg, i) => {
-    const M = M4.mul(M4.trans(p[0], p[1], p[2]), M4.rotX(cum));
+    const M = M4.mul(outer,
+                     M4.mul(M4.trans(p[0], p[1], p[2]), M4.rotX(cum)));
     for (const nm of seg.parts.concat(seg.servo)) {
       const part = PARTS.find(x => x.name === nm);
       if (part) part.base = M;
@@ -69,8 +83,12 @@ function poseParts() {
     p = [p[0], p[1] - seg.length * Math.sin(a), p[2] + seg.length * Math.cos(a)];
     cum += N[J[i + 1]];
   });
-  const sh = PARTS.find(x => x.name === RIG.shade);
-  if (sh) sh.base = M4.mul(M4.trans(p[0], p[1], p[2]), M4.rotX(cum + 180));
+  const shM = M4.mul(outer,
+                     M4.mul(M4.trans(p[0], p[1], p[2]), M4.rotX(cum + 180)));
+  for (const nm of (RIG.shadeParts || [RIG.shade])) {
+    const sh = PARTS.find(x => x.name === nm);
+    if (sh) sh.base = shM;
+  }
 
   if (printMode) {
     // print pose: rotate about X by `flip`, then drop the part onto Z = 0,
@@ -287,9 +305,9 @@ function frame() {
 (async function () {
   try {
     const [nodes, rig, spec] = await Promise.all([
-      loadGLB("./hotaru-rig.glb"),
-      fetch("./rig.json").then(r => r.json()),
-      fetch("./spec.json").then(r => r.json()),
+      loadGLB("./hotaru2-rig.glb"),
+      fetch("./rig2.json").then(r => r.json()),
+      fetch("./spec2.json").then(r => r.json()),
     ]);
     RIG = rig; SPEC = spec;
     PARTS = nodes.map(n => ({ ...uploadPart(n), on: true }));

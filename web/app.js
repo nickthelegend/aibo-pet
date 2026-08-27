@@ -157,11 +157,25 @@ function poseParts() {
   if (!RIG) return;
   const piv = RIG.pivot;
   let p = [piv[0], piv[1], piv[2]];
-  let cum = cur.base;
-  const below = RIG.yokeBelow;
+
+  /* 2.0's base joint is a PAN about Z, not a tilt about X, so it cannot
+   * join the cumulative rotX chain the other three form. It becomes an
+   * OUTER transform on everything that turns with the disc, and the chain
+   * below it starts from zero. rig.panParts is what marks a v2 rig; a v1
+   * rig has none and keeps the original single-chain behaviour. */
+  const panning = Array.isArray(RIG.panParts);
+  const outer = panning ? M4.rotZ(cur.base) : M4.id();
+  let cum = panning ? 0 : cur.base;
+  if (panning) {
+    for (const nm of RIG.panParts) {
+      const q = ROLE.get(nm);
+      if (q) q.model = outer;
+    }
+  }
 
   RIG.segments.forEach((seg, i) => {
-    const M = M4.mul(M4.trans(p[0], p[1], p[2]), M4.rotX(cum));
+    const M = M4.mul(outer,
+                     M4.mul(M4.trans(p[0], p[1], p[2]), M4.rotX(cum)));
     for (const nm of seg.parts.concat(seg.servo)) {
       const part = ROLE.get(nm);
       if (part) part.model = M;
@@ -170,8 +184,12 @@ function poseParts() {
     p = [p[0], p[1] - seg.length * Math.sin(a), p[2] + seg.length * Math.cos(a)];
     cum += cur[J[i + 1]];
   });
-  const sh = ROLE.get(RIG.shade);
-  if (sh) sh.model = M4.mul(M4.trans(p[0], p[1], p[2]), M4.rotX(cum + 180));
+  const shM = M4.mul(outer,
+                     M4.mul(M4.trans(p[0], p[1], p[2]), M4.rotX(cum + 180)));
+  for (const nm of (RIG.shadeParts || [RIG.shade])) {
+    const sh = ROLE.get(nm);
+    if (sh) sh.model = shM;
+  }
 }
 
 /* World bounds of the pose as drawn, from each part's 8 local AABB corners.
@@ -556,7 +574,7 @@ const talk = {
   },
   askPrinter() {
     this.type(this.lineFor("ask_printer"), "ask_printer", () => {
-      const opts = ["Bambu A1 mini", "Another Bambu", "Prusa", "Something else", "No printer yet"];
+      const opts = ["Bambu P1S", "Bambu A1 mini", "Prusa", "Something else", "No printer yet"];
       this.el.chips.innerHTML = opts.map(o =>
         `<button class="chip" type="button" data-v="${o}">${o}</button>`).join("");
       [...this.el.chips.querySelectorAll(".chip")].forEach((b, k) => {
@@ -643,8 +661,8 @@ function syncButtons() {
 
   try {
     const [nodes, rig] = await Promise.all([
-      loadGLB("./hotaru-rig.glb"),
-      fetch("./rig.json").then(r => r.json()),
+      loadGLB("./hotaru2-rig.glb"),
+      fetch("./rig2.json").then(r => r.json()),
     ]);
     RIG = rig; RIG.yokeBelow = 16.0;
     // the rig carries the viewer's loose-parts tray; the hero is a portrait

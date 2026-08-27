@@ -1,0 +1,439 @@
+{
+ "parts": [
+  {
+   "name": "v2-tub",
+   "mm": [
+    156.8,
+    168.0,
+    56.0
+   ],
+   "cm3": 211.6,
+   "fits": true
+  },
+  {
+   "name": "v2-disc",
+   "mm": [
+    155.4,
+    155.4,
+    11.0
+   ],
+   "cm3": 129.1,
+   "fits": true
+  },
+  {
+   "name": "v2-tower",
+   "mm": [
+    74.0,
+    44.0,
+    67.8
+   ],
+   "cm3": 37.9,
+   "fits": true
+  },
+  {
+   "name": "v2-link1-in",
+   "mm": [
+    146.0,
+    46.0,
+    9.4
+   ],
+   "cm3": 21.6,
+   "fits": true
+  },
+  {
+   "name": "v2-link1-out",
+   "mm": [
+    146.0,
+    46.0,
+    4.0
+   ],
+   "cm3": 24.2,
+   "fits": true
+  },
+  {
+   "name": "v2-link1-spacers",
+   "mm": [
+    10.0,
+    31.0,
+    51.5
+   ],
+   "cm3": 8.1,
+   "fits": true
+  },
+  {
+   "name": "v2-link1-ledges",
+   "mm": [
+    67.2,
+    12.0,
+    33.1
+   ],
+   "cm3": 6.2,
+   "fits": true
+  },
+  {
+   "name": "v2-link2-in",
+   "mm": [
+    136.0,
+    46.0,
+    4.0
+   ],
+   "cm3": 19.5,
+   "fits": true
+  },
+  {
+   "name": "v2-link2-out",
+   "mm": [
+    136.0,
+    46.0,
+    4.0
+   ],
+   "cm3": 17.9,
+   "fits": true
+  },
+  {
+   "name": "v2-link2-spacers",
+   "mm": [
+    17.0,
+    31.0,
+    60.1
+   ],
+   "cm3": 14.1,
+   "fits": true
+  },
+  {
+   "name": "v2-head",
+   "mm": [
+    59.7,
+    45.0,
+    30.0
+   ],
+   "cm3": 25.9,
+   "fits": true
+  },
+  {
+   "name": "v2-clamps",
+   "mm": [
+    92.0,
+    8.0,
+    4.0
+   ],
+   "cm3": 1.4,
+   "fits": true
+  },
+  {
+   "name": "v2-screws",
+   "mm": [
+    56.0,
+    26.0,
+    9.2
+   ],
+   "cm3": 3.3,
+   "fits": true
+  },
+  {
+   "name": "v2-bolts",
+   "mm": [
+    81.0,
+    59.0,
+    13.5
+   ],
+   "cm3": 9.2,
+   "fits": true
+  },
+  {
+   "name": "v2-disckeys",
+   "mm": [
+    10.5,
+    28.9,
+    3.2
+   ],
+   "cm3": 0.3,
+   "fits": true
+  },
+  {
+   "name": "v2-trimcap",
+   "mm": [
+    32.0,
+    32.0,
+    3.2
+   ],
+   "cm3": 2.3,
+   "fits": true
+  },
+  {
+   "name": "v2-caphead",
+   "mm": [
+    26.0,
+    26.0,
+    3.2
+   ],
+   "cm3": 1.2,
+   "fits": true
+  },
+  {
+   "name": "v2-keycap",
+   "mm": [
+    17.0,
+    17.0,
+    6.0
+   ],
+   "cm3": 1.3,
+   "fits": true
+  },
+  {
+   "name": "v2-horns",
+   "mm": [
+    100.0,
+    100.0,
+    7.3
+   ],
+   "cm3": 8.6,
+   "fits": true
+  },
+  {
+   "name": "shade",
+   "mm": [
+    88.0,
+    88.0,
+    86.0
+   ],
+   "cm3": 41.3,
+   "fits": true
+  },
+  {
+   "name": "v2-conecap",
+   "mm": [
+    88.0,
+    88.0,
+    8.4
+   ],
+   "cm3": 15.8,
+   "fits": true
+  }
+ ],
+ "interfaces": [],
+ "stats": {
+  "parts": 21,
+  "interfaces": 21,
+  "joints": 4,
+  "servos": 4,
+  "height_mm": 362,
+  "reach_mm": 280,
+  "plastic_cm3": 601,
+  "plates": 4,
+  "m3": 0,
+  "m2": 0,
+  "printed_screws": 24,
+  "bed_mm": 256
+ },
+ "downloads": {
+  "base": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/",
+  "zip": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/hotaru2-plates.zip",
+  "zip_mb": 4.0,
+  "plates_zip": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/hotaru2-plates.zip",
+  "plates_zip_mb": 4.0,
+  "plates": [
+   "v2-plate-1-base",
+   "v2-plate-2-disc",
+   "v2-plate-3-head",
+   "v2-plate-4-cone"
+  ],
+  "files": {
+   "v2-tub": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-tub.stl",
+   "v2-disc": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-disc.stl",
+   "v2-tower": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-tower.stl",
+   "v2-link1-in": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-link1-in.stl",
+   "v2-link1-out": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-link1-out.stl",
+   "v2-link1-spacers": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-link1-spacers.stl",
+   "v2-link1-ledges": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-link1-ledges.stl",
+   "v2-link2-in": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-link2-in.stl",
+   "v2-link2-out": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-link2-out.stl",
+   "v2-link2-spacers": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-link2-spacers.stl",
+   "v2-head": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-head.stl",
+   "v2-clamps": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-clamps.stl",
+   "v2-screws": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-screws.stl",
+   "v2-bolts": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-bolts.stl",
+   "v2-disckeys": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-disckeys.stl",
+   "v2-trimcap": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-trimcap.stl",
+   "v2-caphead": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-caphead.stl",
+   "v2-keycap": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-keycap.stl",
+   "v2-horns": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-horns.stl",
+   "shade": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/shade.stl",
+   "v2-conecap": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-conecap.stl"
+  }
+ },
+ "print_pose": {
+  "v2-tub": {
+   "flip": 0.0,
+   "dz": -0.0
+  },
+  "v2-disc": {
+   "flip": 180.0,
+   "dz": -0.0
+  },
+  "v2-tower": {
+   "flip": 0.0,
+   "dz": -0.0
+  },
+  "v2-link1-in": {
+   "flip": 0.0,
+   "dz": -0.0
+  },
+  "v2-link1-out": {
+   "flip": 0.0,
+   "dz": -0.0
+  },
+  "v2-link1-spacers": {
+   "flip": 0.0,
+   "dz": -0.0
+  },
+  "v2-link1-ledges": {
+   "flip": 0.0,
+   "dz": -0.0
+  },
+  "v2-link2-in": {
+   "flip": 0.0,
+   "dz": -0.0
+  },
+  "v2-link2-out": {
+   "flip": 0.0,
+   "dz": -0.0
+  },
+  "v2-link2-spacers": {
+   "flip": 0.0,
+   "dz": -0.0
+  },
+  "v2-head": {
+   "flip": 0.0,
+   "dz": -0.0
+  },
+  "v2-clamps": {
+   "flip": 0.0,
+   "dz": -0.0
+  },
+  "v2-screws": {
+   "flip": 0.0,
+   "dz": -0.0
+  },
+  "v2-bolts": {
+   "flip": 0.0,
+   "dz": -0.0
+  },
+  "v2-disckeys": {
+   "flip": 0.0,
+   "dz": -0.0
+  },
+  "v2-trimcap": {
+   "flip": 0.0,
+   "dz": -0.0
+  },
+  "v2-caphead": {
+   "flip": 0.0,
+   "dz": -0.0
+  },
+  "v2-keycap": {
+   "flip": 0.0,
+   "dz": -0.0
+  },
+  "v2-horns": {
+   "flip": 0.0,
+   "dz": -0.0
+  },
+  "shade": {
+   "flip": 0.0,
+   "dz": -0.0
+  },
+  "v2-conecap": {
+   "flip": 0.0,
+   "dz": -0.0
+  }
+ },
+ "plates": {
+  "bed_mm": 256.0,
+  "list": [
+   {
+    "plate": "v2-plate-1-base",
+    "why": "the tub, its crown and the button turret -- the big one",
+    "parts": [
+     "v2-tub",
+     "v2-tower",
+     "v2-clamps",
+     "v2-keycap"
+    ],
+    "used_mm": [
+     164.4,
+     168.0,
+     67.8
+    ],
+    "fits_bed": true,
+    "supports": [],
+    "mb": 4.39,
+    "url": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-plate-1-base.stl"
+   },
+   {
+    "plate": "v2-plate-2-disc",
+    "why": "the turntable, link1's inner plate and the yoke screws",
+    "parts": [
+     "v2-disc",
+     "v2-link1-in",
+     "v2-screws"
+    ],
+    "used_mm": [
+     200.7,
+     155.4,
+     11.0
+    ],
+    "fits_bed": true,
+    "supports": [],
+    "mb": 3.19,
+    "url": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-plate-2-disc.stl"
+   },
+   {
+    "plate": "v2-plate-3-head",
+    "why": "every remaining link plate, the head block and the caps",
+    "parts": [
+     "v2-link1-out",
+     "v2-link2-in",
+     "v2-link2-out",
+     "v2-link1-spacers",
+     "v2-link1-ledges",
+     "v2-link2-spacers",
+     "v2-head",
+     "v2-trimcap",
+     "v2-caphead"
+    ],
+    "used_mm": [
+     153.1,
+     55.7,
+     60.1
+    ],
+    "fits_bed": true,
+    "supports": [
+     "v2-head"
+    ],
+    "mb": 7.38,
+    "url": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-plate-3-head.stl"
+   },
+   {
+    "plate": "v2-plate-4-cone",
+    "why": "the cone, its LED cap, the horns, bolts and disc keys",
+    "parts": [
+     "shade",
+     "v2-conecap",
+     "v2-bolts",
+     "v2-disckeys",
+     "v2-horns"
+    ],
+    "used_mm": [
+     120.0,
+     120.0,
+     86.0
+    ],
+    "fits_bed": true,
+    "supports": [],
+    "mb": 3.1,
+    "url": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-plate-4-cone.stl"
+   }
+  ]
+ }
+}
