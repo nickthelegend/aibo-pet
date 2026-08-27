@@ -198,7 +198,11 @@ def _psleeve(x, y, z0, z1):
 # 1.3 inside the pebble wall at PCB height -- at 40 it was r 72.9, in the
 # wall. The -Y edge at 18 still clears the pan clamp bosses, which top out
 # at y 17.15.
-ESP_XY = (16.0, 35.5)   # +2.5: the O10 pan clamp bosses reach y 20.2
+# x 13, not 16: the PCB corner at (48, 50.5) crossed the tub's inner wall
+# arc, which reaches in to r~69 there. The board is squeezed between the
+# pan clamp bosses at y 20.2 and that arc, and 3 mm inboard is where a
+# 64 x 30 board actually clears both.
+ESP_XY = (13.0, 35.5)
 ESP_ROT = 0.0
 ESP_POST = 10.0          # > 8.5 of ESP32-S3 pin
 AMP_XY = (-40.0, -34.0)
@@ -523,6 +527,36 @@ def tub():
             m += _psleeve(*bpos, PAN_TAB_Z - 4.0, PAN_TAB_Z + 6.0)
 
     # ---- electronics, on the floor, v1 footprints ----
+    def corner_tabs(cx, cy, L, W, h_post, rise=3.0, fit=0.4, sides="xy"):
+        """Four L-tabs just OUTSIDE the board outline, rising past its top
+        face. They locate the PCB by its EDGES.
+
+        Pins through the mounting holes were the first idea and they were
+        wrong twice: the ESP's -X pair landed under the WROOM can and the
+        amp's +Y pair landed under the solder-pad strip. Neither board has
+        a hole where the standoff geometry wanted one. An edge fence needs
+        no hole at all, so it cannot be wrong about where the holes are.
+
+        `sides` exists because a dev board is wider than its PCB: the
+        ESP32-S3's WROOM can hangs 5 mm past the -X edge and its USB shell
+        1.2 mm past the +X edge, so X-face tabs sit exactly where the
+        overhang is. That board gets Y-face tabs only, and the charge well
+        and wall hold it in X."""
+        m2 = pl.Mesh()
+        hx, hy = L / 2 + fit, W / 2 + fit
+        for sx in (-1, 1):
+            for sy in (-1, 1):
+                arms = []
+                if "x" in sides:
+                    arms.append(box(cx + sx * hx, cy + sy * (hy - 5.0),
+                                    cx + sx * (hx + 1.8), cy + sy * hy))
+                if "y" in sides:
+                    arms.append(box(cx + sx * (hx - 6.0), cy + sy * hy,
+                                    cx + sx * hx, cy + sy * (hy + 1.8)))
+                m2 += pl.prism(unary_union(arms),
+                               FLOOR - OVL, FLOOR + h_post + rise)
+        return m2
+
     def posts(cx, cy, offs, h_post, pin_offs=None):
         """Standoffs tall enough that the board's THROUGH-HOLE PINS clear the
         floor. An ESP32-S3's pins hang 8.5 below its PCB and the amp's 6.0;
@@ -557,11 +591,16 @@ def tub():
     # +X pair sits at +26.5, not +29.5: the charge well's land begins at
     # 49.6 and a post at 45.5 reached into it
     m += posts(*ESP_XY, [(ox, sy * 8.5) for ox in (-29.5, 26.5)
-                         for sy in (-1, 1)], ESP_POST,
-               pin_offs=[(-29.5, sy * 8.5) for sy in (-1, 1)])
-    # MAX98357A: its one row is along -Y, so both pairs sit above it
+                         for sy in (-1, 1)], ESP_POST, pin_offs=[])
+    m += corner_tabs(*ESP_XY, P.ESP_L, P.ESP_W, ESP_POST, sides="y")
+    # MAX98357A: its one row is along -Y, so both pairs sit above it.
+    # NO pins: the +Y pair lands at local (+/-7.5, 6.0), which on the real
+    # breakout is under the solder-pad strip, not a mounting hole -- a pin
+    # there presses on pads. The board is 3 g on a shelf inside a closed
+    # tub; four posts and gravity are the whole mounting.
     m += posts(*AMP_XY, [(sx * 7.5, oy) for sx in (-1, 1)
-                         for oy in (6.0, -2.5)], AMP_POST)
+                         for oy in (6.0, -2.5)], AMP_POST, pin_offs=[])
+    m += corner_tabs(*AMP_XY, P.AMP_L, P.AMP_W, AMP_POST)
 
     # speaker against +X wall: two rails + open back grille (v1 lesson: the
     # pocket stays open behind the driver)
