@@ -114,7 +114,7 @@ def main():
                "which also proves every joint engagement number on this arm)", "",
                "Electronics: ESP32-S3, MAX98357A, 40x20 speaker, round mic,",
                "4x MG996R and NOTHING ELSE: every fastener is printed. P6 "
-               "thumb-bolts into printed-thread sleeves, three printed yoke "
+               "thumb-bolts into printed-thread sleeves, two printed yoke "
                "screws, two disc keys, locating pins under the boards.", "",
                "CAD, audits, and the whole history:",
                "github.com/nickthelegend/aibo-pet"]
