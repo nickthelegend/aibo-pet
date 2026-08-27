@@ -174,15 +174,18 @@ def main():
             dz = 104.0
         else:
             dz = 130.0
-        # and fan the sandwich plates apart in X so both faces are visible
-        dx = 0.0
+        # fan the sandwich plates apart in Y. The first cut fanned them in
+        # X -- but the plates' faces POINT along X, so the natural viewing
+        # angle looks straight down that axis and the fanned pair lands
+        # exactly behind itself: the exploded arm read as ONE plate.
+        dy = 0.0
         if n.endswith("-in"):
-            dx = 34.0
+            dy = 40.0
         elif n.endswith("-out"):
-            dx = -34.0
+            dy = -40.0
         elif n.endswith(("-spacers", "-ledges")):
-            dx = 68.0
-        q.translate(dx=dx, dz=dz)
+            dy = 80.0
+        q.translate(dy=dy, dz=dz)
         ex.append((n, q, c))
     _glb(os.path.join(EXP, "hotaru2-exploded.glb"), ex)
 
