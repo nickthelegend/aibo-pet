@@ -61,9 +61,9 @@ LINES = {
         "the difference between a servo turning and something looking alive.",
     ],
     "need": [
-        "Three big servos, one small one, a microphone, a speaker, and a board "
-        "to run them. Twenty two printed parts, and every one fits the smallest "
-        "Bambu bed.",
+        "Four identical servos, a microphone, a speaker, and a board to run "
+        "them. Twenty one printed parts on four plates, and not a single "
+        "screw. Every fastener is printed too.",
     ],
     "print": [
         "Nine plates. Start with the test plate, it takes fifteen minutes and "

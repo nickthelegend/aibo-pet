@@ -235,7 +235,55 @@ const MOODS = {
   scan:    { label: "Scan",    loop: false, keys: [
     [0.00, {}], [0.45, { base: -9, head: -20 }], [1.05, { base: 11, head: 14 }],
     [1.65, { base: -6, head: -12 }], [2.2, {}] ] },
+
+  /* ---- 2.0's own moves. The pan is the whole point of this revision, so
+   * the lamp had better use it. The head counter-rotates through every
+   * turn: a real lamp keeps looking where it was going, and that one
+   * detail is what stops a pan reading as a lazy-susan. ---------------- */
+  turnL:   { label: "Look left", loop: false, keys: [
+    [0.00, {}], [0.35, { base: -18, head: -8 }],
+    [1.10, { base: -54, head: -14, shoulder: -6 }],
+    [2.10, { base: -54, head: 4, shoulder: -6 }],
+    [3.10, { base: -50, head: -6 }], [4.00, {}] ] },
+  turnR:   { label: "Look right", loop: false, keys: [
+    [0.00, {}], [0.35, { base: 18, head: -8 }],
+    [1.10, { base: 54, head: -14, shoulder: -6 }],
+    [2.10, { base: 54, head: 4, shoulder: -6 }],
+    [3.10, { base: 50, head: -6 }], [4.00, {}] ] },
+  // "turn around": all the way over and all the way back, one continuous
+  // sweep -- the 180 the base servo actually delivers, shown as one move
+  around:  { label: "Turn around", loop: false, keys: [
+    [0.00, {}], [0.40, { base: -14, shoulder: -8, head: -12 }],
+    [1.60, { base: -56, shoulder: -4, head: -6 }],
+    [3.40, { base: 56, shoulder: -4, head: -6 }],
+    [4.40, { base: 30, head: -10 }], [5.20, {}] ] },
+  yes:     { label: "Yes", loop: false, keys: [
+    [0.00, {}], [0.14, { head: -14, shoulder: -6 }],
+    [0.34, { head: 30, shoulder: 4 }], [0.52, { head: -10, shoulder: -4 }],
+    [0.70, { head: 26, shoulder: 3 }], [0.88, { head: -6 }],
+    [1.20, {}] ] },
+  no:      { label: "No", loop: false, keys: [
+    [0.00, {}], [0.16, { base: -22, head: -6 }], [0.40, { base: 22 }],
+    [0.64, { base: -18 }], [0.88, { base: 14 }], [1.30, {}] ] },
+  stretch: { label: "Stretch", loop: false, keys: [
+    [0.00, {}], [0.55, { shoulder: -26, elbow: -28, head: -34 }],
+    [1.40, { shoulder: -28, elbow: -30, head: -38 }],
+    [2.00, { shoulder: 10, elbow: 12, head: 16 }], [2.90, {}] ] },
 };
+
+/* ---- the ambient reel -------------------------------------------------
+ * Nobody is clicking the mood buttons on a landing page. Left alone the
+ * lamp used to hold one pose forever, breathing 2.5 degrees, and read as a
+ * still render. So: with no interaction, it performs -- one move every
+ * IDLE_GAP seconds, in order, forever. The order is deliberate rather than
+ * random, because random reliably plays the same move twice and looks
+ * broken. Any real interaction (a chip, a mood button) pre-empts it and
+ * resets the clock. */
+const IDLE_REEL = ["yes", "turnL", "scan", "around", "curious",
+                   "turnR", "stretch", "no", "perk"];
+const IDLE_GAP = 5.0;
+let reelI = 0, idleFor = 0;
+
 let mood = "idle", moodT = 0;
 
 function sampleMood(name, t) {
@@ -252,8 +300,11 @@ function sampleMood(name, t) {
 }
 
 /* ------------------------------------------------------------ camera --- */
+let fitting = false;
+
 function fitCamera() {
-  const save = mood, saveT = moodT;
+  const save = mood, saveT = moodT, saveReel = reelI;
+  fitting = true;
   const lo = [1e9, 1e9, 1e9], hi = [-1e9, -1e9, -1e9];
   for (const k of Object.keys(MOODS)) {
     mood = k; moodT = 0;
@@ -271,7 +322,8 @@ function fitCamera() {
       if (mood !== k) break;                 // it reverted; extremes are in
     }
   }
-  mood = save; moodT = saveT;
+  mood = save; moodT = saveT; reelI = saveReel; idleFor = 0;
+  fitting = false;
   for (const j of J) { cur[j] = RIG.neutral[j]; vel[j] = 0; }
   update(1 / 60);
   CTR = [0, (lo[1] + hi[1]) / 2, (lo[2] + hi[2]) / 2];
@@ -285,7 +337,12 @@ function fitCamera() {
 // than neutral and sulk drops the shade almost to the base.
 const FOVY = 0.62;
 let CTR = [0, 6, 190];
-let az = -0.62, el = 0.10, dist = 790, drag = null;
+/* az: the arm leans along -Y, so a camera on +Y sees only its back and the
+ * cone tucks out of sight behind the plates. Swinging the CAMERA round to
+ * roughly three-quarter puts the arm across the frame and the cone in
+ * profile -- and unlike panning the model, it costs no servo travel, which
+ * the pan reel needs all of. */
+let az = -1.15, el = 0.13, dist = 790, drag = null;
 cv.addEventListener("pointerdown", e => { drag = { x: e.clientX, y: e.clientY };
   cv.setPointerCapture(e.pointerId); });
 addEventListener("pointerup", () => drag = null);
@@ -309,6 +366,21 @@ function update(dt) {
   const want = sampleMood(mood, moodT);
   if (!MOODS[mood].loop && moodT > MOODS[mood].keys[MOODS[mood].keys.length - 1][0]) {
     mood = "idle"; moodT = 0; syncButtons();
+  }
+  // ambient reel: only while resting, and never during fitCamera's sweep
+  // (it drives update() itself and would spin the reel counter forward)
+  if (!fitting) {
+    if (mood === "idle") {
+      idleFor += dt;
+      if (idleFor >= IDLE_GAP) {
+        idleFor = 0;
+        mood = IDLE_REEL[reelI++ % IDLE_REEL.length];
+        moodT = 0;
+        syncButtons();
+      }
+    } else {
+      idleFor = 0;
+    }
   }
   for (const j of J) {
     const lim = RIG ? RIG.range[j] : [-40, 40];

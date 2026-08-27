@@ -112,18 +112,29 @@ def main():
         "shade": "shade",
         "shadeParts": groups["shade"],
         "pivot": [0.0, 0.0, z_sh],
-        # A neutral that reads as a desk lamp rather than a flagpole: the
-        # shoulder leans the arm out, the elbow folds it back over the base,
-        # and the head tips the cone TOWARD the viewer so the LED ring is
-        # visible through the cap's slot. Chosen by eye in the browser --
-        # positive rotX tips away from the camera, so the head sits low.
-        "neutral": {"base": 0.0, "shoulder": 38.0, "elbow": -62.0,
-                    "head": 8.0},
+        # A LAMP, not a flagpole and not a robot arm holding a cup.
+        #
+        # The cone's mouth points along rotX(shoulder+elbow+head) applied to
+        # +Z, so that sum is the only number that decides whether this reads
+        # as a desk lamp: 0 is straight up (a flagpole), 90 is horizontal,
+        # ~135 hangs it down and forward over the desk the way every lamp
+        # does. v1's hero summed to 114 for the same reason. An earlier cut
+        # summed to -16 -- the cone pointed at the ceiling, and the user's
+        # verdict was simply "its not looking like a lamp".
+        #
+        # 26 + 58 + 50 = 134: arm up and forward, forearm near horizontal,
+        # cone hanging off the end.
+        # base stays 0: the three-quarter view comes from the CAMERA's
+        # azimuth in app.js, not from turning the model, because turning the
+        # model spends pan travel the reel needs.
+        "neutral": {"base": 0.0, "shoulder": 30.0, "elbow": 62.0,
+                    "head": 73.0},
         # Off-neutral travel. The motion audit clears every joint for a full
         # 180 (165 at the head), so these are expressive limits, not
         # mechanical ones -- kept well inside what the servos can reach.
-        "range": {"base": [-60.0, 60.0], "shoulder": [-30.0, 30.0],
-                  "elbow": [-30.0, 30.0], "head": [-38.0, 38.0]},
+        # base neutral is 0, so the full +/-85 stays inside the servo's 180.
+        "range": {"base": [-85.0, 85.0], "shoulder": [-32.0, 32.0],
+                  "elbow": [-32.0, 32.0], "head": [-40.0, 40.0]},
     }
 
     packed = []

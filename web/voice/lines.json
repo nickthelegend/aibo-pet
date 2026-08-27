@@ -31,7 +31,7 @@
   "need": [
    {
     "src": "./voice/need.0.mp3",
-    "text": "Three big servos, one small one, a microphone, a speaker, and a board to run them. Twenty two printed parts, and every one fits the smallest Bambu bed."
+    "text": "Four identical servos, a microphone, a speaker, and a board to run them. Twenty one printed parts on four plates, and not a single screw. Every fastener is printed too."
    }
   ],
   "print": [
