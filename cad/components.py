@@ -51,7 +51,13 @@ def esp32_s3():
     """Dual-USB-C ROBODUINO clone. Origin = PCB underside centre, USB-C at +X,
     WROOM module at -X, header pins DOWN."""
     L, W, T = P.ESP_L, P.ESP_W, P.ESP_T
-    pcb = _b(L, W, 0.0, T, r=1.5)
+    # corner mounting holes -- real boards have them, and the tub's printed
+    # locating pins rise through them now that the M2 screws are gone
+    holes = unary_union([affinity.translate(pl.circle(2.4, 16),
+                                            sx * (L - 5) / 2, sy * (W - 5) / 2)
+                         for sx in (-1, 1) for sy in (-1, 1)])
+    prof = pl.rounded_rect(L, W, 1.5).difference(holes)
+    pcb = pl.prism(prof, 0.0, T)
     parts = [("esp32-pcb", pcb, C["pcb-black"])]
 
     m = pl.Mesh()
@@ -112,7 +118,11 @@ def inmp441():
 def max98357a():
     """Purple breakout, green screw terminal on top, 7 pins down one edge."""
     L, W, T = P.AMP_L, P.AMP_W, P.AMP_T
-    parts = [("amp-pcb", _b(L, W, 0.0, T, r=1.0), C["pcb-purple"])]
+    holes = unary_union([affinity.translate(pl.circle(2.4, 16),
+                                            sx * 7.5, oy)
+                         for sx in (-1, 1) for oy in (6.0, -2.5)])
+    prof = pl.rounded_rect(L, W, 1.0).difference(holes)
+    parts = [("amp-pcb", pl.prism(prof, 0.0, T), C["pcb-purple"])]
     tl, tw, th = P.AMP_TERM
     parts.append(("amp-terminal", _b(tl, tw, T - OVL, T + th, -1.5, W / 2 - tw / 2 - 1.5),
                   C["terminal"]))
@@ -307,3 +317,34 @@ def for_part(name):
                      dz=(P.YOKE_BELOW + P.ARM_FORE_L)
                      - (P.SG_L / 2 - P.SG_SHAFT_OFF), tag="-head")
     return []
+
+
+# ---------------------------------------------------------- WS2812 ring ----
+def ws2812_ring():
+    """The LED ring, as sold: an annular PCB with the LEDs on ONE face and
+    the four solder pads on the other. Origin = PCB back-face centre, LEDs
+    at +Z. Pads at -Z, grouped near one edge the way the common 12-LED
+    boards put them: PWR, GND, IN, OUT."""
+    from shapely import affinity as _aff
+    import math as _math
+    n_led = 12
+    pcb = pl.ring2d(pl.circle(P.RING_OD, 96), pl.circle(P.RING_ID, 96))
+    parts = [("ring-pcb", pl.prism(pcb, 0.0, P.RING_T), C["pcb-black"])]
+    led = pl.Mesh()
+    r_led = (P.RING_OD + P.RING_ID) / 4.0
+    for i in range(n_led):
+        a = 2 * _math.pi * i / n_led
+        led += pl.prism(_aff.translate(box(-2.5, -2.5, 2.5, 2.5),
+                                       r_led * _math.cos(a),
+                                       r_led * _math.sin(a)),
+                        P.RING_T - OVL, P.RING_T + 1.6)
+    parts.append(("ring-leds", led, C["ring"]))
+    pads = pl.Mesh()
+    for i in range(4):
+        a = _math.radians(258 + 8 * i)
+        pads += pl.prism(_aff.translate(box(-1.1, -1.1, 1.1, 1.1),
+                                        r_led * _math.cos(a),
+                                        r_led * _math.sin(a)),
+                         -0.3, 0.0 + OVL)
+    parts.append(("ring-pads", pads, C["gold"]))
+    return parts

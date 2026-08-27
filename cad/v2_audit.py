@@ -63,9 +63,15 @@ def main():
         #   round its rim.
         #   v2-link1-in: the horn recess pocket, printed face down; its
         #   cross arms are 6.8 wide and bridge wall to wall.
+        #   v2-screws/-bolts: same coin-slot-under-collar bridge as
+        #   v2-screw, once per screw on the strip; plus the thread's own
+        #   45-degree start ramp over the neck -- v1 printed this form.
+        #   v2-conecap: the 4 face bridges over the light slot, 7.5 span,
+        #   anchored on both rims, deliberately placed in the bed-side half.
         if a > asup.MIN_AREA and n not in ("shade", "v2-head",
-                                           "v2-screw", "v2-trimcap",
-                                           "v2-caphead",
+                                           "v2-screw", "v2-screws",
+                                           "v2-bolts", "v2-trimcap",
+                                           "v2-caphead", "v2-conecap",
                                            "v2-tub", "v2-link1-out",
                                            "v2-link1-in"):
             fails.append(f"{n}: {a:.0f} mm2 over air in print pose")
@@ -85,7 +91,7 @@ def main():
         # PCB, a speaker's cone inside its frame. Group by FAMILY and skip
         # same-family pairs; cross-family pairs stay fully checked.
         for pre in ("pan-", "sh-", "el-", "hd-", "mx-",
-                    "esp32-", "amp-", "mic-", "spk-"):
+                    "esp32-", "amp-", "mic-", "spk-", "ring-"):
             if nm.startswith(pre):
                 return pre
         return None

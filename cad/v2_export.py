@@ -38,8 +38,10 @@ LAYOUT = {
     "v2-link2-spacers":("v2-plate-3-head", 95.0, 45.0),
     "v2-head":         ("v2-plate-3-head", 30.0, 95.0),
     "shade":           ("v2-plate-4-cone", 0.0, 55.0),
-    "v2-screw":        ("v2-plate-3-head", -15.0, 100.0),
-    "v2-screw-elbow":  ("v2-plate-3-head", -45.0, 100.0),
+    "v2-screws":       ("v2-plate-2-disc", 0.0, 108.0),
+    "v2-conecap":      ("v2-plate-4-cone", 110.0, 55.0),
+    "v2-bolts":        ("v2-plate-4-cone", 115.0, -45.0),
+    "v2-disckeys":     ("v2-plate-4-cone", 75.0, -100.0),
     "v2-trimcap":      ("v2-plate-3-head", 75.0, 105.0),
     "v2-caphead":      ("v2-plate-3-head", 108.0, 105.0),
     "v2-keycap":       ("v2-plate-1-base", -90.0, 80.0),
@@ -111,7 +113,9 @@ def main():
                "(everything else prints clean -- measured by cad/v2_audit.py,",
                "which also proves every joint engagement number on this arm)", "",
                "Electronics: ESP32-S3, MAX98357A, 40x20 speaker, round mic,",
-               "4x MG996R, M3 inserts -- one servo part number, four joints.", "",
+               "4x MG996R and NOTHING ELSE: every fastener is printed. P6 "
+               "thumb-bolts into printed-thread sleeves, three printed yoke "
+               "screws, two disc keys, locating pins under the boards.", "",
                "CAD, audits, and the whole history:",
                "github.com/nickthelegend/aibo-pet"]
     zp = os.path.join(EXP, "hotaru2-plates.zip")
@@ -197,7 +201,7 @@ def main():
             "elbow_clearance_mm": 0.3, "stub_engage_mm": 5.0,
             "shade_yoke_margin_mm": 0.7},
         "known_limits": [
-            "elbow is single sided: drive horn M3 is the retention; the far "
+            "elbow is single sided: the printed trim cup is the retention; the far "
             "plate is truncated clear of the servo tail's swept annulus",
             "v2-head needs supports (45 mm2 under its stub axle)",
             "electronics wall openings (USB, mic port, MX plate) are placed "

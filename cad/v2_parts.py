@@ -163,6 +163,28 @@ def l2_spots():
     return [(LINK2_OUT_START + 8, -LINK_W / 2 + 6),
             (LINK2_OUT_START + 8, LINK_W / 2 - 6), (47.0, 0.0)]
 
+# ---- all-printed fastening: there is NO metal on this robot ----
+# Every M3-insert bore becomes a printed P6 thread (the v1 yoke screw's
+# proven M6x2 form), every M3 becomes a printed thumb-bolt, and the two
+# board-screw stations become locating pins under gravity. The user has no
+# screws and wants to buy none; v1's printed thread is the one fastener
+# this project has already manufactured and load-tested.
+PB_CLEAR = P.SCREW_MAJOR + 0.6      # thumb-bolt clearance hole
+PB_BORE = P.SCREW_MAJOR + 0.8       # host bore the threaded sleeve fuses in
+PB_SLEEVE = P.SCREW_MAJOR + 2.4     # sleeve outer: 0.8 fuse ring per side
+PB_HEAD = 11.0
+
+def _psleeve(x, y, z0, z1):
+    # seg 20 / per_turn 8, not the 64/24 default: a O6 printed thread is
+    # resolved by a 0.4 nozzle far below either number, and at default
+    # tessellation thirteen sleeves plus the bolt strip pushed the
+    # assembled GLB to 113 MB -- past GitHub's 100 MB hard limit.
+    b = pl.threaded_bore(PB_SLEEVE, P.SCREW_MAJOR, P.SCREW_PITCH,
+                         0.0, z1 - z0, clearance=P.SCREW_FIT / 2,
+                         seg=20, per_turn=8)
+    b.translate(dx=x, dy=y, dz=z0)
+    return b
+
 # Board stations: one definition, used by the tub's posts AND by the
 # assembly that drops the real components onto them.
 # The ESP32's USB connectors live on the +X SHORT edge of the board, and
@@ -176,7 +198,7 @@ def l2_spots():
 # 1.3 inside the pebble wall at PCB height -- at 40 it was r 72.9, in the
 # wall. The -Y edge at 18 still clears the pan clamp bosses, which top out
 # at y 17.15.
-ESP_XY = (16.0, 33.0)
+ESP_XY = (16.0, 35.5)   # +2.5: the O10 pan clamp bosses reach y 20.2
 ESP_ROT = 0.0
 ESP_POST = 10.0          # > 8.5 of ESP32-S3 pin
 AMP_XY = (-40.0, -34.0)
@@ -360,12 +382,45 @@ def tub():
     # crown and MX body at once). The pod carries that sector's wall.
     CR_IR, CR_OR = 78.2, 81.2
     sec = _sector(195.0, TR_A0).union(_sector(TR_A1, 345.0))
-    for k in range(28):
-        za = 56.0 * k / 28.0
-        zb = 56.0 * (k + 1) / 28.0 + (OVL if k < 27 else 0.0)
+    # Disc retention, fully printed: at 210 and 330 degrees the crown grows
+    # an outboard channel boss, and a WINDOW through its inner wall at
+    # 38.0..39.4 -- just under the skirt's bottom edge (39.5). A printed key
+    # drops down the channel after the disc is in; its toe pokes through the
+    # window beneath the skirt. Lift the disc and the skirt meets two toes
+    # whose upward load path is the window ceiling, solid crown. The keys
+    # go in AFTER the disc, which is the whole reason the crown itself
+    # cannot carry these toes (a fixed overhang would block the disc drop
+    # -- the closure audit is what forced this into a separate part).
+    KEY_ANGS = (210.0, 330.0)
+    KEY_W = 10.0
+    def _key_boxes(ang, r0, r1, w):
+        bb = box(r0, -w / 2, r1, w / 2)
+        return affinity.rotate(bb, ang, origin=(0, 0))
+    # The boss is a rotated BOX, and a box aimed along a radius carries its
+    # corners PAST the nominal outer radius (hypot(84.4, 8.2) = 84.8). The
+    # key's flange starts exactly at 84.4, so those corners buried
+    # themselves 0.4 into it. Trimming the boss to the true r=84.4 arc
+    # makes the face the flange lands on actually flat-at-radius.
+    key_boss = unary_union([_key_boxes(a, CR_OR - OVL, CR_OR + 3.2, KEY_W + 6.4)
+                            for a in KEY_ANGS]).intersection(
+                                pl.circle(2 * (CR_OR + 3.2), 160))
+    key_win = unary_union([_key_boxes(a, 75.2, CR_OR + 3.2 + OVL, KEY_W + 0.7)
+                           for a in KEY_ANGS])
+    # window floor at 37.0, not 38.0: prism bands stretch their ceilings by
+    # OVL (0.2), so a band ending AT the tongue's z buried its bottom 0.05.
+    # With the floor a full millimetre down, the stretch lands in void; the
+    # ceiling stays sharp at 39.4 because stretches ADD material and the
+    # solid band above already owns everything past 39.4.
+    crown_marks = [0.0, 2.0, 4.0, 6.0, 8.0, 30.0, 37.0, 39.4, 56.0]
+    for za, zb0 in zip(crown_marks[:-1], crown_marks[1:]):
+        zb = zb0 + (OVL if zb0 < 56.0 else 0.0)
         ro = CR_OR if za >= 8.0 else CR_OR - (8.0 - za) * 1.1
         ring = pl.ring2d(pl.circle(2 * ro, 160), pl.circle(2 * CR_IR, 160))
         ring = ring.intersection(sec)
+        if za >= 30.0:                        # boss stiffens the wall
+            ring = ring.union(key_boss.intersection(sec))
+            if za >= 37.0 - 1e-6 and zb0 <= 39.4 + 1e-6:   # the key window
+                ring = ring.difference(key_win)
         if not ring.is_empty:
             m += pl.prism(ring, za, zb)
 
@@ -458,13 +513,17 @@ def tub():
                        [(wire_w, 12.0, 22.0)] if sx < 0 else [])
         # M3 insert bosses beside the tab, for the clamp bar
         for sy in (-1, 1):
-            bpos = (px, sy * (P.MG_W / 2 + 3.6))
-            bos = affinity.translate(pl.circle(7.4, 32), *bpos)
-            bor = affinity.translate(pl.circle(P.M3_INSERT_D, 24), *bpos)
+            # +5.35 not +3.6: the boss grew from O7.4 to O10 to swallow the
+            # printed-thread sleeve, and at the old offset its flank clipped
+            # the servo tab corners by 1.4 (the audit counted 47 points)
+            bpos = (px, sy * (P.MG_W / 2 + 5.35))
+            bos = affinity.translate(pl.circle(PB_SLEEVE + 1.6, 32), *bpos)
+            bor = affinity.translate(pl.circle(PB_BORE, 24), *bpos)
             m += pl.prism(bos.difference(bor), FLOOR - OVL, PAN_TAB_Z + 6.0)
+            m += _psleeve(*bpos, PAN_TAB_Z - 4.0, PAN_TAB_Z + 6.0)
 
     # ---- electronics, on the floor, v1 footprints ----
-    def posts(cx, cy, offs, h_post):
+    def posts(cx, cy, offs, h_post, pin_offs=None):
         """Standoffs tall enough that the board's THROUGH-HOLE PINS clear the
         floor. An ESP32-S3's pins hang 8.5 below its PCB and the amp's 6.0;
         5 mm posts would have driven both straight into the tub floor.
@@ -475,17 +534,31 @@ def tub():
         whole length, and the amp's single row owns y -8.7..-6.1. A 5.4 post
         under either one holds the board up by its connectors."""
         pp = pl.Mesh()
+        pin_offs = offs if pin_offs is None else pin_offs
         for ox, oy in offs:
             p = (cx + ox, cy + oy)
             b = affinity.translate(pl.circle(5.4, 24), *p)
-            hh = affinity.translate(pl.circle(P.M2_PILOT, 16), *p)
-            pp += pl.prism(b.difference(hh), FLOOR - OVL, FLOOR + h_post)
+            pp += pl.prism(b, FLOOR - OVL, FLOOR + h_post)
+            if (ox, oy) not in pin_offs:
+                continue
+            # locating PIN up through the board's corner hole -- the screw
+            # is gone. The tub is sealed by the disc, so gravity plus pins
+            # is the whole mounting story, and it costs nothing. Pins only
+            # where the REAL board has a hole: the ESP's +X posts sit at
+            # +26.5 (the charge well pushed them inboard), where the board
+            # is solid copper -- a pin there punches the PCB, and the audit
+            # counted it. Two pins fix position; four posts carry weight.
+            # Pin top stops 0.05 BELOW the board's top face: anything proud
+            # found the parts that overhang the corner holes.
+            pin = affinity.translate(pl.circle(1.8, 16), *p)
+            pp += pl.prism(pin, FLOOR + h_post - OVL, FLOOR + h_post + 1.55)
         return pp
     # ESP32-S3: inboard of the header rows (|y| <= 12.1 - 2.7 post radius)
     # +X pair sits at +26.5, not +29.5: the charge well's land begins at
     # 49.6 and a post at 45.5 reached into it
     m += posts(*ESP_XY, [(ox, sy * 8.5) for ox in (-29.5, 26.5)
-                         for sy in (-1, 1)], ESP_POST)
+                         for sy in (-1, 1)], ESP_POST,
+               pin_offs=[(-29.5, sy * 8.5) for sy in (-1, 1)])
     # MAX98357A: its one row is along -Y, so both pairs sit above it
     m += posts(*AMP_XY, [(sx * 7.5, oy) for sx in (-1, 1)
                          for oy in (6.0, -2.5)], AMP_POST)
@@ -542,13 +615,15 @@ def disc():
     ]
     # 4 insert bores for the tower flange
     for (ix, iy) in _tower_bolts():
-        openings.append((affinity.translate(pl.circle(P.M3_INSERT_D, 24), ix, iy),
+        openings.append((affinity.translate(pl.circle(PB_BORE, 24), ix, iy),
                          DISC_Z0 - OVL, DISC_Z0 + DISC_T + OVL))
     # No arc vents. They were styling on the ONE face that has to stay a
     # clean bearing surface and a clean top, and they read as busy rather
     # than machined. The platter is plain; the crown and the link skeletons
     # carry the visual language instead.
     m += pl.banded(face, DISC_Z0, DISC_Z0 + DISC_T, openings)
+    for (ix, iy) in _tower_bolts():
+        m += _psleeve(ix, iy, DISC_Z0, DISC_Z0 + DISC_T)
 
     # rim skirt: hides the joint and locates the disc round the rim
     sk = pl.ring2d(pl.circle(SKIRT_ID + 2 * SKIRT_T, 160), pl.circle(SKIRT_ID, 160))
@@ -569,9 +644,9 @@ def tower():
     m = pl.Mesh()
     bw, bd, bt = TWR_BASE
     base = pl.rounded_rect(bw, bd, 6.0)
-    holes = unary_union([affinity.translate(pl.circle(P.M3_CLEAR, 24), x, y)
+    holes = unary_union([affinity.translate(pl.circle(PB_CLEAR, 24), x, y)
                          for x, y in _tower_bolts()])
-    heads = unary_union([affinity.translate(pl.circle(P.M3_HEAD_D + 0.6, 24), x, y)
+    heads = unary_union([affinity.translate(pl.circle(PB_HEAD + 0.8, 24), x, y)
                          for x, y in _tower_bolts()])
     m += pl.banded(base, z0, z0 + bt, [
         (holes, z0 - OVL, z0 + bt + OVL),
@@ -676,13 +751,13 @@ def _link_plate(name, length, colour, near, far, spots=(), holes_at=()):
             keep.append(w.buffer(2.0))
         elif feat == "mount":
             for dy in (-10.0, 10.0):
-                openings.append((affinity.translate(pl.circle(P.M3_CLEAR, 24), x0, dy),
+                openings.append((affinity.translate(pl.circle(PB_CLEAR, 24), x0, dy),
                                  -OVL, PLATE_T + OVL))
     if "stub" in (near, far):
         x0 = length if far == "stub" else 0.0
         keep.append(affinity.translate(pl.circle(30.0, 48), x0, 0))
     for (cx, cy) in tuple(spots) + tuple(holes_at):
-        openings.append((affinity.translate(pl.circle(P.M3_CLEAR, 24), cx, cy),
+        openings.append((affinity.translate(pl.circle(PB_CLEAR, 24), cx, cy),
                          -OVL, PLATE_T + OVL))
         keep.append(affinity.translate(pl.rounded_rect(13.0, 12.0, 2.0), cx, cy))
     cuts = _skeleton(length, unary_union(keep))
@@ -710,10 +785,11 @@ def _ledge_posts(name, spots, h, colour):
     m = pl.Mesh()
     for (cx, cy) in spots:
         b = affinity.translate(pl.rounded_rect(10.0, 12.0, 2.0), cx, cy)
-        hh = affinity.translate(pl.circle(P.M3_INSERT_D, 24), cx, cy)
+        hh = affinity.translate(pl.circle(PB_BORE, 24), cx, cy)
         m += pl.prism(b.difference(hh), 0.0, h - 9.0)
         slot = affinity.translate(box(-5.5, -3.2, 5.5, 3.2), cx, cy)
         m += pl.prism(b.difference(hh).difference(slot), h - 9.0 - OVL, h)
+        m += _psleeve(cx, cy, 0.0, h - 9.0)      # thread in the solid zone
     return (name, m, colour)
 
 
@@ -722,8 +798,9 @@ def _standoffs(name, spots, h, colour):
     m = pl.Mesh()
     for (cx, cy) in spots:
         b = affinity.translate(pl.rounded_rect(10.0, 9.0, 2.0), cx, cy)
-        hh = affinity.translate(pl.circle(P.M3_INSERT_D, 24), cx, cy)
+        hh = affinity.translate(pl.circle(PB_BORE, 24), cx, cy)
         m += pl.prism(b.difference(hh), 0.0, h)
+        m += _psleeve(cx, cy, 0.0, h)
     return (name, m, colour)
 
 
@@ -764,10 +841,10 @@ def _truncated_plate(name, length, start, colour, far, spots=()):
             box(start - 2, -LINK_W / 2, start + 8, LINK_W / 2)]
     if far == "mount":
         for dy in (-10.0, 10.0):
-            openings.append((affinity.translate(pl.circle(P.M3_CLEAR, 24), length, dy),
+            openings.append((affinity.translate(pl.circle(PB_CLEAR, 24), length, dy),
                              -OVL, PLATE_T + OVL))
     for (cx, cy) in spots:
-        openings.append((affinity.translate(pl.circle(P.M3_CLEAR, 24), cx, cy),
+        openings.append((affinity.translate(pl.circle(PB_CLEAR, 24), cx, cy),
                          -OVL, PLATE_T + OVL))
         keep.append(affinity.translate(pl.rounded_rect(13.0, 12.0, 2.0), cx, cy))
     cuts = _skeleton(length, unary_union(keep)).intersection(
@@ -874,12 +951,14 @@ def head_block():
     m += pl.banded(nose, 0.0, HEAD_BLOCK_H, cuts + [
         (cb, HEAD_SHAFT_Z - HEAD_CBORE_D / 2, HEAD_SHAFT_Z + HEAD_CBORE_D / 2)])
 
-    # idler stub: 4 long, so it fills the shade's bore without reaching
-    # link2's inner face. ANNULAR: the shade's keyhole slot is open toward
-    # the yoke tip, so an M3 + washer self-tapped down this pilot is what
-    # keeps the plate on the stub when the head nods.
-    ax = pl.prism(pl.ring2d(pl.circle(P.AXLE_D, 48), pl.circle(2.8, 16)),
-                  0.0, 4.0 + OVL)
+    # idler stub: 4 long, a plain printed axle -- and NO screw. The shade
+    # is one rigid piece: its drive plate is axially locked (horn in the
+    # drop-in recess, capped by the glued cup), so the idler plate cannot
+    # walk off this stub without the whole cone walking, which the drive
+    # side forbids. The M3-and-washer this stub used to carry was v1
+    # thinking; there is no outboard room for any head here anyway
+    # (link2-in stands 0.5 away), which the interference audit proved.
+    ax = pl.prism(pl.circle(P.AXLE_D, 48), 0.0, 4.0 + OVL)
     ax.rotate_y(-90.0)
     ax.translate(dx=-HEAD_HALF + OVL, dy=HEAD_SHAFT_Y, dz=HEAD_SHAFT_Z)
     m += ax
@@ -891,6 +970,66 @@ def _slot_head(d):
     The slot goes clear through -- it prints clean in any orientation and
     reads as machined from both sides."""
     return pl.circle(d, 96).difference(box(-d * 0.36, -1.7, d * 0.36, 1.7))
+
+
+def v2_disckey_one():
+    """ONE disc-retention tongue, y-centred on its own axis. The world
+    assembly places two of these; the print strip is two side by side.
+    (The first cut placed the whole 2-tongue strip at each window, so every
+    key carried a phantom twin 16 mm away buried in the crown wall -- the
+    interference audit found the twins.)"""
+    m = pl.prism(box(0.0, -9.3 / 2, 8.9, 9.3 / 2), 0.0, 1.2)
+    # flange backed off 0.15 from the tongue root: at 0 it shared a face
+    # with the boss arc and the parity probe counted the coincident skin
+    m += pl.prism(box(-1.55, -12.9 / 2, -0.15, 12.9 / 2), 0.0, 3.2)
+    return m
+
+
+def v2_disckeys():
+    """The two disc-retention tongues as one printed strip. Each slides
+    RADIALLY through its crown window after the disc is seated; the tip
+    rides 0.15 under the skirt's bottom edge, so the disc cannot lift, and
+    the fixed crown never has to overhang the disc's drop-in path (a fixed
+    overhang is exactly what the closure audit rejects). The flange stands
+    on the boss face as the stop and the fingernail grip."""
+    out = pl.Mesh()
+    for i in range(2):
+        q = v2_disckey_one().copy()
+        q.translate(dy=i * 16.0)
+        out += q
+    return [("v2-disckeys", out, COLORS["v2-accent"])]
+
+
+def v2_bolts():
+    """22 printed P6 thumb-bolts -- every fastener on the robot, printed.
+
+    4 tower->disc, 4 link1 spots (both plates), 2 link1 ledges, 6 link2
+    spots (both plates), 6 servo clamp bars. Head 11 with the coin slot,
+    minor-diameter neck through the 4.0 plate, then 6.5 of the proven M6x2
+    printed thread into the sleeve on the far side."""
+    m = pl.Mesh()
+    neck_d = P.SCREW_MAJOR - 2 * pl.THREAD_RAMP * P.SCREW_PITCH
+    for i in range(22):
+        x, y = (i % 6) * 14.0, (i // 6) * 16.0
+        m += pl.prism(affinity.translate(_slot_head(PB_HEAD), x, y), 0.0, 2.6)
+        m += pl.prism(affinity.translate(pl.circle(neck_d, 32), x, y),
+                      2.6 - OVL, 7.0)
+        th = pl.thread(P.SCREW_MAJOR, P.SCREW_PITCH, 7.0 - OVL, 13.5,
+                       seg=20, per_turn=8)
+        th.translate(dx=x, dy=y)
+        m += th
+    return [("v2-bolts", m, COLORS["v2-accent"])]
+
+
+def v2_screws_strip():
+    """The two yoke screws as one printed strip: shoulder and elbow. The
+    head joint needs none -- see head_block's stub comment."""
+    m = pl.Mesh()
+    for i in range(2):
+        q = v2_screw()[0][1].copy()
+        q.translate(dx=i * 30.0)
+        m += q
+    return [("v2-screws", m, COLORS["v2-accent"])]
 
 
 def v2_screw():
@@ -978,6 +1117,6 @@ def clamp_bars():
     m = pl.Mesh()
     for i in range(6):
         b = affinity.translate(pl.rounded_rect(12.0, 8.0, 2.0), i * 16.0, 0)
-        h = affinity.translate(pl.circle(P.M3_CLEAR, 24), i * 16.0, 0)
+        h = affinity.translate(pl.circle(PB_CLEAR, 24), i * 16.0, 0)
         m += pl.prism(b.difference(h), 0.0, 4.0)
     return [("v2-clamps", m, COLORS["v2-clamp"])]

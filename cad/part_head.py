@@ -6,8 +6,7 @@ taper narrows as Z rises, so the whole shell is self-supporting; the apex is
 left OPEN, which kills the last bridge and doubles as the ring's wire exit.
 
 Stack, mouth (Z=0) up:
-   0.0 ..  3.0   bezel      lip retaining the WS2812 ring; glow exits here
-   3.0 ..  5.6   seat       RING_OD + fit pocket
+   0.0 ..  5.6   mouth      straight O88 wall the cap's skirt slides into
    5.6 .. 30.0   cone
   30.0 .. 36.0   vents      SHADE_VENTS slots, like the reference lamp
   36.0 .. 52.0   cone
@@ -22,7 +21,13 @@ so the horn cross recess was clipped to a 0.25 sliver and the cone was
 hanging on nothing. Every static audit passed it, because a cone attached
 to nothing collides with nothing.
 
-Printed mouth DOWN, exactly as modelled.
+The mouth is CLOSED by a separate cap (cone-cap): flat face, an annular
+light slot over the WS2812's LED circle, ring pocket behind, friction skirt
+into the mouth. The ring rides the cap, glowing through the slot; its wires
+run up the cone interior and out the open apex. A pry notch in the rim lets
+a fingernail pop the cap back off.
+
+Printed mouth DOWN, exactly as modelled; the cap prints face down too.
 """
 from __future__ import annotations
 
@@ -115,31 +120,62 @@ def _collar():
 
 
 def _mouth():
-    """Mouth lip plus a SPOKED carrier for the LED ring.
+    """Straight O88 entry wall, plus the pry notch.
 
-    The mouth used to be solid from the ring out to the rim. At a 66 mouth
-    that was tolerable; at 88 it is a 43 mm wide flat disc of PLA -- about
-    31 g, hung 74 mm off the tilt axis, to retain a 12 g ring. Three spokes
-    do the same job, and the rest of the mouth is the aperture the light
-    actually leaves through.
-
-    Ring fitting: it drops in from the APEX side and lands on the aperture
-    lip; the pocket wall round it takes the sideways load. Wires leave up
-    the open apex.
+    The spoked open mouth is gone: the user wants the cone CLOSED, with the
+    LED ring on a cap. So the mouth is now just the socket that cap plugs
+    into -- a parallel wall two SHADE_WALLs thick (the skirt bears on it),
+    with a thumbnail-sized notch in the rim to pry the cap back out.
     """
-    wall = P.SHADE_WALL
-    shelf_id = P.RING_OD + P.RING_FIT
-    shelf_od = shelf_id + 2 * wall + 1.4
-    m = pl.prism(pl.ring2d(pl.circle(P.SHADE_OD, 96),
-                           pl.circle(P.SHADE_OD - 2 * wall, 96)), 0.0, Z_SEAT1)
-    m += pl.prism(pl.ring2d(pl.circle(shelf_od, 96), pl.circle(RING_AP, 96)),
-                  0.0, Z_SEAT0)                       # the lip the ring sits on
-    m += pl.prism(pl.ring2d(pl.circle(shelf_od, 96), pl.circle(shelf_id, 96)),
-                  Z_SEAT0 - OVL, Z_SEAT1)             # pocket wall round it
-    spokes = [affinity.rotate(box(-4.0, shelf_od / 2 - 1.0, 4.0, P.SHADE_OD / 2),
-                              a, origin=(0, 0))
-              for a in (0.0, 120.0, 240.0)]
-    m += pl.prism(unary_union(spokes), 0.0, Z_SEAT1)
+    wall_id = P.SHADE_OD - 2 * (P.SHADE_WALL + 2.0)
+    prof = pl.ring2d(pl.circle(P.SHADE_OD, 96), pl.circle(wall_id, 96))
+    notch = box(-4.0, -P.SHADE_OD / 2 - 1, 4.0, -P.SHADE_OD / 2 + 1.2)
+    return pl.banded(prof, 0.0, Z_SEAT1, [(notch, 0.0 - OVL, 1.6)])
+
+
+# cap geometry, shared with the assembly so the ring lands where the slot is
+CAP_FACE_T = 2.4
+CAP_SKIRT = 6.0
+CAP_SKIRT_OD = P.SHADE_OD - 2 * (P.SHADE_WALL + 2.0) - 0.4   # 0.2/side slide
+LED_CIRCLE = (P.RING_OD + P.RING_ID) / 2.0                    # 38.35
+SLOT_ID, SLOT_OD = P.RING_ID - 1.2, P.RING_OD + 1.0   # square-LED corners
+POST_R = P.RING_OD / 2 + P.RING_FIT + 2.2   # post EDGE clears RING_OD
+
+
+def cone_cap():
+    """The face of the lamp. Prints face down: flange 0..2.4, then the
+    skirt and the ring-locator posts rise above it.
+
+    face      O88 disc with an annular LIGHT SLOT over the LED circle,
+              interrupted by 4 bridges that keep the centre disc attached
+    skirt     O84.0 x 6, slides into the mouth wall; friction plus the pry
+              notch is the whole retention story, same as the keycap
+    posts     3 stubs just outside RING_OD locate the ring over the slot;
+              the ring drops in LED-side-down and a dab of glue holds it
+    """
+    face = pl.circle(P.SHADE_OD, 96)
+    slot = pl.ring2d(pl.circle(SLOT_OD, 96), pl.circle(SLOT_ID, 96))
+    bridges = unary_union([affinity.rotate(box(-3.0, 0.0, 3.0, P.SHADE_OD / 2),
+                                           a, origin=(0, 0))
+                           for a in (45, 135, 225, 315)])
+    # The bridges live only in the TOP half of the face: 12 LED squares on a
+    # 30-degree grid can never all dodge bridges on a 90-degree grid (90 is
+    # a multiple of 30), so instead of dodging in plan they duck in Z -- the
+    # LED tops stop at 0.8, the bridge undersides start at 1.2. Face-down on
+    # the bed each is a 7.5 mm bridge anchored on both rims, which prints
+    # clean; the audit exemption for it carries this reason.
+    m = pl.banded(face, 0.0, CAP_FACE_T, [(slot, 0.0 - OVL, CAP_FACE_T + OVL)])
+    # bridges in the print-side half: face-down they lie ON the bed (no
+    # bridging at all), and world-side they sit 0.4 ABOVE the LED tops
+    m += pl.prism(bridges.intersection(slot), 0.0, CAP_FACE_T / 2.0)
+    m += pl.prism(pl.ring2d(pl.circle(CAP_SKIRT_OD, 96),
+                            pl.circle(CAP_SKIRT_OD - 4.0, 96)),
+                  CAP_FACE_T - OVL, CAP_FACE_T + CAP_SKIRT)
+    for a in (30.0, 150.0, 270.0):
+        px = POST_R * math.cos(math.radians(a))
+        py = POST_R * math.sin(math.radians(a))
+        m += pl.prism(affinity.translate(pl.circle(4.4, 24), px, py),
+                      CAP_FACE_T - OVL, CAP_FACE_T + P.RING_T + 2.0)
     return m
 
 
@@ -183,7 +219,8 @@ def build():
                     for zl, zh, w in J._disc_slices(P.AXLE_D + P.AXLE_FIT, 0.0, TILT)]
                    + [(box(-YK1 - OVL, -slot_w, -YK0 + OVL, slot_w),
                        TILT, Z_YOKE1 + OVL)])
-    return [("shade", m, P.COLORS["shade"])]
+    return [("shade", m, P.COLORS["shade"]),
+            ("v2-conecap", cone_cap(), P.COLORS["shade"])]
 
 
 if __name__ == "__main__":

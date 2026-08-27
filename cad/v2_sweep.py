@@ -29,7 +29,7 @@ import v2_parts as V
 # BOARDS -- they sit on the tub's own standoffs, and leaving them out of
 # this list swept the ESP32 and the mic round the inside of the tub and
 # reported the disc as seized on its own electronics.
-STATIC_PREFIX = ("v2-tub", "mx-", "v2-keycap", "pan-",
+STATIC_PREFIX = ("v2-tub", "mx-", "v2-keycap", "v2-disckey", "pan-",
                  "esp32-", "amp-", "mic-", "spk-")
 STEP_DEG = 7.5
 RANGE_DEG = 180.0

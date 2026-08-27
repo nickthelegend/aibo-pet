@@ -82,13 +82,25 @@ def world_items():
         q.translate(dx=xc, dy=15.0, dz=z_hd - 22.0)
         out.append((n, q, c))
 
-    # ---- the v1 cone shade, unchanged, on the head axis
-    sname, smesh, scol = part_head.build()[0]
-    sm = smesh.copy()
+    # ---- the cone shade on the head axis, mouth up, capped
+    built = {n: (m, c) for n, m, c in part_head.build()}
+    sm = built["shade"][0].copy()
     sm.translate(dz=-part_head.TILT)
     sm.rotate_x(180.0)
     sm.translate(dx=xc, dz=z_hd)
-    out.append((sname, sm, scol))
+    out.append(("shade", sm, built["shade"][1]))
+
+    mouth_z = z_hd + part_head.TILT              # rim plane, facing up
+    cap = built["v2-conecap"][0].copy()
+    cap.rotate_x(180.0)                          # printed face-down; face up
+    cap.translate(dx=xc, dz=mouth_z + part_head.CAP_FACE_T)
+    out.append(("v2-conecap", cap, built["v2-conecap"][1]))
+
+    # the WS2812 rides the cap: LEDs up, tops 0.8 proud into the light slot
+    for n, m, c in CO.ws2812_ring():
+        q = m.copy()
+        q.translate(dx=xc, dz=mouth_z + 0.8 - (P.RING_T + 1.6))
+        out.append((n, q, c))
 
     # ---- the hardware that visually and physically closes the joints ----
     scr = V.v2_screw()[0][1].copy()
@@ -100,6 +112,15 @@ def world_items():
     scr2.rotate_y(-90.0)
     scr2.translate(dx=V.L2_OUT_HALF + V.PLATE_T + 3.2, dz=z_el)
     out.append(("v2-screw-elbow", scr2, V.COLORS["v2-accent"]))
+
+    # disc-retention tongues, slid radially through the crown windows
+    import math as _m
+    for i, ang in enumerate((210.0, 330.0)):
+        k = V.v2_disckey_one().copy()
+        k.rotate_z(ang + 180.0)                      # +x -> radially inward
+        k.translate(dx=84.4 * _m.cos(_m.radians(ang)),
+                    dy=84.4 * _m.sin(_m.radians(ang)), dz=38.15)
+        out.append((f"v2-disckey-{i}", k, V.COLORS["v2-accent"]))
 
     # No trim cap at the elbow. Its job was to plug the hub bore -- but the
     # HORN occupies that bore, which is the whole point of the joint, and
@@ -233,7 +254,8 @@ def print_items():
     out = []
     for n, m, c in (V.tub() + V.disc() + V.tower() + V.link1() + V.link2()
                     + V.head_block() + V.clamp_bars()
-                    + V.v2_screw() + V.v2_trimcap() + V.v2_caphead()
+                    + V.v2_screws_strip() + V.v2_bolts() + V.v2_disckeys()
+                    + V.v2_trimcap() + V.v2_caphead()
                     + V.v2_keycap() + V.v2_horns()):
         q = m.copy()
         if n == "v2-disc":
@@ -249,10 +271,10 @@ def print_items():
         b = q.bounds()
         q.translate(dz=-b[2])
         out.append((n, q))
-    # the shade prints exactly as v1 ships it
-    sn, sm, _sc = part_head.build()[0]
-    q = sm.copy(); b = q.bounds(); q.translate(dz=-b[2])
-    out.append(("shade", q))
+    # the shade and its cap print exactly as modelled, mouth/face down
+    for sn, sm, _sc in part_head.build():
+        q = sm.copy(); b = q.bounds(); q.translate(dz=-b[2])
+        out.append((sn, q))
     return out
 
 
@@ -263,6 +285,8 @@ PLATES = [
      ["v2-link1-in", "v2-link1-out", "v2-link1-spacers",
       "v2-link2-in", "v2-link2-out", "v2-link2-spacers",
       "v2-head", "v2-clamps"]),
-    ("v2-plate-3-shade", "the cone, unchanged from v1",
-     ["shade"]),
+    ("v2-plate-3-shade", "the cone and its LED-ring cap",
+     ["shade", "v2-conecap"]),
+    ("v2-plate-4-hardware", "printed bolts, yoke screws, disc keys",
+     ["v2-bolts", "v2-screws", "v2-disckeys"]),
 ]

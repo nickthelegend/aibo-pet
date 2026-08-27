@@ -37,12 +37,14 @@ def joints():
         # link, not with the case. The screws thread into the inboard stub
         # and stay put while the outboard plate turns on them.
         ("shoulder", z_sh, ("v2-link1", "v2-link2", "v2-head", "shade",
+                            "v2-conecap", "ring-",
                             "v2-trimcap", "v2-caphead", "v2-screw-elbow",
                             "el-", "hd-",
                             "horn-shoulder", "horn-elbow", "horn-head"), 180.0),
         ("elbow", z_el, ("v2-link2", "v2-head", "shade", "hd-", "v2-trimcap",
-                         "v2-caphead", "horn-elbow", "horn-head"), 180.0),
-        ("head", z_hd, ("shade", "v2-caphead"), 180.0),
+                         "v2-caphead", "v2-conecap", "ring-",
+                         "horn-elbow", "horn-head"), 180.0),
+        ("head", z_hd, ("shade", "v2-caphead", "v2-conecap", "ring-"), 180.0),
     ]
 
 

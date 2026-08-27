@@ -45,7 +45,10 @@ STEP = 2.0
 
 DIRS = [((0, 0, -1), "down -Z"), ((0, 0, 1), "up +Z"),
         ((-1, 0, 0), "in -X"), ((1, 0, 0), "in +X"),
-        ((0, -1, 0), "in -Y"), ((0, 1, 0), "in +Y")]
+        ((0, -1, 0), "in -Y"), ((0, 1, 0), "in +Y"),
+        # horizontal diagonals: the disc keys enter radially at 210/330
+        ((-0.866, -0.5, 0), "in 210deg"), ((0.866, 0.5, 0), "in 30deg"),
+        ((0.866, -0.5, 0), "in 330deg"), ((-0.866, 0.5, 0), "in 150deg")]
 
 # Servo lead-outs are flexible cable, modelled as a rigid stub so the wire
 # exit is visible. A stub that fouls a channel it is meant to be threaded
@@ -63,11 +66,17 @@ L2 = L1 + ("horn-elbow", "v2-link2", "v2-screw-elbow", "hd-")
 
 STEPS = [
     ("esp32-", TUB), ("amp-", TUB), ("spk-", TUB), ("mic-", TUB),
-    ("pan-", ELEC), ("horn-pan", PAN), ("v2-disc", PAN), ("v2-tower", DISC),
+    ("pan-", ELEC), ("horn-pan", PAN), ("v2-disc", PAN),
+    # one step per key: they enter along OPPOSITE radials (210 and 330),
+    # so a single step covering both can never find one direction that fits
+    ("v2-disckey-0", PAN + ("v2-disc",)),
+    ("v2-disckey-1", PAN + ("v2-disc",)), ("v2-tower", DISC),
     ("horn-shoulder", TOWER), ("v2-link1-out", TOWER),
     ("horn-elbow", L1), ("v2-link2-out", L1),
     ("v2-head", L2), ("horn-head", L2),
     ("shade", L2 + ("v2-head", "horn-head")),
+    ("ring-", L2 + ("v2-head", "horn-head", "shade")),
+    ("v2-conecap", L2 + ("v2-head", "horn-head", "shade", "ring-")),
     ("v2-trimcap", L2 + ("v2-head",)),
     ("v2-caphead", L2 + ("v2-head", "horn-head", "shade")),
     ("v2-keycap", TUB + ("mx-",)),
@@ -117,8 +126,11 @@ def main():
         return TRAVEL, ""
 
     for pre, placed in STEPS:
+        # "v2-disc" is a prefix of "v2-disckey-": without the exclusion the
+        # disc step dragged both keys along and drove them into the tub.
         moving = [(n, m) for n, m in world
-                  if n.startswith(pre) and not n.endswith(FLEX)]
+                  if n.startswith(pre) and not n.endswith(FLEX)
+                  and not (pre == "v2-disc" and n.startswith("v2-disckey"))]
         obstacles = [(n, m) for n, m in world
                      if n.startswith(placed) and not n.startswith(pre)
                      and not n.endswith(FLEX)]
