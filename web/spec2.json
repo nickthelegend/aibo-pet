@@ -7,7 +7,7 @@
     168.0,
     56.0
    ],
-   "cm3": 206.4,
+   "cm3": 203.9,
    "fits": true
   },
   {
@@ -219,7 +219,7 @@
   "servos": 4,
   "height_mm": 362,
   "reach_mm": 280,
-  "plastic_cm3": 596,
+  "plastic_cm3": 593,
   "plates": 4,
   "m3": 0,
   "m2": 0,

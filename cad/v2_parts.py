@@ -468,12 +468,17 @@ def tub():
     # back of the lamp, and it is the only way this switch is serviceable.
     mx_back = affinity.translate(pl.rounded_rect(16.0, 30.0, 3.0),
                                  MXC[0], MXC[1] - 9.0)
+    # ONE opening in the pod's back, not two. The access port and the lead
+    # window were separate holes at 44..54.5 and 26..34, which read from
+    # outside as two unexplained cavities stacked on the same face. They do
+    # one job between them -- get to the tags, get the wire out -- so they
+    # are one slot from 26 up to the plate: solder at the top of it, the
+    # lead falls down the same opening and through the tub wall.
     T_OPEN = [
         (mx_sq, MX_PLATE_Z, TR_TOP + OVL),
         (mx_re, 44.0, MX_PLATE_Z),
-        (mx_back, 44.0, MX_PLATE_Z),
+        (mx_back, 26.0, MX_PLATE_Z),
         (vwire, 28.0, 44.0 + OVL),
-        (wire_win, 26.0, 34.0),
     ]
     # Bands are split at every opening edge. A fixed 2 mm grid missed the
     # 54.5 plate line: the 54..56 band carried no active opening, and the
