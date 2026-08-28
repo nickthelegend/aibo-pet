@@ -466,8 +466,14 @@ def tub():
     # the pocket into an open port: clip the switch in from the top, solder
     # both tags from behind, drop the leads down the bore. It faces the
     # back of the lamp, and it is the only way this switch is serviceable.
-    mx_back = affinity.translate(pl.rounded_rect(16.0, 30.0, 3.0),
-                                 MXC[0], MXC[1] - 9.0)
+    # The access slot faces INWARD, into the tub, not out the visible face.
+    # Cut outward it was the first thing you saw on the back of the lamp;
+    # cut inward it opens above the rim where the disc later hides it, and
+    # you still reach the tags with the disc off -- which is when you are
+    # soldering anyway. The 1.75 mm of outer wall behind the pocket stays,
+    # so from outside the pod is unbroken.
+    mx_inner = affinity.translate(pl.rounded_rect(16.0, 22.0, 3.0),
+                                  MXC[0], MXC[1] + 8.0)
     # ONE opening in the pod's back, not two. The access port and the lead
     # window were separate holes at 44..54.5 and 26..34, which read from
     # outside as two unexplained cavities stacked on the same face. They do
@@ -477,8 +483,9 @@ def tub():
     T_OPEN = [
         (mx_sq, MX_PLATE_Z, TR_TOP + OVL),
         (mx_re, 44.0, MX_PLATE_Z),
-        (mx_back, 26.0, MX_PLATE_Z),
+        (mx_inner, 44.0, MX_PLATE_Z),
         (vwire, 28.0, 44.0 + OVL),
+        (wire_win, 26.0, 34.0),
     ]
     # Bands are split at every opening edge. A fixed 2 mm grid missed the
     # 54.5 plate line: the 54..56 band carried no active opening, and the

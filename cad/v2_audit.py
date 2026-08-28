@@ -236,8 +236,12 @@ def main():
          (cx + (P.MX_BODY_SQ / 2 + 1.2), cy, zr), True),
         ("pod solid beside the relief -X",
          (cx - (P.MX_BODY_SQ / 2 + 1.2), cy, zr), True),
-        ("access port OPEN behind the tags",
-         (cx, cy - (P.MX_BODY_SQ / 2 + 6.0), zr), False),
+        # the port faces INWARD now, so this probes toward the tub centre;
+        # the outward face must be SOLID, which the row after it asserts
+        ("access port OPEN inboard of the tags",
+         (cx, cy + (P.MX_BODY_SQ / 2 + 1.0), zr), False),
+        ("pod outer face still solid",
+         (cx, cy - (P.MX_BODY_SQ / 2 + 1.0), zr), True),
         ("wire bore open below",          (cx, cy, 36.0), False),
         ("top face solid at the rim",     (cx + 12.0, cy, V.TR_TOP - 0.7), True),
     ]
