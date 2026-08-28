@@ -197,6 +197,17 @@ def build():
     # retention that the open slots give up is put back explicitly: a glued
     # cap over the hub end (drive) and an M3 + washer into the stub's pilot
     # (idler). Torque rides the channel side walls exactly as before.
+    # Weld both yoke plates into the collar. The plates start at Z_CONE1
+    # and the collar flares to exactly 2*YK1 there, so they were relying on
+    # a tangent kiss -- and on the idler side the pivot bore's slices ate
+    # what little overlap there was, leaving that plate a separate object
+    # in the mesh. An unconditional slab through the join, well below the
+    # bore at TILT, makes it one piece with no cosmetic change.
+    for _sx in (1, -1):
+        _x0, _x1 = (YK0, YK1) if _sx > 0 else (-YK1, -YK0)
+        m += pl.prism(box(_x0, -YK_HY, _x1, YK_HY),
+                      Z_CONE1 - 6.0, Z_CONE1 + 2.0)
+
     hy = YK_HY
     aw = P.HORN_ARM_W + P.HORN_FIT
     hub = P.HORN_HUB_D + P.HORN_FIT

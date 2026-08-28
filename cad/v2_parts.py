@@ -432,7 +432,14 @@ def tub():
     for za, zb0 in zip(crown_marks[:-1], crown_marks[1:]):
         zb = zb0 + (OVL if zb0 < 56.0 else 0.0)
         ro = CR_OR if za >= 8.0 else CR_OR - (8.0 - za) * 1.1
-        ring = pl.ring2d(pl.circle(2 * ro, 160), pl.circle(2 * CR_IR, 160))
+        # Below the skirt the crown's INNER radius reaches the wall, which
+        # is the only thing joining it to the tub. At a constant 78.2 it
+        # stood 3.2 clear of a wall ending at 75: a free-floating ring,
+        # watertight and fully audited, that came off the plate as a loose
+        # arc in the user's hand. Above 37 it steps back out so the disc's
+        # skirt still drops past it.
+        ri = CR_IR if za >= 37.0 else TUB_OD / 2 - TUB_WALL
+        ring = pl.ring2d(pl.circle(2 * ro, 160), pl.circle(2 * ri, 160))
         ring = ring.intersection(sec)
         if za >= 30.0:                        # boss stiffens the wall
             ring = ring.union(key_boss.intersection(sec))
@@ -490,11 +497,12 @@ def tub():
     # Bands are split at every opening edge. A fixed 2 mm grid missed the
     # 54.5 plate line: the 54..56 band carried no active opening, and the
     # mesh probe found the "cutout" solid.
-    marks = sorted({0.0, 2.0, 4.0, 6.0, 8.0, 26.0, 28.0, 34.0, 44.0,
+    marks = sorted({0.0, 2.0, 4.0, 6.0, 8.0, 26.0, 28.0, 34.0, 37.0, 44.0,
                     MX_PLATE_Z, TR_TOP})
     for za, zb in zip(marks[:-1], marks[1:]):
         ro = TR_R1 if za >= 8.0 else TR_R1 - (8.0 - za) * 1.1
-        ring = pl.ring2d(pl.circle(2 * ro, 160), pl.circle(2 * TR_R0, 160))
+        ri_t = TR_R0 if za >= 37.0 else TUB_OD / 2 - TUB_WALL
+        ring = pl.ring2d(pl.circle(2 * ro, 160), pl.circle(2 * ri_t, 160))
         ring = ring.intersection(tsec)
         cuts = unary_union([g for g, zl, zh in T_OPEN
                             if zl <= za + 0.01 and zh >= zb - 0.01] or
@@ -1022,7 +1030,8 @@ def head_block():
     # nose: the drive face carries the horn's counterbore, exactly as the
     # shoulder cheek does, so the cross sits 1.0 in and the socket swallows
     # 1.7 of spline
-    nose = affinity.translate(pl.rounded_rect(2 * HEAD_HALF, D, 5.0), 0, D - 4.0)
+    nose = affinity.translate(pl.rounded_rect(2 * HEAD_HALF, D + 5.0, 5.0),
+                              0, D - 6.5)
     cb = affinity.translate(pl.circle(HEAD_CBORE_D, 48),
                             HEAD_HALF - HEAD_CBORE_T, HEAD_SHAFT_Y)
     cb = cb.intersection(box(HEAD_HALF - HEAD_CBORE_T, -99, 99, 99))
@@ -1056,10 +1065,14 @@ def v2_disckey_one():
     (The first cut placed the whole 2-tongue strip at each window, so every
     key carried a phantom twin 16 mm away buried in the crown wall -- the
     interference audit found the twins.)"""
-    m = pl.prism(box(0.0, -9.3 / 2, 8.9, 9.3 / 2), 0.0, 1.2)
-    # flange backed off 0.15 from the tongue root: at 0 it shared a face
-    # with the boss arc and the parity probe counted the coincident skin
-    m += pl.prism(box(-1.55, -12.9 / 2, -0.15, 12.9 / 2), 0.0, 3.2)
+    # The TONGUE reaches 0.5 back into the flange, rather than the flange
+    # reaching forward into the tongue. Both give one solid part -- sharing
+    # only the plane x=0 gave two loose bits -- but the flange's front face
+    # is what lands on the crown boss at r 84.4, so growing it forward put
+    # 0.5 of key inside the boss. Growing the tongue backwards costs
+    # nothing: behind the flange is air.
+    m = pl.prism(box(-0.5, -9.3 / 2, 8.9, 9.3 / 2), 0.0, 1.2)
+    m += pl.prism(box(-1.55, -12.9 / 2, 0.0, 12.9 / 2), 0.0, 3.2)
     return m
 
 

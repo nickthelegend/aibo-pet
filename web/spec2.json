@@ -7,7 +7,7 @@
     168.0,
     56.0
    ],
-   "cm3": 206.4,
+   "cm3": 247.9,
    "fits": true
   },
   {
@@ -107,7 +107,7 @@
     45.0,
     30.0
    ],
-   "cm3": 25.9,
+   "cm3": 27.7,
    "fits": true
   },
   {
@@ -197,7 +197,7 @@
     88.0,
     86.0
    ],
-   "cm3": 41.3,
+   "cm3": 43.4,
    "fits": true
   },
   {
@@ -219,7 +219,7 @@
   "servos": 4,
   "height_mm": 362,
   "reach_mm": 280,
-  "plastic_cm3": 596,
+  "plastic_cm3": 641,
   "plates": 4,
   "m3": 0,
   "m2": 0,
@@ -367,7 +367,7 @@
     ],
     "fits_bed": true,
     "supports": [],
-    "mb": 4.46,
+    "mb": 4.54,
     "url": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-plate-1-base.stl"
    },
    {
