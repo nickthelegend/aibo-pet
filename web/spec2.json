@@ -7,7 +7,7 @@
     168.0,
     56.0
    ],
-   "cm3": 213.0,
+   "cm3": 206.4,
    "fits": true
   },
   {
@@ -219,7 +219,7 @@
   "servos": 4,
   "height_mm": 362,
   "reach_mm": 280,
-  "plastic_cm3": 602,
+  "plastic_cm3": 596,
   "plates": 4,
   "m3": 0,
   "m2": 0,
@@ -229,13 +229,13 @@
  "downloads": {
   "base": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/",
   "zip": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/hotaru2-plates.zip",
-  "zip_mb": 4.0,
+  "zip_mb": 4.1,
   "plates_zip": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/hotaru2-plates.zip",
-  "plates_zip_mb": 4.0,
+  "plates_zip_mb": 4.1,
   "plates": [
    "v2-plate-1-base",
-   "v2-plate-2-disc",
-   "v2-plate-3-head",
+   "v2-plate-2-arm",
+   "v2-plate-3-disc",
    "v2-plate-4-cone"
   ],
   "files": {
@@ -367,52 +367,52 @@
     ],
     "fits_bed": true,
     "supports": [],
-    "mb": 4.38,
+    "mb": 4.46,
     "url": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-plate-1-base.stl"
    },
    {
-    "plate": "v2-plate-2-disc",
-    "why": "the turntable, link1's inner plate and the yoke screws",
+    "plate": "v2-plate-2-arm",
+    "why": "",
     "parts": [
-     "v2-disc",
      "v2-link1-in",
-     "v2-screws"
-    ],
-    "used_mm": [
-     200.7,
-     155.4,
-     11.0
-    ],
-    "fits_bed": true,
-    "supports": [],
-    "mb": 3.19,
-    "url": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-plate-2-disc.stl"
-   },
-   {
-    "plate": "v2-plate-3-head",
-    "why": "every remaining link plate, the head block and the caps",
-    "parts": [
      "v2-link1-out",
      "v2-link2-in",
      "v2-link2-out",
      "v2-link1-spacers",
      "v2-link1-ledges",
      "v2-link2-spacers",
+     "v2-screws"
+    ],
+    "used_mm": [
+     146.2,
+     46.0,
+     60.1
+    ],
+    "fits_bed": true,
+    "supports": [],
+    "mb": 9.04,
+    "url": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-plate-2-arm.stl"
+   },
+   {
+    "plate": "v2-plate-3-disc",
+    "why": "",
+    "parts": [
+     "v2-disc",
      "v2-head",
      "v2-trimcap",
      "v2-caphead"
     ],
     "used_mm": [
-     153.1,
-     55.7,
-     60.1
+     155.4,
+     155.4,
+     30.0
     ],
     "fits_bed": true,
     "supports": [
      "v2-head"
     ],
-    "mb": 7.38,
-    "url": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-plate-3-head.stl"
+    "mb": 1.52,
+    "url": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-plate-3-disc.stl"
    },
    {
     "plate": "v2-plate-4-cone",
@@ -420,9 +420,9 @@
     "parts": [
      "shade",
      "v2-conecap",
+     "v2-horns",
      "v2-bolts",
-     "v2-disckeys",
-     "v2-horns"
+     "v2-disckeys"
     ],
     "used_mm": [
      120.0,

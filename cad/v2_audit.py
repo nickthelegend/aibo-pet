@@ -225,7 +225,19 @@ def main():
         ("plate solid beside the cutout", (cx, cy - (P.MX_CUT / 2 + 0.6), zp), True),
         ("cutout open for the clips",     (cx, cy, zp), False),
         ("relief hollow under the plate", (cx, cy, zr), False),
-        ("pod solid outside the relief",  (cx, cy - (P.MX_BODY_SQ / 2 + 1.2), zr), True),
+        # The walls that retain the switch and carry the pod are the SIDES.
+        # This used to probe behind the relief, which is now deliberately
+        # an access port -- without it the solder tags sit in a blind
+        # pocket no iron can reach. Probing the sides keeps the original
+        # teeth (a pod with no pocket still fails, its side walls missing)
+        # and the port itself is now guarded by the row below, so it cannot
+        # quietly close up again.
+        ("pod solid beside the relief +X",
+         (cx + (P.MX_BODY_SQ / 2 + 1.2), cy, zr), True),
+        ("pod solid beside the relief -X",
+         (cx - (P.MX_BODY_SQ / 2 + 1.2), cy, zr), True),
+        ("access port OPEN behind the tags",
+         (cx, cy - (P.MX_BODY_SQ / 2 + 6.0), zr), False),
         ("wire bore open below",          (cx, cy, 36.0), False),
         ("top face solid at the rim",     (cx + 12.0, cy, V.TR_TOP - 0.7), True),
     ]

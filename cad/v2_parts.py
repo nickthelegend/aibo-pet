@@ -454,10 +454,24 @@ def tub():
                  MXC[0] + P.MX_CUT / 2, MXC[1] + P.MX_CUT / 2)
     mx_re = _box(MXC[0] - P.MX_BODY_SQ / 2, MXC[1] - P.MX_BODY_SQ / 2,
                  MXC[0] + P.MX_BODY_SQ / 2, MXC[1] + P.MX_BODY_SQ / 2)
-    vwire = affinity.translate(pl.circle(8.0, 24), *MXC)
+    vwire = affinity.translate(pl.circle(10.0, 24), *MXC)
+    # ACCESS PORT through the pod's back, at the terminal height.
+    #
+    # Without it the switch's two solder tags sit at the bottom of a blind
+    # 16 x 16 pocket, 10 mm deep, whose only other exit is the lead bore --
+    # no soldering iron reaches that, and no finger does either. The switch
+    # could be dropped in and then never wired. There is only 1.75 mm of
+    # wall behind the pocket (it spans r 79.2..95.2 inside a pod that ends
+    # at 97), so cutting it through costs nothing structurally and turns
+    # the pocket into an open port: clip the switch in from the top, solder
+    # both tags from behind, drop the leads down the bore. It faces the
+    # back of the lamp, and it is the only way this switch is serviceable.
+    mx_back = affinity.translate(pl.rounded_rect(16.0, 30.0, 3.0),
+                                 MXC[0], MXC[1] - 9.0)
     T_OPEN = [
         (mx_sq, MX_PLATE_Z, TR_TOP + OVL),
         (mx_re, 44.0, MX_PLATE_Z),
+        (mx_back, 44.0, MX_PLATE_Z),
         (vwire, 28.0, 44.0 + OVL),
         (wire_win, 26.0, 34.0),
     ]
