@@ -3,11 +3,11 @@
   {
    "name": "v2-tub",
    "mm": [
-    156.8,
-    168.0,
+    162.4,
+    178.2,
     56.0
    ],
-   "cm3": 247.9,
+   "cm3": 353.4,
    "fits": true
   },
   {
@@ -219,7 +219,7 @@
   "servos": 4,
   "height_mm": 362,
   "reach_mm": 280,
-  "plastic_cm3": 641,
+  "plastic_cm3": 747,
   "plates": 4,
   "m3": 0,
   "m2": 0,
@@ -361,13 +361,13 @@
      "v2-keycap"
     ],
     "used_mm": [
-     164.4,
-     168.0,
+     167.2,
+     178.2,
      67.8
     ],
     "fits_bed": true,
     "supports": [],
-    "mb": 4.54,
+    "mb": 4.85,
     "url": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-plate-1-base.stl"
    },
    {

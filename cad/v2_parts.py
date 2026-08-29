@@ -389,16 +389,33 @@ def tub():
     # floor through its own 40-degree foot, capped flat at 56.
     from shapely.geometry import Polygon as _Poly
     def _sector(a0, a1):
+        # steps scale with the arc: the crown now sweeps 332 degrees, and a
+        # fixed 40 would have chorded it into a visible polygon once the
+        # ring was intersected against 160-segment circles.
+        n = max(40, int(abs(a1 - a0) / 1.5))
         pts = [(0.0, 0.0)] + [
-            (200.0 * math.cos(math.radians(a0 + t * (a1 - a0) / 40)),
-             200.0 * math.sin(math.radians(a0 + t * (a1 - a0) / 40)))
-            for t in range(41)]
+            (200.0 * math.cos(math.radians(a0 + t * (a1 - a0) / n)),
+             200.0 * math.sin(math.radians(a0 + t * (a1 - a0) / n)))
+            for t in range(n + 1)]
         return _Poly(pts)
     # The crown parts at the turret: its ring through 256..284 would run
     # straight across the pod's switch relief (795 probe points inside
     # crown and MX body at once). The pod carries that sector's wall.
     CR_IR, CR_OR = 78.2, 81.2
-    sec = _sector(195.0, TR_A0).union(_sector(TR_A1, 345.0))
+    # FULL RING, not a 150-degree arc. An arc has two free ends, and a wall
+    # 3 mm thick standing 56 tall on two free ends is a lever waiting to
+    # snap -- which is exactly what the user said when they held the
+    # printed one. Closing it into a ring removes the free ends entirely:
+    # every section is braced by the two beside it, and hoop stress does
+    # the work instead of a cantilever. Only the turret's own sector is
+    # left out, because the pod fills it.
+    # The crown runs INTO the turret pod by 4 degrees at each end instead
+    # of stopping exactly where the pod starts. Butted end-to-end the two
+    # only shared a plane, which is precisely the seam an arc levers open
+    # at; overlapped, they interpenetrate by ~5.6 mm of arc at r80 and the
+    # ring is continuous material the whole way round, crown into pod into
+    # crown. A closed ring has no free end to lever.
+    sec = _sector(TR_A1 - 4.0, TR_A0 + 360.0 + 4.0)
     # Disc retention, fully printed: at 210 and 330 degrees the crown grows
     # an outboard channel boss, and a WINDOW through its inner wall at
     # 38.0..39.4 -- just under the skirt's bottom edge (39.5). A printed key
