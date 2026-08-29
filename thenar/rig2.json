@@ -1,0 +1,139 @@
+{
+ "static": [
+  "v2-tub",
+  "v2-disckey-0",
+  "v2-disckey-1",
+  "pan-mg996r-body",
+  "pan-mg996r-tabs",
+  "pan-mg996r-label",
+  "pan-mg996r-boss",
+  "pan-mg996r-spline",
+  "pan-mg996r-wire",
+  "esp32-pcb",
+  "esp32-module",
+  "esp32-usb",
+  "esp32-buttons",
+  "esp32-led",
+  "esp32-headers",
+  "esp32-pins",
+  "amp-pcb",
+  "amp-terminal",
+  "amp-pads",
+  "amp-headers",
+  "amp-pins",
+  "mic-pcb",
+  "mic-ring",
+  "mic-pkg",
+  "mic-pins",
+  "spk-frame",
+  "spk-back",
+  "spk-cone",
+  "spk-dome",
+  "spk-wires",
+  "mx-mx-upper",
+  "mx-mx-body",
+  "mx-mx-neck",
+  "mx-mx-stem",
+  "mx-mx-pins-l",
+  "mx-mx-pins-r",
+  "v2-keycap"
+ ],
+ "panParts": [
+  "v2-disc",
+  "v2-tower",
+  "horn-pan",
+  "sh-mg996r-body",
+  "sh-mg996r-tabs",
+  "sh-mg996r-label",
+  "sh-mg996r-boss",
+  "sh-mg996r-spline",
+  "sh-mg996r-wire"
+ ],
+ "loose": [],
+ "segments": [
+  {
+   "parts": [
+    "v2-link1-in",
+    "v2-link1-out",
+    "v2-link1-spacers",
+    "v2-link1-ledges",
+    "v2-screw",
+    "v2-screw-elbow",
+    "horn-shoulder"
+   ],
+   "servo": [
+    "el-mg996r-body",
+    "el-mg996r-tabs",
+    "el-mg996r-label",
+    "el-mg996r-boss",
+    "el-mg996r-spline",
+    "el-mg996r-wire"
+   ],
+   "length": 100.0
+  },
+  {
+   "parts": [
+    "v2-link2-in",
+    "v2-link2-out",
+    "v2-link2-spacers",
+    "v2-head",
+    "horn-elbow",
+    "v2-trimcap"
+   ],
+   "servo": [
+    "hd-mg996r-body",
+    "hd-mg996r-tabs",
+    "hd-mg996r-label",
+    "hd-mg996r-boss",
+    "hd-mg996r-spline",
+    "hd-mg996r-wire"
+   ],
+   "length": 90.0
+  },
+  {
+   "parts": [
+    "horn-head",
+    "v2-caphead"
+   ],
+   "servo": [],
+   "length": 0.0
+  }
+ ],
+ "shade": "shade",
+ "shadeParts": [
+  "shade",
+  "v2-conecap",
+  "ring-pcb",
+  "ring-leds",
+  "ring-pads"
+ ],
+ "pivot": [
+  0.0,
+  0.0,
+  95.5
+ ],
+ "neutral": {
+  "base": 0.0,
+  "shoulder": 30.0,
+  "elbow": 62.0,
+  "head": 73.0
+ },
+ "range": {
+  "base": [
+   -85.0,
+   85.0
+  ],
+  "shoulder": [
+   -32.0,
+   32.0
+  ],
+  "elbow": [
+   -32.0,
+   32.0
+  ],
+  "head": [
+   -40.0,
+   40.0
+  ]
+ }
+}
