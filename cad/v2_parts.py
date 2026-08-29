@@ -339,7 +339,7 @@ def tub():
     # edge; spans BOTH ports (26 across) plus clearance
     usb_win = _box(48.9, ESP_XY[1] - 15.0, 95.0, ESP_XY[1] + 15.0)
     # MX lead: from under the turret pocket, through rear wall and bulge
-    wire_win = _box(-4.0, -95, 4.0, -66.0)
+    wire_win = _box(-6.0, -95, 6.0, -66.0)
     mic_hole = affinity.translate(pl.circle(P.MIC_PORT_D, 24), -74.0, 0.0)
     mic_hole = mic_hole.union(_box(-92, -P.MIC_PORT_D / 2, -70, P.MIC_PORT_D / 2))
     # Ventilation, sized by v2_margins rather than by eye. The tub is a
@@ -363,17 +363,23 @@ def tub():
         (usb_win, USB_Z0, USB_Z0 + P.USB_PLUG_H + 1.6),
         (mic_hole, 26.0, 26.0 + P.MIC_PORT_D),
         (grille,   5.0, 33.0),
-        (wire_win, 26.0, 34.0),
+        (wire_win, 24.0, 36.0),
     ]
     steps = 40
     for k in range(steps):
         za = TUB_H * k / steps
-        zb = TUB_H * (k + 1) / steps + (OVL if k < steps - 1 else 0.0)
+        zb0 = TUB_H * (k + 1) / steps            # the band's TRUE top
+        zb = zb0 + (OVL if k < steps - 1 else 0.0)   # stretched, to fuse
         o = od(za)
         ring = _flat(pl.circle(o, 160), FACET_Y).difference(
                _flat(pl.circle(o - 2 * TUB_WALL, 160), FACET_Y - TUB_WALL))
+        # against zb0, NOT the stretched zb: a band is stretched by OVL so
+        # its shell fuses with its neighbour, and testing the opening
+        # against that inflated top drops any opening whose ceiling lands
+        # on a band edge -- the whole band then prints solid. The opening
+        # covers the band it is asked about, not the overlap.
         cuts = unary_union([g for g, zl, zh in WALL_OPEN
-                            if zl <= za + 0.01 and zh >= zb - 0.01] or
+                            if zl <= za + 0.01 and zh >= zb0 - 0.01] or
                            [Polygon()])
         ring = ring.difference(cuts)
         if not ring.is_empty:
@@ -446,7 +452,7 @@ def tub():
     # ceiling stays sharp at 39.4 because stretches ADD material and the
     # solid band above already owns everything past 39.4.
     crown_marks = sorted({0.0, 2.0, 4.0, 6.0, 8.0, 30.0, 37.0, 39.4, 56.0,
-                          5.0, 26.0, 33.0, 34.0, 26.0 + P.MIC_PORT_D,
+                          5.0, 24.0, 26.0, 33.0, 36.0, 26.0 + P.MIC_PORT_D,
                           USB_Z0, USB_Z0 + P.USB_PLUG_H + 1.6})
     for za, zb0 in zip(crown_marks[:-1], crown_marks[1:]):
         zb = zb0 + (OVL if zb0 < 56.0 else 0.0)
@@ -521,12 +527,12 @@ def tub():
         (mx_re, 44.0, MX_PLATE_Z),
         (mx_inner, 44.0, MX_PLATE_Z),
         (vwire, 28.0, 44.0 + OVL),
-        (wire_win, 26.0, 34.0),
+        (wire_win, 24.0, 36.0),
     ]
     # Bands are split at every opening edge. A fixed 2 mm grid missed the
     # 54.5 plate line: the 54..56 band carried no active opening, and the
     # mesh probe found the "cutout" solid.
-    marks = sorted({0.0, 2.0, 4.0, 6.0, 8.0, 26.0, 28.0, 34.0, 37.0, 44.0,
+    marks = sorted({0.0, 2.0, 4.0, 6.0, 8.0, 24.0, 28.0, 36.0, 37.0, 44.0,
                     MX_PLATE_Z, TR_TOP})
     for za, zb in zip(marks[:-1], marks[1:]):
         ro = TR_R1 if za >= 8.0 else TR_R1 - (8.0 - za) * 1.1
@@ -719,10 +725,24 @@ def disc():
     # would only clear at one angle -- the sweep audit found the disc
     # grounding on it at every step except 0 and +/-90. A groove at the
     # hump's radius clears it through the whole rotation.
-    HUMP_R0, HUMP_R1, HUMP_TOP = 12.0, 26.0, 47.9
+    # r 10..28, not 12..26: the pan servo's boss cleared the rotating disc
+    # by 0.15 mm, which is not a running fit on an FDM part -- it is a rub.
+    # The relief is a groove the disc sweeps over, so widening it costs
+    # nothing but a little plastic.
+    HUMP_R0, HUMP_R1, HUMP_TOP = 10.0, 28.0, 48.4
     openings.append((pl.ring2d(pl.circle(2 * HUMP_R1, 96),
                                pl.circle(2 * HUMP_R0, 96)),
                      DISC_Z0 - OVL, HUMP_TOP))
+    # The pan servo's boss pokes up into the disc's hub bore, and the disc
+    # TURNS over it: O13.3 round a O13 boss is 0.15 a side, which is a rub
+    # on an FDM part, not a running fit. The bore is stepped out to O14 for
+    # the 3.1 the boss actually occupies -- 0.5 a side -- and stays 13.3
+    # above that, where the horn's hub needs it. The cross arms run out to
+    # r24 so they lose nothing that grips.
+    # to 49.8, past the boss's own top at 49.3 -- a counterbore that stops
+    # BELOW the thing it is clearing clears nothing, which a 3.0 ceiling
+    # proved by leaving the gap at 0.15 exactly where it started.
+    openings.append((pl.circle(14.0, 48), DISC_Z0 - OVL, DISC_Z0 + 3.8))
     openings += [
         (kidney, DISC_Z0 - OVL, DISC_Z0 + DISC_T + OVL),
         (thr, DISC_Z0 - OVL, DISC_Z0 + DISC_T + OVL),

@@ -35,7 +35,14 @@ import solidtest as ST
 import v2_assembly as A
 import v2_parts as V
 
-CELL = 3.0            # mm per voxel
+# 2.0, not 3.0. Eroding a 3 mm grid by one cell demands 3 mm of clearance
+# all round the cable, which is the right test in open space and the wrong
+# one inside a channel built FOR a cable: the MX lead's own 8 x 8 window and
+# the mic's cradle both failed it while passing a real 2 mm wire with room
+# to spare. At 2 mm cells the erosion asks for 2 mm of clearance, so a
+# channel has to be 6 mm across to count -- still conservative for a
+# servo lead, and it no longer rejects the channels this lamp actually has.
+CELL = 2.0            # mm per voxel
 PAD = 9.0             # air margin round the assembly bbox
 
 # component lead exit -> where that cable has to arrive
