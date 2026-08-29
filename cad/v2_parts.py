@@ -341,7 +341,7 @@ def tub():
     # MX lead: from under the turret pocket, through rear wall and bulge
     wire_win = _box(-4.0, -95, 4.0, -66.0)
     mic_hole = affinity.translate(pl.circle(P.MIC_PORT_D, 24), -74.0, 0.0)
-    mic_hole = mic_hole.union(_box(-80, -P.MIC_PORT_D / 2, -70, P.MIC_PORT_D / 2))
+    mic_hole = mic_hole.union(_box(-92, -P.MIC_PORT_D / 2, -70, P.MIC_PORT_D / 2))
     # Ventilation, sized by v2_margins rather than by eye. The tub is a
     # CLOSED box holding the ESP32 and the pan servo, and 7 slots over 36
     # degrees gave 277 mm2 -- about a sixth of what free convection needs to
@@ -354,7 +354,7 @@ def tub():
     _gang = [a for a in range(-45, 20, 5)] + [40, 45]
     _gang += [a for a in range(140, 191, 5) if a != 180]   # 180 is the mic
     grille = unary_union([
-        affinity.rotate(_box(60.0, -1.5, 80.0, 1.5), a, origin=(0, 0))
+        affinity.rotate(_box(60.0, -1.5, 92.0, 1.5), a, origin=(0, 0))
         for a in _gang])
     globals()["_GRILLE_SLOTS"] = len(_gang)
 
@@ -445,7 +445,9 @@ def tub():
     # With the floor a full millimetre down, the stretch lands in void; the
     # ceiling stays sharp at 39.4 because stretches ADD material and the
     # solid band above already owns everything past 39.4.
-    crown_marks = [0.0, 2.0, 4.0, 6.0, 8.0, 30.0, 37.0, 39.4, 56.0]
+    crown_marks = sorted({0.0, 2.0, 4.0, 6.0, 8.0, 30.0, 37.0, 39.4, 56.0,
+                          5.0, 26.0, 33.0, 34.0, 26.0 + P.MIC_PORT_D,
+                          USB_Z0, USB_Z0 + P.USB_PLUG_H + 1.6})
     for za, zb0 in zip(crown_marks[:-1], crown_marks[1:]):
         zb = zb0 + (OVL if zb0 < 56.0 else 0.0)
         ro = CR_OR if za >= 8.0 else CR_OR - (8.0 - za) * 1.1
@@ -458,6 +460,16 @@ def tub():
         ri = CR_IR if za >= 37.0 else TUB_OD / 2 - TUB_WALL
         ring = pl.ring2d(pl.circle(2 * ro, 160), pl.circle(2 * ri, 160))
         ring = ring.intersection(sec)
+        # Grounding the crown to the wall filled r72..81.2 all the way
+        # round below 37 -- and every opening in that wall (speaker grille,
+        # USB well, mic port, the MX lead window) sits inside that annulus.
+        # They were all bricked up behind the crown: the wall had a hole,
+        # the crown behind it did not, so from outside there was no hole at
+        # all. Whatever the wall opens, the crown opens too.
+        thru = [g for g, zl, zh in WALL_OPEN
+                if zl <= za + 1e-6 and zh >= zb0 - 1e-6]
+        if thru:
+            ring = ring.difference(unary_union(thru))
         if za >= 30.0:                        # boss stiffens the wall
             ring = ring.union(key_boss.intersection(sec))
             if za >= 37.0 - 1e-6 and zb0 <= 39.4 + 1e-6:   # the key window
