@@ -4,7 +4,7 @@
  * hardware. This is the same rig the Hotaru site renders, posed to its neutral
  * stance and rotated slowly, with no controls: it is evidence, not a toy.
  *
- * Deliberately lazy. The GLB is 4.2 MB and sits far down the page, so nothing
+ * Deliberately lazy. The GLB is 2.3 MB and sits far down the page, so nothing
  * is fetched until the card is actually near the viewport.
  */
 import { M4, loadGLB, makeGL } from "./gl.js";
@@ -33,8 +33,8 @@ export function mountHotaru(cv) {
 async function run(cv) {
   const { gl, prog, U } = makeGL(cv);
   const [nodes, rig] = await Promise.all([
-    loadGLB("./hotaru2-rig.glb"),
-    fetch("./rig2.json").then(r => r.json()),
+    loadGLB("./hotaru-rig.glb"),
+    fetch("./rig.json").then(r => r.json()),
   ]);
 
   // rig.loose is the spares tray: horns, the spline test coupon, the retainer
@@ -70,20 +70,9 @@ async function run(cv) {
   const J = ["base", "shoulder", "elbow", "head"];
   function pose() {
     const N = rig.neutral;
-    // 2.0's base joint is a PAN about Z, not one more tilt in the rotX
-    // chain, so it applies as an OUTER transform and the chain below it
-    // starts from zero. rig.panParts is what marks a 2.0 rig; a v1 rig has
-    // no such key and keeps the old four-tilt walk.
-    const panning = Array.isArray(rig.panParts);
-    const outer = panning ? M4.rotZ(N.base) : M4.id();
-    let p = rig.pivot.slice(), cum = panning ? 0 : N.base;
-    if (panning) for (const nm of rig.panParts) {
-      const q = parts.find(x => x.name === nm);
-      if (q) q.model = outer;
-    }
+    let p = rig.pivot.slice(), cum = N.base;
     rig.segments.forEach((seg, i) => {
-      const M = M4.mul(outer,
-                       M4.mul(M4.trans(p[0], p[1], p[2]), M4.rotX(cum)));
+      const M = M4.mul(M4.trans(p[0], p[1], p[2]), M4.rotX(cum));
       for (const nm of seg.parts.concat(seg.servo)) {
         const q = parts.find(x => x.name === nm);
         if (q) q.model = M;
@@ -92,13 +81,8 @@ async function run(cv) {
       p = [p[0], p[1] - seg.length * Math.sin(a), p[2] + seg.length * Math.cos(a)];
       cum += N[J[i + 1]];
     });
-    // the cone is three parts now -- shell, cap and the LED ring
-    const sm = M4.mul(outer,
-                      M4.mul(M4.trans(p[0], p[1], p[2]), M4.rotX(cum + 180)));
-    for (const nm of (rig.shadeParts || [rig.shade])) {
-      const q = parts.find(x => x.name === nm);
-      if (q) q.model = sm;
-    }
+    const sh = parts.find(x => x.name === rig.shade);
+    if (sh) sh.model = M4.mul(M4.trans(p[0], p[1], p[2]), M4.rotX(cum + 180));
   }
   pose();
 

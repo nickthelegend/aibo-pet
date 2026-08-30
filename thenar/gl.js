@@ -18,12 +18,6 @@ export const M4 = {
     const a = d*Math.PI/180, c = Math.cos(a), s = Math.sin(a), m = M4.id();
     m[5]=c; m[6]=s; m[9]=-s; m[10]=c; return m;
   },
-  /* HOTARU 2.0 pans about Z -- v1's four joints were all tilts, so this
-   * axis had never been needed. */
-  rotZ(d) {
-    const a = d*Math.PI/180, c = Math.cos(a), s = Math.sin(a), m = M4.id();
-    m[0]=c; m[1]=s; m[4]=-s; m[5]=c; return m;
-  },
   persp(fovy, asp, n, f) {
     const t = 1/Math.tan(fovy/2), m = new Float32Array(16);
     m[0]=t/asp; m[5]=t; m[10]=(f+n)/(n-f); m[11]=-1; m[14]=2*f*n/(n-f);
