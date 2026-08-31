@@ -41,7 +41,8 @@
  "panParts": [
   "v2-disc",
   "v2-tower",
-  "horn-pan",
+  "horn-pan-shorn-arm",
+  "horn-pan-shorn-hub",
   "sh-mg996r-body",
   "sh-mg996r-tabs",
   "sh-mg996r-label",
@@ -59,7 +60,8 @@
     "v2-link1-ledges",
     "v2-screw",
     "v2-screw-elbow",
-    "horn-shoulder"
+    "horn-shoulder-shorn-arm",
+    "horn-shoulder-shorn-hub"
    ],
    "servo": [
     "el-mg996r-body",
@@ -77,8 +79,8 @@
     "v2-link2-out",
     "v2-link2-spacers",
     "v2-head",
-    "horn-elbow",
-    "v2-trimcap"
+    "horn-elbow-shorn-arm",
+    "horn-elbow-shorn-hub"
    ],
    "servo": [
     "hd-mg996r-body",
@@ -92,8 +94,8 @@
   },
   {
    "parts": [
-    "horn-head",
-    "v2-caphead"
+    "horn-head-shorn-arm",
+    "horn-head-shorn-hub"
    ],
    "servo": [],
    "length": 0.0

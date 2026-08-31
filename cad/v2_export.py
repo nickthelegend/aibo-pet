@@ -34,10 +34,16 @@ LAYOUT = {
     "v2-tub":          ("v2-plate-1-base", 0.0, 0.0),
     "v2-head":         ("v2-plate-1-base", 0.0, 118.0),
 
-    "v2-link1-in":     ("v2-plate-2-arm", 0.0, -81.0),
-    "v2-link1-out":    ("v2-plate-2-arm", 0.0, -27.0),
-    "v2-link2-in":     ("v2-plate-2-arm", 0.0, 27.0),
-    "v2-link2-out":    ("v2-plate-2-arm", 0.0, 81.0),
+    # The four links are each 58 deep and were spaced 54 apart, so every
+    # neighbouring pair overlapped by 4 mm -- 449 mm2 of shared plate that
+    # the collision check caught and the bed-fit check never would have,
+    # because the PLATE still fitted the bed; the parts just sat on top of
+    # one another. 4 x 58 = 232 against 244 usable leaves 12 mm for three
+    # gaps, so 61 centres gives each pair a clean 3 mm.
+    "v2-link1-in":     ("v2-plate-2-arm", 0.0, -91.5),
+    "v2-link1-out":    ("v2-plate-2-arm", 0.0, -30.5),
+    "v2-link2-in":     ("v2-plate-2-arm", 0.0, 30.5),
+    "v2-link2-out":    ("v2-plate-2-arm", 0.0, 91.5),
     "v2-link1-spacers":("v2-plate-2-arm", 115.0, -81.0),
     "v2-link1-ledges": ("v2-plate-2-arm", 115.0, -30.0),
     "v2-link2-spacers":("v2-plate-2-arm", 115.0, 27.0),
@@ -119,9 +125,10 @@ def main():
                "(everything else prints clean -- measured by cad/v2_audit.py,",
                "which also proves every joint engagement number on this arm)", "",
                "Electronics: ESP32-S3, MAX98357A, 40x20 speaker, round mic,",
-               "4x MG996R and NOTHING ELSE: every fastener is printed. P6 "
-               "thumb-bolts into printed-thread sleeves, two printed yoke "
-               "screws, two disc keys, locating pins under the boards.", "",
+               "4x MG996R. Each servo uses the STOCK horn from its own bag.",
+               "Every fastener is printed EXCEPT five M3s: four bolt the",
+               "tower down to the disc, and the fifth is the screw that came",
+               "with the servo, holding the pan horn on its output shaft.", "",
                "CAD, audits, and the whole history:",
                "github.com/nickthelegend/hotaru"]
     zp = os.path.join(EXP, "hotaru2-plates.zip")

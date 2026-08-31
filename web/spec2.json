@@ -17,7 +17,7 @@
     155.4,
     11.0
    ],
-   "cm3": 138.6,
+   "cm3": 141.3,
    "fits": true
   },
   {
@@ -27,27 +27,27 @@
     44.0,
     67.8
    ],
-   "cm3": 37.9,
+   "cm3": 38.8,
    "fits": true
   },
   {
    "name": "v2-link1-in",
    "mm": [
-    146.0,
-    46.0,
+    158.0,
+    58.0,
     9.4
    ],
-   "cm3": 21.6,
+   "cm3": 29.4,
    "fits": true
   },
   {
    "name": "v2-link1-out",
    "mm": [
-    146.0,
-    46.0,
+    158.0,
+    58.0,
     4.0
    ],
-   "cm3": 24.2,
+   "cm3": 33.0,
    "fits": true
   },
   {
@@ -73,21 +73,21 @@
   {
    "name": "v2-link2-in",
    "mm": [
-    136.0,
-    46.0,
+    148.0,
+    58.0,
     4.0
    ],
-   "cm3": 19.5,
+   "cm3": 27.5,
    "fits": true
   },
   {
    "name": "v2-link2-out",
    "mm": [
-    136.0,
-    46.0,
+    148.0,
+    58.0,
     4.0
    ],
-   "cm3": 17.9,
+   "cm3": 24.3,
    "fits": true
   },
   {
@@ -151,26 +151,6 @@
    "fits": true
   },
   {
-   "name": "v2-trimcap",
-   "mm": [
-    32.0,
-    32.0,
-    3.2
-   ],
-   "cm3": 2.3,
-   "fits": true
-  },
-  {
-   "name": "v2-caphead",
-   "mm": [
-    26.0,
-    26.0,
-    3.2
-   ],
-   "cm3": 1.2,
-   "fits": true
-  },
-  {
    "name": "v2-keycap",
    "mm": [
     17.0,
@@ -181,23 +161,13 @@
    "fits": true
   },
   {
-   "name": "v2-horns",
-   "mm": [
-    100.0,
-    100.0,
-    7.3
-   ],
-   "cm3": 8.6,
-   "fits": true
-  },
-  {
    "name": "shade",
    "mm": [
     88.0,
     88.0,
-    86.0
+    86.5
    ],
-   "cm3": 43.4,
+   "cm3": 43.5,
    "fits": true
   },
   {
@@ -213,13 +183,13 @@
  ],
  "interfaces": [],
  "stats": {
-  "parts": 21,
-  "interfaces": 21,
+  "parts": 18,
+  "interfaces": 18,
   "joints": 4,
   "servos": 4,
   "height_mm": 362,
   "reach_mm": 280,
-  "plastic_cm3": 738,
+  "plastic_cm3": 761,
   "plates": 4,
   "m3": 0,
   "m2": 0,
@@ -229,13 +199,13 @@
  "downloads": {
   "base": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/",
   "zip": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/hotaru2-plates.zip",
-  "zip_mb": 4.3,
+  "zip_mb": 4.2,
   "plates_zip": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/hotaru2-plates.zip",
-  "plates_zip_mb": 4.3,
+  "plates_zip_mb": 4.2,
   "plates": [
    "v2-plate-1-base",
    "v2-plate-2-arm",
-   "v2-plate-3-disc",
+   "v2-plate-3-turntable",
    "v2-plate-4-cone"
   ],
   "files": {
@@ -254,10 +224,7 @@
    "v2-screws": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/v2-screws.stl",
    "v2-bolts": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/v2-bolts.stl",
    "v2-disckeys": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/v2-disckeys.stl",
-   "v2-trimcap": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/v2-trimcap.stl",
-   "v2-caphead": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/v2-caphead.stl",
    "v2-keycap": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/v2-keycap.stl",
-   "v2-horns": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/v2-horns.stl",
    "shade": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/shade.stl",
    "v2-conecap": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/v2-conecap.stl"
   }
@@ -323,19 +290,7 @@
    "flip": 0.0,
    "dz": -0.0
   },
-  "v2-trimcap": {
-   "flip": 0.0,
-   "dz": -0.0
-  },
-  "v2-caphead": {
-   "flip": 0.0,
-   "dz": -0.0
-  },
   "v2-keycap": {
-   "flip": 0.0,
-   "dz": -0.0
-  },
-  "v2-horns": {
    "flip": 0.0,
    "dz": -0.0
   },
@@ -356,18 +311,18 @@
     "why": "the tub, its crown and the button turret -- the big one",
     "parts": [
      "v2-tub",
-     "v2-tower",
-     "v2-clamps",
-     "v2-keycap"
+     "v2-head"
     ],
     "used_mm": [
-     167.2,
+     162.4,
      178.2,
-     67.8
+     56.0
     ],
     "fits_bed": true,
-    "supports": [],
-    "mb": 5.38,
+    "supports": [
+     "v2-head"
+    ],
+    "mb": 4.47,
     "url": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/v2-plate-1-base.stl"
    },
    {
@@ -380,39 +335,37 @@
      "v2-link2-out",
      "v2-link1-spacers",
      "v2-link1-ledges",
-     "v2-link2-spacers",
-     "v2-screws"
+     "v2-link2-spacers"
     ],
     "used_mm": [
-     146.2,
-     46.0,
+     158.0,
+     58.0,
      60.1
     ],
     "fits_bed": true,
     "supports": [],
-    "mb": 9.04,
+    "mb": 8.37,
     "url": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/v2-plate-2-arm.stl"
    },
    {
-    "plate": "v2-plate-3-disc",
+    "plate": "v2-plate-3-turntable",
     "why": "",
     "parts": [
      "v2-disc",
-     "v2-head",
-     "v2-trimcap",
-     "v2-caphead"
+     "v2-tower",
+     "v2-disckeys",
+     "v2-clamps",
+     "v2-keycap"
     ],
     "used_mm": [
+     163.7,
      155.4,
-     155.4,
-     30.0
+     67.8
     ],
     "fits_bed": true,
-    "supports": [
-     "v2-head"
-    ],
-    "mb": 1.74,
-    "url": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/v2-plate-3-disc.stl"
+    "supports": [],
+    "mb": 2.39,
+    "url": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/v2-plate-3-turntable.stl"
    },
    {
     "plate": "v2-plate-4-cone",
@@ -420,18 +373,17 @@
     "parts": [
      "shade",
      "v2-conecap",
-     "v2-horns",
      "v2-bolts",
-     "v2-disckeys"
+     "v2-screws"
     ],
     "used_mm": [
-     120.0,
-     120.0,
-     86.0
+     119.5,
+     97.5,
+     86.5
     ],
     "fits_bed": true,
     "supports": [],
-    "mb": 3.1,
+    "mb": 3.6,
     "url": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/v2-plate-4-cone.stl"
    }
   ]
