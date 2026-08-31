@@ -39,6 +39,12 @@
       <div class="bar"><div id="bar-fill"></div></div>
     </div>
 
+    <!-- The bed, owned by the framework. No `crossorigin` (lint rejects it
+         outright) and an id is mandatory: an id-less <audio> is never picked
+         up by the mixer and the render comes out silent. -->
+    <audio id="hotaru-bgm" src="assets/bgm/track.wav"
+           data-start="0" data-duration="86" data-volume="0.85"></audio>
+
     <div id="outro" class="card">
       <h1>Four servos.<br>Nothing else bought.</h1>
       <p>21 printed parts on four P1S plates. Every fastener but the base's
