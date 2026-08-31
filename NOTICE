@@ -1,0 +1,23 @@
+HOTARU 2.0
+Copyright (c) 2026 nickthelegend
+
+This project is released under the MIT License (see LICENSE).
+
+Scope
+-----
+"The Software" as used in the LICENSE is intended to cover everything in this
+repository, including the parametric CAD sources under cad/, the generated
+geometry under exports/ (STL, GLB, and the plate archives), the firmware
+under firmware/, and the site under web/.
+
+In plain terms: you may print these parts, modify the CAD, sell what you
+print, and ship derivatives, commercially or not. Attribution is the only
+condition -- keep the copyright notice and the licence text with substantial
+portions of the work.
+
+Third-party components
+----------------------
+The MG996R servos, ESP32-S3 board, MAX98357A amplifier, INMP441 microphone,
+WS2812 ring, speaker and Cherry MX switch are third-party hardware. This
+project models their dimensions in order to fit them; it does not
+redistribute their designs, firmware or trademarks.
