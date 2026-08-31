@@ -1,4 +1,4 @@
-"""params.py — every AIBO dimension, in one place.
+"""params.py — every HOTARU dimension, in one place.
 
 Units mm. World frame: X right, Y back (away from you), Z up.
 Origin: center of the base footprint, Z=0 at the base's outer bottom face.
@@ -425,6 +425,27 @@ HORN_SPLINE_L = 4.5    # spline engagement -- MUST stay under the ~4.7 mm of
 #                        out on the servo's boss before it grips
 HORN_DISC_D   = 26.0   # adapter that captures a STOCK round horn
 HORN_SCREW_R  = 8.0    # bolt circle onto the stock horn  TODO verify
+
+# ---- the STOCK MG996R double horn, the black nylon one in the servo bag ----
+# We stop printing horns. A moulded nylon horn on a moulded spline beats a
+# printed one every time, it is already in the box, and it costs nothing.
+#
+# These are the published dimensions for the MG996R/MG995 double arm. They
+# are NOT measured off the user's actual horn -- measure yours and correct
+# any that differ; every pocket in the design is derived from them, so one
+# edit here moves all of it.
+SHORN_L       = 54.0   # tip to tip, the long axis
+SHORN_W       = 8.0    # arm width at the hub. The real arm tapers narrower
+                       # toward the tips, so a constant-width pocket this
+                       # wide swallows it with room at the ends
+SHORN_T       = 2.5    # plate thickness, the bit that sits in the pocket
+SHORN_HUB_D   = 14.0   # raised hub outer diameter
+SHORN_HUB_H   = 5.0    # hub height, standing proud on the spline side
+SHORN_FIT     = 0.4    # per side, pocket over horn
+SHORN_SCREW   = 2.4    # clearance for the horn's own self-tapper (holes in
+                       # the moulded arm are ~2.0; open yours to suit)
+SHORN_SCREW_R = (12.5, 19.5)   # which of the arm's holes we bolt through,
+                       # measured from the hub centre along the arm
 
 # ================================================================ colors ====
 # ---- component models (cad/components.py) --------------------------------

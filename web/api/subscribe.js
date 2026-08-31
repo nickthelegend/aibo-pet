@@ -69,8 +69,8 @@ newsletter.
 In the meantime everything is already public:
 
   Every part and its STL   https://aibo.loompad.tech/parts
-  All 22 STLs as a zip     https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/all-stls.zip
-  The CAD                  https://github.com/nickthelegend/aibo-pet
+  All 22 STLs as a zip     https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/all-stls.zip
+  The CAD                  https://github.com/nickthelegend/hotaru
 
 One thing worth knowing before you print: a few component dimensions still
 come from listings rather than calipers. Measure your servo and your speaker
@@ -90,8 +90,8 @@ hotaru@loompad.tech`,
   <p>Everything is already public:</p>
   <ul>
     <li><a href="https://aibo.loompad.tech/parts">Every part and its STL</a></li>
-    <li><a href="https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/all-stls.zip">All 22 STLs as a zip</a></li>
-    <li><a href="https://github.com/nickthelegend/aibo-pet">The CAD, in pure Python</a></li>
+    <li><a href="https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/all-stls.zip">All 22 STLs as a zip</a></li>
+    <li><a href="https://github.com/nickthelegend/hotaru">The CAD, in pure Python</a></li>
   </ul>
   <p style="color:#555">One thing worth knowing before you print: a few
      component dimensions still come from listings rather than calipers.

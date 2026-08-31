@@ -7,3 +7,9 @@ __pycache__/
 # vercel CLI link state
 web/.vercel/
 .models/
+
+# hyperframes working output -- regenerate with `npx hyperframes render`
+videos/*/renders/
+videos/*/snapshots/
+videos/*/assets/bgm/*.log
+videos/*/node_modules/

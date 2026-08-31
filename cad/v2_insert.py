@@ -77,8 +77,6 @@ STEPS = [
     ("shade", L2 + ("v2-head", "horn-head")),
     ("ring-", L2 + ("v2-head", "horn-head", "shade")),
     ("v2-conecap", L2 + ("v2-head", "horn-head", "shade", "ring-")),
-    ("v2-trimcap", L2 + ("v2-head",)),
-    ("v2-caphead", L2 + ("v2-head", "horn-head", "shade")),
     ("v2-keycap", TUB + ("mx-",)),
 ]
 

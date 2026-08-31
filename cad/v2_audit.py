@@ -94,6 +94,11 @@ def main():
                     "esp32-", "amp-", "mic-", "spk-", "ring-"):
             if nm.startswith(pre):
                 return pre
+        # the stock horns are components too: one horn is an arm plus a hub
+        # that overlap by construction, exactly like a servo's sub-meshes
+        for pre in ("horn-pan-", "horn-shoulder-", "horn-elbow-", "horn-head-"):
+            if nm.startswith(pre):
+                return pre
         return None
     for (x, _), (y, _) in itertools.combinations(world, 2):
         # sub-meshes of one servo overlap BY CONSTRUCTION (a component is a
@@ -123,10 +128,12 @@ def main():
             "horn-elbow": ("el-", "v2-link1-out", "v2-link2-in"),
             "horn-head": ("hd-", "v2-head", "shade"),
         }
+        # PREFIX, not equality: a stock horn is "horn-elbow-shorn-arm" and
+        # "horn-elbow-shorn-hub", so an exact-name exemption never fired
+        # and every drive in the robot reported as a clash.
         for hn, oks in HORN_OK.items():
-            if hn in (x, y):
-                other = y if x == hn else x
-                if other.startswith(tuple(oks)):
+            for a_, b_ in ((x, y), (y, x)):
+                if a_.startswith(hn) and b_.startswith(tuple(oks)):
                     n_in = 0
         if frozenset((x, y)) in engaged or n_in <= 5:
             n_in = 0

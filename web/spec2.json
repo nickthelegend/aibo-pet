@@ -227,10 +227,10 @@
   "bed_mm": 256
  },
  "downloads": {
-  "base": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/",
-  "zip": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/hotaru2-plates.zip",
+  "base": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/",
+  "zip": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/hotaru2-plates.zip",
   "zip_mb": 4.3,
-  "plates_zip": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/hotaru2-plates.zip",
+  "plates_zip": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/hotaru2-plates.zip",
   "plates_zip_mb": 4.3,
   "plates": [
    "v2-plate-1-base",
@@ -239,27 +239,27 @@
    "v2-plate-4-cone"
   ],
   "files": {
-   "v2-tub": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-tub.stl",
-   "v2-disc": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-disc.stl",
-   "v2-tower": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-tower.stl",
-   "v2-link1-in": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-link1-in.stl",
-   "v2-link1-out": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-link1-out.stl",
-   "v2-link1-spacers": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-link1-spacers.stl",
-   "v2-link1-ledges": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-link1-ledges.stl",
-   "v2-link2-in": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-link2-in.stl",
-   "v2-link2-out": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-link2-out.stl",
-   "v2-link2-spacers": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-link2-spacers.stl",
-   "v2-head": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-head.stl",
-   "v2-clamps": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-clamps.stl",
-   "v2-screws": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-screws.stl",
-   "v2-bolts": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-bolts.stl",
-   "v2-disckeys": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-disckeys.stl",
-   "v2-trimcap": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-trimcap.stl",
-   "v2-caphead": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-caphead.stl",
-   "v2-keycap": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-keycap.stl",
-   "v2-horns": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-horns.stl",
-   "shade": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/shade.stl",
-   "v2-conecap": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-conecap.stl"
+   "v2-tub": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/v2-tub.stl",
+   "v2-disc": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/v2-disc.stl",
+   "v2-tower": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/v2-tower.stl",
+   "v2-link1-in": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/v2-link1-in.stl",
+   "v2-link1-out": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/v2-link1-out.stl",
+   "v2-link1-spacers": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/v2-link1-spacers.stl",
+   "v2-link1-ledges": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/v2-link1-ledges.stl",
+   "v2-link2-in": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/v2-link2-in.stl",
+   "v2-link2-out": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/v2-link2-out.stl",
+   "v2-link2-spacers": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/v2-link2-spacers.stl",
+   "v2-head": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/v2-head.stl",
+   "v2-clamps": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/v2-clamps.stl",
+   "v2-screws": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/v2-screws.stl",
+   "v2-bolts": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/v2-bolts.stl",
+   "v2-disckeys": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/v2-disckeys.stl",
+   "v2-trimcap": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/v2-trimcap.stl",
+   "v2-caphead": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/v2-caphead.stl",
+   "v2-keycap": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/v2-keycap.stl",
+   "v2-horns": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/v2-horns.stl",
+   "shade": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/shade.stl",
+   "v2-conecap": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/v2-conecap.stl"
   }
  },
  "print_pose": {
@@ -368,7 +368,7 @@
     "fits_bed": true,
     "supports": [],
     "mb": 5.38,
-    "url": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-plate-1-base.stl"
+    "url": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/v2-plate-1-base.stl"
    },
    {
     "plate": "v2-plate-2-arm",
@@ -391,7 +391,7 @@
     "fits_bed": true,
     "supports": [],
     "mb": 9.04,
-    "url": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-plate-2-arm.stl"
+    "url": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/v2-plate-2-arm.stl"
    },
    {
     "plate": "v2-plate-3-disc",
@@ -412,7 +412,7 @@
      "v2-head"
     ],
     "mb": 1.74,
-    "url": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-plate-3-disc.stl"
+    "url": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/v2-plate-3-disc.stl"
    },
    {
     "plate": "v2-plate-4-cone",
@@ -432,7 +432,7 @@
     "fits_bed": true,
     "supports": [],
     "mb": 3.1,
-    "url": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/v2-plate-4-cone.stl"
+    "url": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/v2-plate-4-cone.stl"
    }
   ]
  }

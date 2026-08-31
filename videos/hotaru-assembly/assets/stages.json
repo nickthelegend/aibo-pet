@@ -1,0 +1,243 @@
+[
+ {
+  "i": 0,
+  "label": "The shell",
+  "new": [
+   "v2-tub"
+  ],
+  "total": 1
+ },
+ {
+  "i": 1,
+  "label": "Brains",
+  "new": [
+   "esp32-pcb",
+   "esp32-module",
+   "esp32-usb",
+   "esp32-buttons",
+   "esp32-led",
+   "esp32-headers",
+   "esp32-pins"
+  ],
+  "total": 8
+ },
+ {
+  "i": 2,
+  "label": "Amp and speaker",
+  "new": [
+   "amp-pcb",
+   "amp-terminal",
+   "amp-pads",
+   "amp-headers",
+   "amp-pins",
+   "spk-frame",
+   "spk-back",
+   "spk-cone",
+   "spk-dome",
+   "spk-wires"
+  ],
+  "total": 18
+ },
+ {
+  "i": 3,
+  "label": "Microphone",
+  "new": [
+   "mic-pcb",
+   "mic-ring",
+   "mic-pkg",
+   "mic-pins"
+  ],
+  "total": 22
+ },
+ {
+  "i": 4,
+  "label": "The button",
+  "new": [
+   "mx-mx-upper",
+   "mx-mx-body",
+   "mx-mx-neck",
+   "mx-mx-stem",
+   "mx-mx-pins-l",
+   "mx-mx-pins-r",
+   "v2-keycap"
+  ],
+  "total": 29
+ },
+ {
+  "i": 5,
+  "label": "Pan servo",
+  "new": [
+   "pan-mg996r-body",
+   "pan-mg996r-tabs",
+   "pan-mg996r-label",
+   "pan-mg996r-boss",
+   "pan-mg996r-spline",
+   "pan-mg996r-wire"
+  ],
+  "total": 35
+ },
+ {
+  "i": 6,
+  "label": "Its horn",
+  "new": [
+   "horn-pan-shorn-arm",
+   "horn-pan-shorn-hub"
+  ],
+  "total": 37
+ },
+ {
+  "i": 7,
+  "label": "The turntable",
+  "new": [
+   "v2-disc"
+  ],
+  "total": 38
+ },
+ {
+  "i": 8,
+  "label": "Two keys lock it",
+  "new": [
+   "v2-disckey-0",
+   "v2-disckey-1"
+  ],
+  "total": 40
+ },
+ {
+  "i": 9,
+  "label": "The tower",
+  "new": [
+   "v2-tower"
+  ],
+  "total": 41
+ },
+ {
+  "i": 10,
+  "label": "Shoulder servo",
+  "new": [
+   "sh-mg996r-body",
+   "sh-mg996r-tabs",
+   "sh-mg996r-label",
+   "sh-mg996r-boss",
+   "sh-mg996r-spline",
+   "sh-mg996r-wire"
+  ],
+  "total": 47
+ },
+ {
+  "i": 11,
+  "label": "Shoulder horn",
+  "new": [
+   "horn-shoulder-shorn-arm",
+   "horn-shoulder-shorn-hub"
+  ],
+  "total": 49
+ },
+ {
+  "i": 12,
+  "label": "Link 1, inner",
+  "new": [
+   "v2-link1-in",
+   "v2-link1-spacers",
+   "v2-link1-ledges",
+   "v2-screw"
+  ],
+  "total": 53
+ },
+ {
+  "i": 13,
+  "label": "Link 1, outer",
+  "new": [
+   "v2-link1-out"
+  ],
+  "total": 54
+ },
+ {
+  "i": 14,
+  "label": "Elbow servo",
+  "new": [
+   "el-mg996r-body",
+   "el-mg996r-tabs",
+   "el-mg996r-label",
+   "el-mg996r-boss",
+   "el-mg996r-spline",
+   "el-mg996r-wire"
+  ],
+  "total": 60
+ },
+ {
+  "i": 15,
+  "label": "Elbow horn",
+  "new": [
+   "horn-elbow-shorn-arm",
+   "horn-elbow-shorn-hub"
+  ],
+  "total": 62
+ },
+ {
+  "i": 16,
+  "label": "Link 2, inner",
+  "new": [
+   "v2-link2-in",
+   "v2-link2-spacers",
+   "v2-screw-elbow"
+  ],
+  "total": 65
+ },
+ {
+  "i": 17,
+  "label": "Link 2, outer",
+  "new": [
+   "v2-link2-out"
+  ],
+  "total": 66
+ },
+ {
+  "i": 18,
+  "label": "The head",
+  "new": [
+   "v2-head"
+  ],
+  "total": 67
+ },
+ {
+  "i": 19,
+  "label": "Head servo and horn",
+  "new": [
+   "horn-head-shorn-arm",
+   "horn-head-shorn-hub",
+   "hd-mg996r-body",
+   "hd-mg996r-tabs",
+   "hd-mg996r-label",
+   "hd-mg996r-boss",
+   "hd-mg996r-spline",
+   "hd-mg996r-wire"
+  ],
+  "total": 75
+ },
+ {
+  "i": 20,
+  "label": "The cone",
+  "new": [
+   "shade"
+  ],
+  "total": 76
+ },
+ {
+  "i": 21,
+  "label": "LED ring",
+  "new": [
+   "ring-pcb",
+   "ring-leds",
+   "ring-pads"
+  ],
+  "total": 79
+ },
+ {
+  "i": 22,
+  "label": "Cap it",
+  "new": [
+   "v2-conecap"
+  ],
+  "total": 80
+ }
+]

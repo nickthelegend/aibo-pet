@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>HOTARU 2.0 — assembly</title>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+</head>
+<body>
+<!--
+  HOTARU 2.0 — the build, one part at a time.
+
+  The geometry is the project's own CAD: assets/hotaru-all.glb carries all
+  80 named parts in world pose, and assets/stages.json says which parts
+  join at which step. Nothing here is a mock-up of the lamp; it IS the lamp.
+
+  Seek safety: the canvas never reads a clock. One paused GSAP timeline
+  drives a plain progress object, and its onUpdate renders the frame for
+  exactly that time -- so scrubbing, snapshotting and rendering all land on
+  the same pixels. The GLB is fetched and uploaded BEFORE the timeline is
+  registered, which is what the core contract asks for.
+-->
+<div data-composition-id="hotaru-assembly" data-duration="86"
+     data-width="1920" data-height="1080">
+  <div class="stage">
+    <canvas id="scene" width="1920" height="1080"></canvas>
+
+    <div class="vignette"></div>
+
+    <div id="intro" class="card">
+      <div class="kicker">HOTARU 2.0</div>
+      <h1>Eighty parts,<br>one order.</h1>
+      <p>Every step below is the order the closure audit walks — the one
+         the design is actually checked for.</p>
+    </div>
+
+    <div id="hud" class="hud">
+      <div class="step"><span id="step-n">01</span><i>/23</i></div>
+      <div id="step-label" class="label">The shell</div>
+      <div class="bar"><div id="bar-fill"></div></div>
+    </div>
+
+    <div id="outro" class="card">
+      <h1>Four servos.<br>Nothing else bought.</h1>
+      <p>21 printed parts on four P1S plates. Every fastener but the base's
+         M3s is printed too.</p>
+    </div>
+  </div>
+</div>
+
+<style>
+  [data-composition-id="hotaru-assembly"] {
+    width: 1920px; height: 1080px; position: relative; overflow: hidden;
+    background: #0b0b0e;
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    color: #f3f3f6;
+  }
+  .stage { position: absolute; inset: 0; }
+  #scene { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .vignette {
+    position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(120% 85% at 50% 42%,
+      rgba(11,11,14,0) 38%, rgba(11,11,14,.72) 100%);
+  }
+  .card { position: absolute; left: 132px; top: 50%; width: 900px;
+          transform: translateY(-50%); opacity: 0; }
+  .kicker { font-size: 26px; letter-spacing: .34em; text-transform: uppercase;
+            color: #7b5cff; font-weight: 600; margin-bottom: 26px; }
+  .card h1 { font-size: 108px; line-height: 1.02; font-weight: 700;
+             letter-spacing: -.028em; margin: 0 0 28px; }
+  .card p { font-size: 30px; line-height: 1.45; color: #a9a9b8;
+            max-width: 720px; margin: 0; }
+  .hud { position: absolute; left: 132px; bottom: 116px; width: 820px; opacity: 0; }
+  .step { font-size: 22px; letter-spacing: .2em; color: #7b5cff;
+          font-weight: 600; margin-bottom: 14px; }
+  .step i { font-style: normal; color: #8a8a99; }
+  .label { font-size: 62px; font-weight: 650; letter-spacing: -.02em;
+           margin-bottom: 30px; }
+  .bar { width: 100%; height: 3px; background: rgba(255,255,255,.12); }
+  #bar-fill { width: 0%; height: 100%; background: #7b5cff; }
+</style>
+
+<script type="module">
+  import { M4, loadGLB, makeGL } from "./assets/gl.js";
+
+  const ID = "hotaru-assembly";
+  const DUR = 86, INTRO = 4.5, OUTRO = 6.0;
+
+  const cv = document.getElementById("scene");
+  const { gl, prog, U } = makeGL(cv);
+
+  // Everything is fetched and uploaded BEFORE the timeline is registered:
+  // the contract allows an async build, it just forbids registering early.
+  const [nodes, stages] = await Promise.all([
+    loadGLB("./assets/hotaru-all.glb"),
+    fetch("./assets/stages.json").then(r => r.json()),
+  ]);
+
+  const parts = nodes.map(n => {
+    const vao = gl.createVertexArray();
+    gl.bindVertexArray(vao);
+    const vb = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vb);
+    gl.bufferData(gl.ARRAY_BUFFER, n.pos, gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(0);
+    gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);
+    const ib = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ib);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, n.idx, gl.STATIC_DRAW);
+    gl.bindVertexArray(null);
+    const lo = [1e9, 1e9, 1e9], hi = [-1e9, -1e9, -1e9];
+    for (let i = 0; i < n.pos.length; i += 3)
+      for (let k = 0; k < 3; k++) {
+        if (n.pos[i+k] < lo[k]) lo[k] = n.pos[i+k];
+        if (n.pos[i+k] > hi[k]) hi[k] = n.pos[i+k];
+      }
+    return { name: n.name, vao, count: n.idx.length,
+             itype: n.idx instanceof Uint16Array ? gl.UNSIGNED_SHORT
+                                                 : gl.UNSIGNED_INT,
+             color: new Float32Array(n.color), lo, hi,
+             ctr: [0,1,2].map(k => (lo[k] + hi[k]) / 2) };
+  });
+  const byName = new Map(parts.map(p => [p.name, p]));
+
+  // which step each part arrives on, and the frame the camera must hold
+  stages.forEach((s, i) => s.new.forEach(nm => {
+    const p = byName.get(nm); if (p) p.step = i;
+  }));
+  // The camera frames WHAT IS BUILT SO FAR, not the finished lamp. Aimed at
+  // the final centre, the tub alone sat tiny in a corner for the first third
+  // of the video -- the steps you most need to see are the ones with the
+  // least on the table.
+  const FOV = 0.62, ASPECT = cv.width / cv.height;
+  const TANH = Math.tan(FOV / 2);
+  const FRAMES = stages.map((_, i) => {
+    const lo = [1e9,1e9,1e9], hi = [-1e9,-1e9,-1e9];
+    for (const p of parts) {
+      if (p.step === undefined || p.step > i) continue;
+      for (let k = 0; k < 3; k++) {
+        if (p.lo[k] < lo[k]) lo[k] = p.lo[k];
+        if (p.hi[k] > hi[k]) hi[k] = p.hi[k];
+      }
+    }
+    const ctr = [0,1,2].map(k => (lo[k] + hi[k]) / 2);
+    const vert = hi[2] - lo[2];
+    const horiz = Math.hypot(hi[0] - lo[0], hi[1] - lo[1]);
+    // fit the taller of the two constraints, then leave a margin, and never
+    // let a single small part pull the camera into its own face
+    const dist = Math.max(vert / (2 * TANH),
+                          horiz / (2 * TANH * ASPECT), 92) * 1.42;
+    return { ctr, dist, span: Math.max(vert, horiz) };
+  });
+
+  // A part flies in along the axis it is actually assembled on -- straight
+  // down onto the base, outward for the arm's plates -- so the motion
+  // reads as the build rather than as parts teleporting.
+  function entryOffset(p, span) {
+    const d = Math.max(34, Math.min(120, span * 0.42));
+    const dx = p.ctr[0] - FRAMES[FRAMES.length - 1].ctr[0];
+    if (p.name.startsWith("v2-link") || p.name.startsWith("horn-")
+        || p.name.startsWith("sh-") || p.name.startsWith("el-")
+        || p.name.startsWith("hd-"))
+      return [Math.sign(dx || 1) * d, 0, d * 0.22];
+    return [0, 0, d];
+  }
+
+  const HOT = new Float32Array(3);
+  const state = { t: 0 };
+  const easeOut = u => 1 - Math.pow(1 - u, 3);
+
+  function renderAt(t) {
+    const n = stages.length;
+    const body = DUR - INTRO - OUTRO;
+    const per = body / n;
+    const raw = (t - INTRO) / per;              // stage-space, may be <0
+    const cur = Math.max(0, Math.min(n - 1, Math.floor(raw)));
+    // before the body starts, stage 0 is already SEATED -- otherwise the
+    // title card plays over a tub frozen mid-drop, half out of frame
+    const frac = raw < 0 ? 1 : Math.max(0, Math.min(1, raw - cur));
+
+    gl.viewport(0, 0, cv.width, cv.height);
+    gl.clearColor(0.043, 0.043, 0.055, 1);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    // ease the camera between this step's frame and the next so it pulls
+    // back WITH the part that is arriving, never in a jump after it
+    const sm = frac * frac * (3 - 2 * frac);
+    const f0 = FRAMES[cur], f1 = FRAMES[Math.min(cur + 1, FRAMES.length - 1)];
+    const tgt = [0,1,2].map(k => f0.ctr[k] + (f1.ctr[k] - f0.ctr[k]) * sm);
+    const dist = f0.dist + (f1.dist - f0.dist) * sm;
+    const span = f0.span + (f1.span - f0.span) * sm;
+
+    // one slow revolution across the whole piece, tilted down a little
+    const az = -0.85 + (t / DUR) * 2.30;
+    const el = 0.30 + 0.10 * Math.sin((t / DUR) * Math.PI);
+    const eye = [tgt[0] + dist * Math.cos(el) * Math.sin(az),
+                 tgt[1] + dist * Math.cos(el) * Math.cos(az),
+                 tgt[2] + dist * Math.sin(el)];
+
+    // hold the lamp right of centre; push it further over while a full-width
+    // card is on screen, so the type never sits on top of the geometry
+    const card = t < INTRO ? 1 - Math.min(1, Math.max(0, (t - INTRO + 1.2) / 1.2))
+               : t > DUR - OUTRO
+                 ? Math.min(1, (t - (DUR - OUTRO)) / 1.2) : 0;
+    const shift = dist * (0.135 + 0.165 * card);
+    const V = M4.mul(M4.trans(shift, 0, 0), M4.look(eye, tgt, [0, 0, 1]));
+    const P = M4.persp(FOV, ASPECT, 5, 8000);
+
+    gl.useProgram(prog);
+    for (const p of parts) {
+      if (p.step === undefined || p.step > cur) continue;
+      let m = M4.id();
+      // the tub never flies in: the intro already showed it seated, so
+      // animating it again reads as the base falling off
+      if (cur > 0 && p.step === cur && frac < 1) {
+        const u = easeOut(frac);
+        const o = entryOffset(p, span);
+        m = M4.trans(o[0] * (1 - u), o[1] * (1 - u), o[2] * (1 - u));
+      }
+      const mv = M4.mul(V, m);
+      gl.uniformMatrix4fv(U.mv, false, mv);
+      gl.uniformMatrix4fv(U.mvp, false, M4.mul(P, mv));
+      // the part that just arrived glows accent and settles into its own
+      // colour -- without it the mic and the pads vanish into the tub
+      if (p.step === cur) {
+        const k = 1 - Math.min(1, frac / 0.55);
+        HOT[0] = p.color[0] + (0.42 - p.color[0]) * k;
+        HOT[1] = p.color[1] + (0.34 - p.color[1]) * k;
+        HOT[2] = p.color[2] + (1.00 - p.color[2]) * k;
+        gl.uniform3fv(U.col, HOT);
+      } else {
+        gl.uniform3fv(U.col, p.color);
+      }
+      gl.bindVertexArray(p.vao);
+      gl.drawElements(gl.TRIANGLES, p.count, p.itype, 0);
+    }
+    gl.bindVertexArray(null);
+
+    const stepN = document.getElementById("step-n");
+    stepN.textContent = String(cur + 1).padStart(2, "0");
+    document.getElementById("step-label").textContent = stages[cur].label;
+    document.getElementById("bar-fill").style.width =
+      (100 * (cur + frac) / n).toFixed(2) + "%";
+  }
+
+  const tl = gsap.timeline({ paused: true });
+  tl.to(state, { t: DUR, duration: DUR, ease: "none",
+                 onUpdate: () => renderAt(state.t) }, 0);
+  tl.fromTo("#intro", { autoAlpha: 0, y: 26 },
+            { autoAlpha: 1, y: 0, duration: 0.9, ease: "power2.out" }, 0.25)
+    .to("#intro", { autoAlpha: 0, y: -22, duration: 0.7,
+                    ease: "power2.in" }, INTRO - 0.7);
+  tl.to("#hud", { autoAlpha: 1, duration: 0.6 }, INTRO)
+    .to("#hud", { autoAlpha: 0, duration: 0.6 }, DUR - OUTRO);
+  tl.fromTo("#outro", { autoAlpha: 0, y: 26 },
+            { autoAlpha: 1, y: 0, duration: 0.9, ease: "power2.out" },
+            DUR - OUTRO + 0.5);
+
+  renderAt(0);
+  window.__timelines[ID] = tl;
+  window.__hfForceTimelineRebind?.();
+</script>
+
+</body>
+</html>

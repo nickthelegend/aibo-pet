@@ -370,45 +370,45 @@
   "bed_mm": 180
  },
  "downloads": {
-  "base": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/",
-  "zip": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/all-stls.zip",
+  "base": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/",
+  "zip": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/all-stls.zip",
   "zip_mb": 2.0,
   "files": {
-   "amp-tab": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/amp-tab.stl",
-   "arm-fore": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/arm-fore.stl",
-   "arm-lower": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/arm-lower.stl",
-   "arm-upper": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/arm-upper.stl",
-   "base-joint": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/base-joint.stl",
-   "base": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/base.stl",
-   "cap-base": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/cap-base.stl",
-   "cap-elbow": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/cap-elbow.stl",
-   "cap-head": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/cap-head.stl",
-   "cap-shoulder": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/cap-shoulder.stl",
-   "esp-tab": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/esp-tab.stl",
-   "horn-adapter": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/horn-adapter.stl",
-   "horn-mg996r": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/horn-mg996r.stl",
-   "horn-sg90": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/horn-sg90.stl",
-   "keycap": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/keycap.stl",
-   "lid": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/lid.stl",
-   "mic-tab": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/mic-tab.stl",
-   "shade": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/shade.stl",
-   "shoulder": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/shoulder.stl",
-   "spk-clamp": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/spk-clamp.stl",
-   "spline-test": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/spline-test.stl",
-   "yoke-screw": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/yoke-screw.stl"
+   "amp-tab": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/amp-tab.stl",
+   "arm-fore": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/arm-fore.stl",
+   "arm-lower": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/arm-lower.stl",
+   "arm-upper": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/arm-upper.stl",
+   "base-joint": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/base-joint.stl",
+   "base": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/base.stl",
+   "cap-base": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/cap-base.stl",
+   "cap-elbow": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/cap-elbow.stl",
+   "cap-head": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/cap-head.stl",
+   "cap-shoulder": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/cap-shoulder.stl",
+   "esp-tab": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/esp-tab.stl",
+   "horn-adapter": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/horn-adapter.stl",
+   "horn-mg996r": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/horn-mg996r.stl",
+   "horn-sg90": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/horn-sg90.stl",
+   "keycap": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/keycap.stl",
+   "lid": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/lid.stl",
+   "mic-tab": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/mic-tab.stl",
+   "shade": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/shade.stl",
+   "shoulder": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/shoulder.stl",
+   "spk-clamp": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/spk-clamp.stl",
+   "spline-test": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/spline-test.stl",
+   "yoke-screw": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/yoke-screw.stl"
   },
   "plates": {
-   "plate-1-test": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plate-1-test.stl",
-   "plate-2-base": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plate-2-base.stl",
-   "plate-2b-shoulder": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plate-2b-shoulder.stl",
-   "plate-3a-arm-lower": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plate-3a-arm-lower.stl",
-   "plate-3b-arm-upper": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plate-3b-arm-upper.stl",
-   "plate-3c-arm-fore": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plate-3c-arm-fore.stl",
-   "plate-4-head-2": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plate-4-head-2.stl",
-   "plate-4-head": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plate-4-head.stl",
-   "plate-5-small": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plate-5-small.stl"
+   "plate-1-test": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/plate-1-test.stl",
+   "plate-2-base": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/plate-2-base.stl",
+   "plate-2b-shoulder": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/plate-2b-shoulder.stl",
+   "plate-3a-arm-lower": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/plate-3a-arm-lower.stl",
+   "plate-3b-arm-upper": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/plate-3b-arm-upper.stl",
+   "plate-3c-arm-fore": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/plate-3c-arm-fore.stl",
+   "plate-4-head-2": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/plate-4-head-2.stl",
+   "plate-4-head": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/plate-4-head.stl",
+   "plate-5-small": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/plate-5-small.stl"
   },
-  "plates_zip": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plates.zip",
+  "plates_zip": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/plates.zip",
   "plates_zip_mb": 2.6
  },
  "print_pose": {
@@ -519,7 +519,7 @@
     "fits_bed": true,
     "supports": [],
     "mb": 0.23,
-    "url": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plate-1-test.stl"
+    "url": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/plate-1-test.stl"
    },
    {
     "plate": "plate-2-base",
@@ -535,7 +535,7 @@
     "fits_bed": true,
     "supports": [],
     "mb": 0.8,
-    "url": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plate-2-base.stl"
+    "url": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/plate-2-base.stl"
    },
    {
     "plate": "plate-2b-shoulder",
@@ -553,7 +553,7 @@
      "shoulder"
     ],
     "mb": 1.99,
-    "url": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plate-2b-shoulder.stl"
+    "url": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/plate-2b-shoulder.stl"
    },
    {
     "plate": "plate-3a-arm-lower",
@@ -571,7 +571,7 @@
      "arm-lower"
     ],
     "mb": 1.01,
-    "url": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plate-3a-arm-lower.stl"
+    "url": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/plate-3a-arm-lower.stl"
    },
    {
     "plate": "plate-3b-arm-upper",
@@ -589,7 +589,7 @@
      "arm-upper"
     ],
     "mb": 1.01,
-    "url": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plate-3b-arm-upper.stl"
+    "url": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/plate-3b-arm-upper.stl"
    },
    {
     "plate": "plate-3c-arm-fore",
@@ -607,7 +607,7 @@
      "arm-fore"
     ],
     "mb": 1.0,
-    "url": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plate-3c-arm-fore.stl"
+    "url": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/plate-3c-arm-fore.stl"
    },
    {
     "plate": "plate-4-head",
@@ -623,7 +623,7 @@
     "fits_bed": true,
     "supports": [],
     "mb": 0.28,
-    "url": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plate-4-head.stl"
+    "url": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/plate-4-head.stl"
    },
    {
     "plate": "plate-4-head-2",
@@ -641,7 +641,7 @@
      "shade"
     ],
     "mb": 0.72,
-    "url": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plate-4-head-2.stl"
+    "url": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/plate-4-head-2.stl"
    },
    {
     "plate": "plate-5-small",
@@ -674,7 +674,7 @@
      "base-joint"
     ],
     "mb": 3.72,
-    "url": "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/plate-5-small.stl"
+    "url": "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/plate-5-small.stl"
    }
   ]
  }

@@ -29,7 +29,7 @@ import v2_assembly as A
 # Parts that are deliberately a TRAY of pieces on one plate -- bolts,
 # clamp bars, horns. They are meant to come off separate.
 MULTI = {
-    "v2-clamps": 6, "v2-bolts": 22, "v2-horns": 4, "v2-screws": 2,
+    "v2-clamps": 6, "v2-bolts": 22, "v2-screws": 2,
     "v2-disckeys": 2, "v2-link1-spacers": 2, "v2-link2-spacers": 3,
     "v2-link1-ledges": 2,
 }

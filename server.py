@@ -56,7 +56,7 @@ def main():
     port = int(os.environ.get("PORT", "8080"))
     httpd = ThreadingHTTPServer(("0.0.0.0", port),
                                 partial(Handler, directory=ROOT))
-    print(f"aibo site on :{port} from {ROOT}", flush=True)
+    print(f"hotaru site on :{port} from {ROOT}", flush=True)
     httpd.serve_forever()
 
 

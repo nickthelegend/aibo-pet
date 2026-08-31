@@ -52,13 +52,18 @@ Z_CONE1 = P.SHADE_DEPTH
 Z_COLLAR0 = Z_CONE1 - P.SHADE_COLLAR
 TILT = P.SHADE_TILT_Z
 # past the axis by the hub radius plus a wall, so the bore is IN the plate
-Z_YOKE1 = TILT + P.HORN_HUB_D / 2 + 5.5
+Z_YOKE1 = TILT + P.SHORN_HUB_D / 2 + 5.5
 RING_AP = P.RING_ID + 10.0
 # the yoke straddles the head nose at its DRIVE CHEEK face -- case centre to
 # case top plus the boss, the same plane link1's plate sits 0.3 outside of
 YK0 = (P.MG_H / 2 + P.MG_BOSS_H) + 0.3
 YK1 = YK0 + P.YOKE_PLATE_T
-YK_HY = P.HORN_HUB_D / 2 + 9.5      # material round the O13 hub
+# 16, not SHORN_L/2+3. Sizing the yoke to swallow the whole 54 arm made
+# the plate 60 tall, and a 60 plate rotating about the pivot sweeps into
+# the head block's tail -- the head dropped from 165 degrees of travel to
+# 52. The pocket carries torque on its SIDES; its ends can be open, so the
+# arm's tips simply stand proud of the plate in free air.
+YK_HY = 16.0
 
 
 # The vent band is a STRAIGHT collar, not part of the taper. A tapered band
@@ -209,21 +214,29 @@ def build():
                       Z_CONE1 - 6.0, Z_CONE1 + 2.0)
 
     hy = YK_HY
-    aw = P.HORN_ARM_W + P.HORN_FIT
-    hub = P.HORN_HUB_D + P.HORN_FIT
-    rec_d = P.HORN_T + P.HORN_FIT
+    # STOCK horn pocket, same single slot as every other joint: the moulded
+    # arm is one bar, not a cross, so a cross pocket would let it rattle a
+    # quarter turn into the empty arm.
+    w = P.SHORN_W + 2 * P.SHORN_FIT
+    L = P.SHORN_L + 2 * P.SHORN_FIT
+    hub = P.SHORN_HUB_D + 2 * P.SHORN_FIT
+    rec_d = P.SHORN_T + P.SHORN_FIT
     rec = box(YK0 - OVL, -hy - 1, YK0 + rec_d, hy + 1)
     m += pl.banded(box(YK0, -hy, YK1, hy), Z_CONE1 - OVL, Z_YOKE1, [
-        # horizontal arm: its channel runs from the axis out the tip
-        (rec.intersection(box(-99, -P.HORN_ARM_HALF, 99, P.HORN_ARM_HALF)),
-         TILT - aw / 2, Z_YOKE1 + OVL),
-        # vertical arm: full height by its own span
-        (rec.intersection(box(-99, -aw / 2, 99, aw / 2)),
-         TILT - P.HORN_ARM_HALF, TILT + P.HORN_ARM_HALF),
-        # hub: keyhole slot clear through, axis to tip
+        # the arm slot, running across the plate through the pivot
+        (rec, TILT - w / 2, TILT + w / 2),
+        # hub bore clear through, and OPEN to the top of the plate: the cone
+        # is lowered onto an already-mounted horn, so a closed bore is a
+        # bore it can never reach. The idler side has had this channel all
+        # along; rewriting the drive side for the stock horn lost it, and
+        # the closure walk caught the cone with nowhere to go.
         (box(YK0 - OVL, -hub / 2, YK1 + OVL, hub / 2),
          TILT - hub / 2, Z_YOKE1 + OVL),
+        # and the arm slot likewise, so the arm enters with the hub
+        (rec, TILT - w / 2, Z_YOKE1 + OVL),
     ])
+    # the idler side drops onto the head's stub, so its bore is open
+    # upward: a channel the width of the axle from the pivot to the top
     slot_w = (P.AXLE_D + P.AXLE_FIT) / 2.0
     m += pl.banded(box(-YK1, -hy, -YK0, hy), Z_CONE1 - OVL, Z_YOKE1,
                    [(box(-YK1 - OVL, -w, -YK0 + OVL, w), zl, zh)

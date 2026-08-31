@@ -1,4 +1,4 @@
-"""render_docs.py — turn the exported GLBs into AIBO product shots.
+"""render_docs.py — turn the exported GLBs into HOTARU product shots.
 
 Pure python: numpy z-buffer rasterizer + stdlib PNG writer. No GPU, no PIL.
 Rasterizer ported from the orchestrator-pad build.
@@ -226,11 +226,11 @@ def shift(items, dx=0.0, dy=0.0, dz=0.0):
 
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
-    asm = load_glb(EXPORTS / "aibo-assembled.glb")
-    pop = load_glb(EXPORTS / "aibo-populated.glb")
+    asm = load_glb(EXPORTS / "hotaru-assembled.glb")
+    pop = load_glb(EXPORTS / "hotaru-populated.glb")
     bay = [it for it in pop if it[0] == "base" or it[0].startswith(
         ("esp32", "mic-", "amp-", "spk-"))]
-    exp = load_glb(EXPORTS / "aibo-exploded.glb")
+    exp = load_glb(EXPORTS / "hotaru-exploded.glb")
     base = [it for it in asm if it[0] in ("base",)]
     lidj = [it for it in asm if it[0] in ("base", "lid", "base-joint", "cap-base")]
 

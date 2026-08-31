@@ -19,7 +19,7 @@ import v2_assembly as A
 import v2_parts as V
 from export_web import WEB
 
-RAW = "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/v2/"
+RAW = "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/v2/"
 EXPV2 = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                      "exports", "v2")
 ZIP = os.path.join(EXPV2, "hotaru2-plates.zip")

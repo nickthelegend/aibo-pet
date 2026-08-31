@@ -1,5 +1,5 @@
 /*
- * servo_test.ino — AIBO MG996R bench test
+ * servo_test.ino — HOTARU MG996R bench test
  *
  * Board: ESP32-D0WD-V3 (ESP32-WROOM-32 DevKit), esp32 core 3.x
  * Port:  /dev/cu.usbserial-0001   FQBN: esp32:esp32:esp32
@@ -42,7 +42,7 @@
 // GPIO12 especially, a pull-up there at boot sets the flash to 1.8 V and the
 // chip will not start. 13/14/27/26 dodge all of it.
 static const int PIN_SERVO   = 13;   // this test
-static const int PIN_BASE    = 13;   // final AIBO map, for later
+static const int PIN_BASE    = 13;   // final HOTARU map, for later
 static const int PIN_SHOULDER = 14;
 static const int PIN_ELBOW   = 27;
 static const int PIN_HEAD    = 26;
@@ -81,7 +81,7 @@ void goTo(int a, int step_ms = STEP_MS) {
 }
 
 void help() {
-  Serial.println(F("\n--- AIBO MG996R test ---"));
+  Serial.println(F("\n--- HOTARU MG996R test ---"));
   Serial.println(F("  0..180  go to angle      s  sweep"));
   Serial.println(F("  c       centre (90)      m  endpoints (10/170)"));
   Serial.println(F("  d       detach           a  attach"));
@@ -115,7 +115,7 @@ void reportReset() {
 void setup() {
   Serial.begin(115200);
   delay(300);
-  Serial.println(F("\nAIBO servo test booting"));
+  Serial.println(F("\nHOTARU servo test booting"));
   reportReset();
   ESP32PWM::allocateTimer(0);
   ESP32PWM::allocateTimer(1);

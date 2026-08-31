@@ -25,17 +25,15 @@ WEB = os.path.normpath(os.path.join(HERE, "..", "web"))
 
 # name -> (plate, dx, dy)
 LAYOUT = {
-    # Plate 2 used to be "the disc and ONE link plate", with the other three
-    # link plates stranded on plate 3. It printed fine and read as a
-    # mistake -- you cannot look at a plate holding half of one arm and
-    # tell whether the file is broken. The four link plates are matched
-    # pairs, so they belong on one plate where you can see all four.
+    # Plate 3 is the TURNTABLE: everything that turns with the base, on one
+    # plate -- disc, the tower that stands on it, and the keys that hold it
+    # down. It cannot also carry the tub: the tub is 157 across and the disc
+    # 155, and 157 + 155 does not fit a 244 usable bed side by side or
+    # stacked. So the fixed shell keeps plate 1 and the rotating assembly
+    # gets its own, which is at least one print job per sub-assembly.
     "v2-tub":          ("v2-plate-1-base", 0.0, 0.0),
-    "v2-tower":        ("v2-plate-1-base", 0.0, 115.0),
-    "v2-clamps":       ("v2-plate-1-base", -90.0, 110.0),
-    "v2-keycap":       ("v2-plate-1-base", -90.0, 80.0),
+    "v2-head":         ("v2-plate-1-base", 0.0, 118.0),
 
-    # plate 2: the whole arm, both pairs, with their spacers beside them
     "v2-link1-in":     ("v2-plate-2-arm", 0.0, -81.0),
     "v2-link1-out":    ("v2-plate-2-arm", 0.0, -27.0),
     "v2-link2-in":     ("v2-plate-2-arm", 0.0, 27.0),
@@ -43,20 +41,17 @@ LAYOUT = {
     "v2-link1-spacers":("v2-plate-2-arm", 115.0, -81.0),
     "v2-link1-ledges": ("v2-plate-2-arm", 115.0, -30.0),
     "v2-link2-spacers":("v2-plate-2-arm", 115.0, 27.0),
-    "v2-screws":       ("v2-plate-2-arm", 115.0, 81.0),
 
-    # plate 3: the turntable and the head that rides the far end of the arm
-    "v2-disc":         ("v2-plate-3-disc", 0.0, -45.0),
-    "v2-head":         ("v2-plate-3-disc", 0.0, 60.0),
-    "v2-trimcap":      ("v2-plate-3-disc", 62.0, 58.0),
-    "v2-caphead":      ("v2-plate-3-disc", 100.0, 58.0),
+    "v2-disc":         ("v2-plate-3-turntable", 0.0, 0.0),
+    "v2-tower":        ("v2-plate-3-turntable", 0.0, 112.0),
+    "v2-disckeys":     ("v2-plate-3-turntable", 95.0, 112.0),
+    "v2-clamps":       ("v2-plate-3-turntable", 0.0, 150.0),
+    "v2-keycap":       ("v2-plate-3-turntable", 62.0, 150.0),
 
-    # plate 4: the cone, its cap, and every printed fastener
     "shade":           ("v2-plate-4-cone", 0.0, 55.0),
     "v2-conecap":      ("v2-plate-4-cone", 110.0, 55.0),
-    "v2-horns":        ("v2-plate-4-cone", 0.0, -55.0),
     "v2-bolts":        ("v2-plate-4-cone", 115.0, -45.0),
-    "v2-disckeys":     ("v2-plate-4-cone", 75.0, -100.0),
+    "v2-screws":       ("v2-plate-4-cone", 115.0, -110.0),
 }
 
 
@@ -128,7 +123,7 @@ def main():
                "thumb-bolts into printed-thread sleeves, two printed yoke "
                "screws, two disc keys, locating pins under the boards.", "",
                "CAD, audits, and the whole history:",
-               "github.com/nickthelegend/aibo-pet"]
+               "github.com/nickthelegend/hotaru"]
     zp = os.path.join(EXP, "hotaru2-plates.zip")
     with zipfile.ZipFile(zp, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as z:
         z.writestr("README.txt", "\n".join(readme))

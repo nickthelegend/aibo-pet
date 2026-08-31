@@ -1,4 +1,4 @@
-"""partlib — pure-python CAD kernel for AIBO (animated servo desk lamp).
+"""partlib — pure-python CAD kernel for HOTARU (animated servo desk lamp).
 
 No OpenSCAD, no CadQuery, no OCC. Everything is built from 2D shapely
 profiles extruded/lofted into closed triangle shells. There is deliberately
@@ -514,7 +514,7 @@ def stl_write(path, mesh):
     ln[ln == 0] = 1.0
     n = (n / ln).astype(np.float32)
     with open(path, "wb") as fh:
-        fh.write(b"aibo partlib" + b"\0" * 68)
+        fh.write(b"hotaru partlib" + b"\0" * 68)
         fh.write(struct.pack("<I", len(F)))
         tri32 = tri.astype(np.float32)
         for i in range(len(F)):
@@ -562,7 +562,7 @@ def glb_write(path, items):
             "indices": 3 * i + 2, "material": i}]})
         nodes.append({"mesh": i, "name": name})
 
-    gltf = {"asset": {"version": "2.0", "generator": "aibo partlib"},
+    gltf = {"asset": {"version": "2.0", "generator": "hotaru partlib"},
             "scene": 0, "scenes": [{"nodes": list(range(len(nodes)))}],
             "nodes": nodes, "meshes": meshes, "materials": materials,
             "bufferViews": views, "accessors": accessors,

@@ -1,4 +1,4 @@
-# AIBO — CAD
+# HOTARU — CAD
 
 Pure-python parametric CAD. No OpenSCAD, no CadQuery, no OCC.
 

@@ -1,4 +1,4 @@
-"""part_base.py — AIBO base: a round turned "pebble", not a box.
+"""part_base.py — HOTARU base: a round turned "pebble", not a box.
 
 A straight cylinder to BASE_STRAIGHT, then a shoulder that tapers in to meet
 the lid, so the whole thing reads as one turned form. The taper runs inward

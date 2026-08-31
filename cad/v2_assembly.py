@@ -130,26 +130,30 @@ def world_items():
 
     # ---- the real printed horns: what actually carries torque from each
     # spline into its plate. v1's part_horn, unchanged.
-    HORNS = {n: m for n, m, _c in part_horn.build()}
+    # The STOCK MG996R horns -- bought hardware, four of them, straight out
+    # of the servo bags. We no longer print horns: a moulded nylon arm on a
+    # moulded spline beats a printed one, and it is already in the box.
     HC = V.COLORS["v2-accent"]
-    hp = HORNS["horn-mg996r"].copy()
-    hp.rotate_x(180.0)
-    hp.translate(dz=V.DISC_Z0 + (P.HORN_T + P.HORN_FIT))
-    out.append(("horn-pan", hp, HC))
-    hs = HORNS["horn-mg996r"].copy()
-    hs.rotate_y(90.0)
-    hs.translate(dx=V.DRIVE_CHEEK[1] - 1.0, dz=z_sh)
-    out.append(("horn-shoulder", hs, HC))
-    he = HORNS["horn-mg996r"].copy()
-    he.rotate_y(-90.0)
-    he.translate(dx=-(V.L1_OUT_HALF + V.BOSS_WALL), dz=z_el)
-    out.append(("horn-elbow", he, HC))
-    hh = HORNS["horn-mg996r"].copy()
-    hh.rotate_y(90.0)
-    # cross face at the COUNTERBORE floor, exactly like the shoulder cheek:
-    # 1.0 into the nose face buys the same 1.7 of spline in the socket
-    hh.translate(dx=xc + V.HEAD_HALF - V.HEAD_CBORE_T, dz=z_hd)
-    out.append(("horn-head", hh, HC))
+
+    def shorn():
+        return [(n, m.copy(), c) for n, m, c in CO.mg996r_horn()]
+
+    for n2, mm, c2 in shorn():                      # pan: hub down the spline
+        mm.rotate_x(180.0)
+        mm.translate(dz=V.DISC_Z0 + P.SHORN_T)
+        out.append((f"horn-pan-{n2}", mm, HC))
+    for n2, mm, c2 in shorn():                      # shoulder, driving +X
+        mm.rotate_y(90.0)
+        mm.translate(dx=V.DRIVE_CHEEK[1] - 1.0, dz=z_sh)
+        out.append((f"horn-shoulder-{n2}", mm, HC))
+    for n2, mm, c2 in shorn():                      # elbow, driving -X
+        mm.rotate_y(-90.0)
+        mm.translate(dx=-(V.L1_OUT_HALF + V.BOSS_WALL), dz=z_el)
+        out.append((f"horn-elbow-{n2}", mm, HC))
+    for n2, mm, c2 in shorn():                      # head
+        mm.rotate_y(90.0)
+        mm.translate(dx=xc + V.HEAD_HALF, dz=z_hd)
+        out.append((f"horn-head-{n2}", mm, HC))
 
     # ---- the servos: the joints read as connected because the thing that
     # connects them is in the picture ----
@@ -229,22 +233,11 @@ def world_items():
                  dz=V.TR_TOP + P.MX_UPPER_H + P.MX_STEM_UP + 1.5)
     out.append(("v2-keycap", kc, V.COLORS["v2-accent"]))
 
-    # the elbow's blue cap, back on: the joint reads symmetrical again
-    tc = V.v2_trimcap()[0][1].copy()
-    tc.rotate_y(90.0)
-    # cup mouth toward the plate: the pocket swallows the proud hub end
-    tc.translate(dx=-(V.L2_IN_HALF + V.PLATE_T) - 3.2, dz=z_el)
-    out.append(("v2-trimcap", tc, V.COLORS["v2-accent"]))
-
-    # the head hub's cap: RETENTION, not just trim -- glued to the hub, its
-    # flange overlaps the drive plate's drop-in slot rails, closing the path
-    # the shade came in by. Its own keyhole slot points up: it drops down
-    # the corridor between the drive plate and link2-out.
-    tc2 = V.v2_caphead()[0][1].copy()
-    tc2.rotate_y(-90.0)
-    tc2.translate(dx=xc + V.HEAD_HALF + P.HORN_HUB_T - V.HEAD_CBORE_T + 1.2,
-                  dz=z_hd)
-    out.append(("v2-caphead", tc2, V.COLORS["v2-accent"]))
+    # No trim cups. They existed to cover a PRINTED horn's O13 hub and to
+    # retain the shade by lapping its slot rails. The moulded horn is a
+    # 54 mm bar, which a O26 cup cannot cover, and retention is now the
+    # horn's own screws through the driven plate -- the job those holes in
+    # the arm were moulded for.
     return out
 
 
@@ -255,8 +248,8 @@ def print_items():
     for n, m, c in (V.tub() + V.disc() + V.tower() + V.link1() + V.link2()
                     + V.head_block() + V.clamp_bars()
                     + V.v2_screws_strip() + V.v2_bolts() + V.v2_disckeys()
-                    + V.v2_trimcap() + V.v2_caphead()
-                    + V.v2_keycap() + V.v2_horns()):
+                   
+                    + V.v2_keycap()):
         q = m.copy()
         if n == "v2-disc":
             q.rotate_x(180.0)          # skirt up -> face down, prints flat

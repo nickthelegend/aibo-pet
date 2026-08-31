@@ -1,7 +1,7 @@
 """assembly.py — place every part in world position, export STLs + previews.
 
-  exports/aibo-assembled.glb   the lamp in its neutral pose
-  exports/aibo-exploded.glb    the same, parts pulled apart
+  exports/hotaru-assembled.glb   the lamp in its neutral pose
+  exports/hotaru-exploded.glb    the same, parts pulled apart
   exports/<part>.stl           one print-ready STL per part, already in its
                                print orientation with min Z dropped to 0
   exports/MANIFEST.json        per-file stats, pose, print notes
@@ -185,19 +185,19 @@ def main():
         pl.stl_write(os.path.join(EXPORTS, f"{name}.stl"), mesh)
 
     items = world_items()
-    pl.glb_write(os.path.join(EXPORTS, "aibo-assembled.glb"), items)
+    pl.glb_write(os.path.join(EXPORTS, "hotaru-assembled.glb"), items)
     comps = world_components()
-    pl.glb_write(os.path.join(EXPORTS, "aibo-populated.glb"), items + comps)
+    pl.glb_write(os.path.join(EXPORTS, "hotaru-populated.glb"), items + comps)
     print(f"populated: +{len(comps)} component meshes "
           f"({sum(len(m.F) for _n, m, _c in comps):,} tris)")
     lift = {"base": 0.0, "shoulder": 18.0, "lid": 34.0, "base-joint": 54.0,
             "cap-base": 68.0}
-    pl.glb_write(os.path.join(EXPORTS, "aibo-exploded.glb"),
+    pl.glb_write(os.path.join(EXPORTS, "hotaru-exploded.glb"),
                  [(n, m.copy().translate(dz=lift.get(n, 0.0)), c) for n, m, c in items])
 
     top = max(m.bounds()[5] for _n, m, _c in items)
     manifest = {
-        "generator": "aibo cad/assembly.py",
+        "generator": "hotaru cad/assembly.py",
         "pose_deg": POSE,
         "lamp_height_mm": round(float(top), 1),
         "reach_mm": P.ARM_LOWER_L + P.ARM_UPPER_L + P.ARM_FORE_L,

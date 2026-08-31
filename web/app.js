@@ -1,6 +1,6 @@
 /* app.js — the live lamp.
  *
- * exports/aibo-assembled.glb has the arm baked at one pose. web/hotaru-rig.glb
+ * exports/hotaru-assembled.glb has the arm baked at one pose. web/hotaru-rig.glb
  * (cad/export_web.py) instead ships every moving segment in its OWN frame,
  * sitting on its yoke pivot pointing +Z, plus rig.json describing how they
  * chain. This rebuilds the pose every frame from four joint angles, which is
@@ -444,7 +444,7 @@ function frame(now) {
 /* Exposed so the joint chain can be inspected from the console -- and so a
  * screenshot test can prove the thing actually moves rather than eyeballing
  * two stills taken a second apart. */
-window.__aibo = {
+window.__hotaru = {
   get pose() { return { ...cur }; },
   get mood() { return mood; },
   play(k) { if (MOODS[k]) { mood = k; moodT = 0; syncButtons(); } },

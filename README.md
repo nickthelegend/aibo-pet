@@ -1,10 +1,10 @@
-# AIBO
+# HOTARU
 
 An animated Pixar-style desk lamp that sees, hears and moves. Round turned
 base, three MG996R lift joints, SG90 head tilt, a cone shade with a WS2812
 ring for an eye, I2S mic and speaker, driven by an ESP32-S3.
 
-![AIBO](docs/images/hero.png)
+![HOTARU](docs/images/hero.png)
 
 ## Status
 
@@ -55,7 +55,7 @@ speaker sits in its pocket           deepest X-75.9 vs wall inner -77.6
 amp pins clear the floor             Z4.4, ridges are 8.0 tall
 ```
 
-`aibo-populated.glb` is the assembly with components; `aibo-assembled.glb` is
+`hotaru-populated.glb` is the assembly with components; `hotaru-assembled.glb` is
 printed parts only. **Every print plate carries its own hardware too**, so
 plate 2 shows the base with the ESP32, mic, amp and speaker seated, and plate
 3 shows the arms with their servos — you can check fit without leaving the

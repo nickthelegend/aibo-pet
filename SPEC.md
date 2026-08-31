@@ -1,4 +1,4 @@
-# AIBO — dimensional spec
+# HOTARU — dimensional spec
 
 Animated Pixar-style desk lamp: round base, three MG996R lift joints, SG90
 head tilt, cone shade with a WS2812 ring, I2S mic + speaker, ESP32-S3.

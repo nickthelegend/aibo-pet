@@ -1,5 +1,5 @@
 /*
- * servo_move.ino — AIBO motion core + bench test
+ * servo_move.ino — HOTARU motion core + bench test
  *
  * Board: ESP32-D0WD-V3 (WROOM-32 DevKit), esp32 core 3.x, ESP32Servo 3.2.1
  * Port:  /dev/cu.usbserial-0001   FQBN: esp32:esp32:esp32
@@ -114,7 +114,7 @@ void timingTest() {
 }
 
 void help() {
-  Serial.println(F("\n--- AIBO motion core ---"));
+  Serial.println(F("\n--- HOTARU motion core ---"));
   Serial.printf("  active joint: %s (GPIO%d)  speed %.0f deg/s\n",
                 NAMES[active], PINS[active], J[active].speed);
   Serial.println(F("  0..180 move | v<n> speed | j<0-3> joint"));
@@ -124,7 +124,7 @@ void help() {
 void setup() {
   Serial.begin(115200);
   delay(300);
-  Serial.println(F("\nAIBO motion core"));
+  Serial.println(F("\nHOTARU motion core"));
   esp_reset_reason_t r = esp_reset_reason();
   Serial.printf("reset reason: %s\n",
                 r == ESP_RST_BROWNOUT ? "*** BROWNOUT -- supply sagged ***"

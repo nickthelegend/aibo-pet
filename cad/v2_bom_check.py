@@ -128,7 +128,10 @@ def main():
                 continue
             inside = ST.inside(pm, near)
             if inside.any():
-                if (pre, pn) in BY_DESIGN:
+                # PREFIX: a stock horn is "horn-pan-shorn-hub" and
+                # "horn-pan-shorn-arm", so an exact-name exemption never
+                # fired and every servo reported as buried in its own horn.
+                if any(pre == a_ and pn.startswith(b_) for a_, b_ in BY_DESIGN):
                     continue          # the drive train, not a clash
                 buried += int(inside.sum())
                 worst, who = -1.0, pn

@@ -76,7 +76,10 @@ TWR_H = TWR_AXIS_Z + 14.0
 L1 = 100.0                      # shoulder -> elbow
 L2 = 90.0                       # elbow -> head
 PLATE_T = 4.0
-CAP_D = 46.0                    # round joint ends
+# 58, not 46: the stock horn is 54 tip to tip and a 46 cap cannot hold its
+# pocket -- the slot broke out of both edges and left 1.1 mm of plate
+# bridging a joint that carries the arm. 58 puts a 2 mm rim round the horn.
+CAP_D = 58.0                    # round joint ends
 LINK_W = 34.0                   # plate width between caps
 GAP_FIT = 0.4                   # per side, yoke over tower / link over link
 
@@ -274,19 +277,35 @@ def _skeleton(length, keepout):
 
 
 def _horn_recess_openings(plate, x_axis, z0, t):
-    """v1 cross recess, expressed as banded() openings cut into a flat plate
-    lying in XY (z0..z0+t): cross arms + hub bore, centred at x_axis."""
-    aw = P.HORN_ARM_W + P.HORN_FIT
-    hub = P.HORN_HUB_D + P.HORN_FIT
-    rec_d = P.HORN_T + P.HORN_FIT
+    """Pocket for the STOCK MG996R double horn, cut from the driven face.
+
+    The printed horn's recess was a CROSS, because a printed horn could be
+    whatever shape suited us. The moulded one is a single straight arm, so
+    the pocket is a single slot -- and a cross pocket would leave the real
+    horn free to rattle a quarter turn round into the empty arm.
+
+    Torque goes through the slot's two long SIDES, which is why the ends
+    can be generous. The centre bore is cut clear through so the hub nests
+    and a driver reaches the shaft screw behind it."""
+    w = P.SHORN_W + 2 * P.SHORN_FIT
+    L = P.SHORN_L + 2 * P.SHORN_FIT
+    hub = P.SHORN_HUB_D + 2 * P.SHORN_FIT
+    rec_d = P.SHORN_T + P.SHORN_FIT
     cx, cy = x_axis
-    arm1 = box(cx - P.HORN_ARM_HALF, cy - aw / 2, cx + P.HORN_ARM_HALF, cy + aw / 2)
-    arm2 = box(cx - aw / 2, cy - P.HORN_ARM_HALF, cx + aw / 2, cy + P.HORN_ARM_HALF)
-    hubc = pl.circle(hub, 48)
-    hubc = affinity.translate(hubc, cx, cy)
+    slot = affinity.translate(pl.rounded_rect(L, w, w / 2.0), cx, cy)
+    hubc = affinity.translate(pl.circle(hub, 48), cx, cy)
+    # Two screws per arm, through the horn's OWN holes into the driven
+    # plate. That is what those holes are for, and it is what now retains
+    # the joint axially: the printed trim cups that used to do it were
+    # shaped round a O13 printed hub and cannot cover a 54 mm moulded bar.
+    # The screws are the small self-tappers in the servo bag.
+    scr = unary_union([affinity.translate(pl.circle(P.SHORN_SCREW, 16),
+                                          cx + sx * r, cy)
+                       for sx in (-1, 1) for r in P.SHORN_SCREW_R])
     return [
-        (unary_union([arm1, arm2]), z0 - OVL, z0 + rec_d),   # recess, part way
-        (hubc, z0 - OVL, z0 + t + OVL),                       # hub clear through
+        (slot, z0 - OVL, z0 + rec_d),
+        (hubc, z0 - OVL, z0 + t + OVL),
+        (scr, z0 - OVL, z0 + t + OVL),
     ]
 
 
@@ -715,8 +734,18 @@ def disc():
                                 for a in [55 + k * (70 / 24) for k in range(25)]])
     kidney = ring.intersection(wedge)
 
-    # centre: screw counterbore + clearance, and the horn cross recess below
-    cb = pl.circle(6.8, 32)
+    # centre: bolt counterbore + clearance, and the horn cross recess below.
+    #
+    # This was the LAST M3 hole in the robot -- O3.4 through a O6.8
+    # counterbore, both sized for a metal M3 -- and it survived the
+    # all-printed conversion because the sweep that replaced the others
+    # matched on a wrapper this line does not have. The fastener that goes
+    # here is now a printed P6 thumb-bolt: O6 thread, O6.6 clearance, O11
+    # head. It could not go in, which is exactly what the user found.
+    # M3 into the servo shaft's own tapped hole -- the screw that comes in
+    # the servo bag with the horn. Counterbored so its head sits below the
+    # disc face and the tower can seat flat on top of it.
+    cb = pl.circle(P.M3_HEAD_D + 1.0, 40)
     thr = pl.circle(P.M3_CLEAR, 24)
 
     openings = _horn_recess_openings(face, (0.0, 0.0), DISC_Z0, DISC_T)
@@ -746,24 +775,34 @@ def disc():
     openings += [
         (kidney, DISC_Z0 - OVL, DISC_Z0 + DISC_T + OVL),
         (thr, DISC_Z0 - OVL, DISC_Z0 + DISC_T + OVL),
-        (cb, DISC_Z0 + DISC_T - 2.0, DISC_Z0 + DISC_T + OVL),
+        (cb, DISC_Z0 + DISC_T - 2.9, DISC_Z0 + DISC_T + OVL),
     ]
     # 4 insert bores for the tower flange
     for (ix, iy) in _tower_bolts():
-        openings.append((affinity.translate(pl.circle(PB_BORE, 24), ix, iy),
+        openings.append((affinity.translate(pl.circle(DISC_BOLT_TAP, 24), ix, iy),
                          DISC_Z0 - OVL, DISC_Z0 + DISC_T + OVL))
     # No arc vents. They were styling on the ONE face that has to stay a
     # clean bearing surface and a clean top, and they read as busy rather
     # than machined. The platter is plain; the crown and the link skeletons
     # carry the visual language instead.
     m += pl.banded(face, DISC_Z0, DISC_Z0 + DISC_T, openings)
-    for (ix, iy) in _tower_bolts():
-        m += _psleeve(ix, iy, DISC_Z0, DISC_Z0 + DISC_T)
+    # no printed-thread sleeves here any more: an M3 self-taps straight into
+    # the 2.9 pilot through the disc's own 4.5 of plate
 
     # rim skirt: hides the joint and locates the disc round the rim
     sk = pl.ring2d(pl.circle(SKIRT_ID + 2 * SKIRT_T, 160), pl.circle(SKIRT_ID, 160))
     m += pl.prism(sk, DISC_Z0 - SKIRT_DROP, DISC_Z0 + OVL)
     return [("v2-disc", m, COLORS["v2-disc"])]
+
+
+# The turntable's fasteners are M3, not printed. A printed P6 thumb-bolt
+# is fine where it is turned by hand into printed plastic, but the disc is
+# the one joint that takes the whole arm's tipping moment through four
+# bolts, and the user's verdict on the printed ones there was simply that
+# they are not good.
+DISC_BOLT_CLEAR = P.M3_CLEAR          # 3.4 through the tower flange
+DISC_BOLT_HEAD = P.M3_HEAD_D + 0.6    # counterbore in the flange
+DISC_BOLT_TAP = 2.9                   # self-tapping pilot in the disc
 
 
 def _tower_bolts():
@@ -779,9 +818,9 @@ def tower():
     m = pl.Mesh()
     bw, bd, bt = TWR_BASE
     base = pl.rounded_rect(bw, bd, 6.0)
-    holes = unary_union([affinity.translate(pl.circle(PB_CLEAR, 24), x, y)
+    holes = unary_union([affinity.translate(pl.circle(DISC_BOLT_CLEAR, 24), x, y)
                          for x, y in _tower_bolts()])
-    heads = unary_union([affinity.translate(pl.circle(PB_HEAD + 0.8, 24), x, y)
+    heads = unary_union([affinity.translate(pl.circle(DISC_BOLT_HEAD, 24), x, y)
                          for x, y in _tower_bolts()])
     m += pl.banded(base, z0, z0 + bt, [
         (holes, z0 - OVL, z0 + bt + OVL),
@@ -1195,8 +1234,8 @@ def v2_trimcap():
     proud hub end lives inside the pocket with 0.3 all round."""
     m = pl.Mesh()
     head = _slot_head(32.0)
-    pocket = pl.circle(P.HORN_HUB_D + 0.6, 48)
-    m += pl.banded(head, 0.0, 3.2, [(pocket, 0.9, 3.2 + OVL)])
+    pocket = pl.circle(P.SHORN_HUB_D + 1.0, 48)
+    m += pl.banded(head, 0.0, 6.6, [(pocket, 0.9, 6.6 + OVL)])
     return [("v2-trimcap", m, COLORS["v2-accent"])]
 
 
@@ -1216,9 +1255,9 @@ def v2_caphead():
     (13.3 slot under a 26 flange leaves 6.3 of overlap each side)."""
     m = pl.Mesh()
     head = _slot_head(26.0)
-    pocket = pl.circle(P.HORN_HUB_D + 0.6, 48)
-    slot = box(-(P.HORN_HUB_D + 0.6) / 2, 0.0, (P.HORN_HUB_D + 0.6) / 2, 14.0)
-    m += pl.banded(head, 0.0, 3.2, [(pocket.union(slot), 0.9, 3.2 + OVL)])
+    pocket = pl.circle(P.SHORN_HUB_D + 1.0, 48)
+    slot = box(-(P.SHORN_HUB_D + 1.0) / 2, 0.0, (P.SHORN_HUB_D + 1.0) / 2, 14.0)
+    m += pl.banded(head, 0.0, 6.6, [(pocket.union(slot), 0.9, 6.6 + OVL)])
     return [("v2-caphead", m, COLORS["v2-accent"])]
 
 

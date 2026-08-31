@@ -348,3 +348,31 @@ def ws2812_ring():
                          -0.3, 0.0 + OVL)
     parts.append(("ring-pads", pads, C["gold"]))
     return parts
+
+
+# ------------------------------------------------- stock MG996R horn ------
+def mg996r_horn():
+    """The black nylon double arm that ships with the servo.
+
+    Modelled as a COMPONENT, not a printed part: it is bought hardware, so
+    it belongs with the servos and the boards in the audits that ask
+    whether real things fit, not on a build plate.
+
+    Origin = the underside of the arm plate, hub rising at +Z the way it
+    sits on the spline. Arms lie along X."""
+    from shapely import affinity as _aff
+    arm = pl.rounded_rect(P.SHORN_L, P.SHORN_W, P.SHORN_W / 2.0)
+    parts = [("shorn-arm", pl.prism(arm, 0.0, P.SHORN_T), C["pcb-black"])]
+    hub = pl.circle(P.SHORN_HUB_D, 48)
+    parts.append(("shorn-hub",
+                  pl.prism(hub, P.SHORN_T - OVL, P.SHORN_T + P.SHORN_HUB_H),
+                  C["pcb-black"]))
+    # the six holes per arm are cosmetic here: nothing bolts through them,
+    # the pocket carries the torque. Cut them so the render reads as the
+    # real part rather than a black lozenge.
+    holes = []
+    for s_ in (-1, 1):
+        for k in range(6):
+            holes.append(_aff.translate(pl.circle(2.0, 12),
+                                        s_ * (9.0 + k * 3.5), 0.0))
+    return parts

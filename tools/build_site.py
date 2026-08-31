@@ -69,7 +69,7 @@ def footer() -> str:
                       ("./faq.html", "FAQ")]),
         ("Company", [("./company.html", "Status"),
                      ("./market.html", "Go to market"),
-                     ("https://github.com/nickthelegend/aibo-pet", "Source")]),
+                     ("https://github.com/nickthelegend/hotaru", "Source")]),
         ("Legal", [("./privacy.html", "Privacy"),
                    ("./terms.html", "Terms")]),
     ]

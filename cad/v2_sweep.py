@@ -82,7 +82,7 @@ def main():
     # built pose would have hidden the very thing it caught. Everything except
     # the horn/servo coupling must be clear at every angle, 0 included.
     baseline = {(m, s) for m, s in touching(0.0)
-                if m == "horn-pan" and s.startswith("pan-")}
+                if m.startswith("horn-pan") and s.startswith("pan-")}
     print("  designed coupling held out of the sweep: "
           + ", ".join(sorted(f"{m}/{s}" for m, s in baseline)))
 

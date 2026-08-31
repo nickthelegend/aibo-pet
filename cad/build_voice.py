@@ -1,4 +1,4 @@
-"""build_voice.py — pre-render every line AIBO speaks.
+"""build_voice.py — pre-render every line HOTARU speaks.
 
 Rendered with Kokoro, an open weights 82M parameter model, not with a
 system voice.

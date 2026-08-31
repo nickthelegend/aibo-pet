@@ -1,5 +1,5 @@
 {
-  "generator": "aibo cad/assembly.py",
+  "generator": "hotaru cad/assembly.py",
   "pose_deg": {
     "base": -22.0,
     "shoulder": 58.0,

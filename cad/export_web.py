@@ -1,6 +1,6 @@
 """export_web.py — the rig the landing page animates.
 
-exports/aibo-assembled.glb bakes the arm at ONE pose: every segment is
+exports/hotaru-assembled.glb bakes the arm at ONE pose: every segment is
 already rotated and translated into place, so there is nothing left to drive.
 Fine for looking at, useless for moving.
 
@@ -103,7 +103,7 @@ def write_glb(path, items):
             "material": i}]})
         nodes.append({"name": name, "mesh": i})
 
-    js = {"asset": {"version": "2.0", "generator": "aibo export_web"},
+    js = {"asset": {"version": "2.0", "generator": "hotaru export_web"},
           "scene": 0, "scenes": [{"nodes": list(range(len(nodes)))}],
           "nodes": nodes, "meshes": meshes, "materials": materials,
           "accessors": accessors, "bufferViews": views,
@@ -233,7 +233,7 @@ def main():
     with zipfile.ZipFile(zpath, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as z:
         for f in stls:
             z.write(os.path.join(exp, f), f)
-    RAW = "https://raw.githubusercontent.com/nickthelegend/aibo-pet/main/exports/"
+    RAW = "https://raw.githubusercontent.com/nickthelegend/hotaru/main/exports/"
     spec["downloads"] = {
         "base": RAW,
         "zip": RAW + "all-stls.zip",
@@ -307,7 +307,7 @@ def main():
         readme.append("")
     readme += ["Supports are needed only where listed. Everything else prints",
                "as modelled; measured by cad/audit_printable.py, not asserted.",
-               "", "CAD, STLs and audits: github.com/nickthelegend/aibo-pet"]
+               "", "CAD, STLs and audits: github.com/nickthelegend/hotaru"]
     with zipfile.ZipFile(pz, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as z:
         z.writestr("README.txt", "\n".join(readme))
         for d in plates_detail:
